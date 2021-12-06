@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "617639553643",
+    "project_id": "spielesammulng",
+    "storage_bucket": "spielesammulng.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:617639553643:android:bb6a7bb9186b79354a1f2e",
+        "android_client_info": {
+          "package_name": "com.example.testapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "617639553643-hq2co8sggi25k64c865dlrrbmabh6hvk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3F8G0FvMaVaIrf4XZTBSauLqvLg95wNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "617639553643-hq2co8sggi25k64c865dlrrbmabh6hvk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
