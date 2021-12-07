@@ -18,11 +18,12 @@ class GameSelect : AppCompatActivity() {
         binding = ActivityGameSelectBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val info :Bundle ?=intent.extras
-        if(info != null){
+        var currentuser = FirebaseAuth.getInstance().currentUser
+        if(currentuser != null) {
 
-            binding.logstatus.setText("Logged in as " + info.getString("email"))
+            binding.logstatus.setText("Logged in as " + currentuser.email)
         }
+
 
 
         binding.buttonlogout.setOnClickListener(){
