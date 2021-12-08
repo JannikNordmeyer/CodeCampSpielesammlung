@@ -2,11 +2,13 @@ package com.example.testapplication
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Button
 import com.example.testapplication.databinding.TictactoeBinding
 
-class Field(var board: Array<Array<Button>>, var game: Game) {
+class Field(var board: Array<Array<String>>, var game: Game) {
+
 
 
     private fun checkField(): Boolean {
@@ -18,7 +20,7 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
             var row = true
             for(j in 0..2){
 
-                row = row && (board[i][j].text == game.player)
+                row = row && (board[i][j] == game.player)
             }
             win = win || row
 
@@ -29,7 +31,7 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
             var column = true
             for(j in 0..2){
 
-                column = column && (board[j][i].text == game.player)
+                column = column && (board[j][i] == game.player)
             }
             win = win || column
 
@@ -38,7 +40,7 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
 
         for(i in 0..2){
 
-            diaR = diaR && (board[i][i].text == game.player)
+            diaR = diaR && (board[i][i] == game.player)
 
         }
         win = win || diaR
@@ -48,7 +50,7 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
 
         for(i in 0..2){
 
-            diaL = diaL && (board[i][2-i].text == game.player)
+            diaL = diaL && (board[i][2-i] == game.player)
 
         }
         win = win || diaL
@@ -56,8 +58,11 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
         if(win){
 
             game.win()
-            val handler = Handler()
-            handler.postDelayed({ clear() }, 1500)
+            val handler = Handler(Looper.getMainLooper())
+            handler.postDelayed({
+                clear()
+                game.change.value = true
+                                }, 1500)
             return true
         }
 
@@ -65,7 +70,7 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
             for(i in 0..2) {
                 for (j in 0..2) {
 
-                    if (board[i][j].text == "  ") {
+                    if (board[i][j] == "") {
 
                         full = false
                     }
@@ -76,8 +81,11 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
             if(full){
 
                 game.draw()
-                val handler = Handler()
-                handler.postDelayed({ clear() }, 1500)
+                val handler = Handler(Looper.getMainLooper())
+                handler.postDelayed({
+                    clear()
+                    game.change.value = true
+                                    }, 1500)
                 return true
             }
 
@@ -87,28 +95,28 @@ class Field(var board: Array<Array<Button>>, var game: Game) {
 
     }
     fun click(a: Int, b: Int){
-        if(board[a][b].text != "  "){
+        if(board[a][b] != ""){
             return
         }
-        board[a][b].setText(game.player)
+        board[a][b] = (game.player)
         if(checkField()){
             return
         }
         game.toggle()
 
     }
-
     private fun clear() {
         for(i in 0..2){
             for(j in 0..2){
 
-                board[i][j].text = "  "
+                board[i][j]= ""
             }
 
         }
         game.toggle()
         if(game.player != "X")
-        game.toggle()
+            game.toggle()
+        game.winner = null
 
     }
 

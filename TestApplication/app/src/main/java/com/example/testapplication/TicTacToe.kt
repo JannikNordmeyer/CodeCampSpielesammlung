@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.TictactoeBinding
 
 
@@ -12,33 +13,118 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: TictactoeBinding
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.tictactoe.xml)
 
         binding = TictactoeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.returnbutton.setOnClickListener(){
+        var viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
 
-            finish()
+        fun updatePrompt(){
+            if(viewmodel.game.winner == null){
+                if(viewmodel.game.player == "X"){
+                    binding.playerprompt.setText("Player 1's Turn:")}
+                else{
+                    binding.playerprompt.setText("Player 2's Turn:")
+                }
+
+            }
+            else{
+                if(viewmodel.game.winner == 0){
+
+                    binding.playerprompt.setText("It's a Draw.")
+
+                }
+                else{
+
+                    binding.playerprompt.setText("Player "+viewmodel.game.winner+" wins.")
+
+                }
+
+
+            }
 
         }
 
+        fun update(){
+            binding.topleft.setText(viewmodel.field.board[0][0])
+            binding.topmid.setText(viewmodel.field.board[0][1])
+            binding.topright.setText(viewmodel.field.board[0][2])
 
-        val board = arrayOf(
-            arrayOf(binding.topleft, binding.topmid, binding.topright),
-            arrayOf(binding.midleft, binding.midmid, binding.midright),
-            arrayOf(binding.botleft, binding.botmid, binding.botright),
-        )
+            binding.midleft.setText(viewmodel.field.board[1][0])
+            binding.midmid.setText(viewmodel.field.board[1][1])
+            binding.midright.setText(viewmodel.field.board[1][2])
 
-        var game = Game(binding.playerprompt, binding)
+            binding.botleft.setText(viewmodel.field.board[2][0])
+            binding.botmid.setText(viewmodel.field.board[2][1])
+            binding.botright.setText(viewmodel.field.board[2][2])
+            updatePrompt()
+        }
 
-        var field = Field(board, game)
+        viewmodel.game.change.observe(this, {
 
-        game.field.add(field)
+            update()
+        })
 
-        game.rungame()
+        update()
+
+        binding.returnbutton.setOnClickListener(){
+            finish()
+        }
+
+        binding.topleft.setOnClickListener(){
+
+            viewmodel.click(0, 0)
+            update()
+        }
+        binding.topmid.setOnClickListener(){
+
+            viewmodel.click(0, 1)
+            update()
+        }
+        binding.topright.setOnClickListener(){
+
+            viewmodel.click(0, 2)
+            update()
+        }
+
+
+        binding.midleft.setOnClickListener(){
+
+            viewmodel.click(1, 0)
+            update()
+        }
+        binding.midmid.setOnClickListener(){
+
+            viewmodel.click(1, 1)
+            update()
+        }
+        binding.midright.setOnClickListener(){
+
+            viewmodel.click(1, 2)
+            update()
+        }
+
+
+        binding.botleft.setOnClickListener(){
+
+            viewmodel.click(2, 0)
+            update()
+        }
+        binding.botmid.setOnClickListener(){
+
+            viewmodel.click(2, 1)
+            update()
+        }
+        binding.botright.setOnClickListener(){
+
+            viewmodel.click(2, 2)
+            update()
+        }
+
+
 
     }
 
