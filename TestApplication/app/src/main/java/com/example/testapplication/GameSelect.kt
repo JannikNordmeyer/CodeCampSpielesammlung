@@ -35,7 +35,7 @@ class GameSelect : AppCompatActivity() {
 
         binding.TicTacToeButton.setOnClickListener(){
 
-            val intent = Intent(this, MainActivity::class.java);
+            val intent = Intent(this, TicTacToe::class.java);
             startActivity(intent)
 
         }

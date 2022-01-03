@@ -16,7 +16,7 @@
             android:name=".Login"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".TicTacToe"
             android:exported="false" />
         <activity
             android:name=".GameSelect"

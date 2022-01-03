@@ -7,7 +7,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
 import com.example.testapplication.databinding.TictactoeBinding
 
-class Game (var board: Array<Array<String>>){
+class TicTacToeGameLogic (var board: Array<Array<String>>){
 
     companion object{
         const val CROSS = "X"

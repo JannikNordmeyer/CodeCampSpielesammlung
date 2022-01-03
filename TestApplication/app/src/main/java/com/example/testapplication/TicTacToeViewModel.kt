@@ -12,7 +12,7 @@ class TicTacToeViewModel: ViewModel() {
         arrayOf("", "", ""),
     )
 
-    var game = Game(emptyboard)
+    var game = TicTacToeGameLogic(emptyboard)
 
     fun click(x:Int, y:Int){
         game.click(x, y)

@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.TictactoeBinding
 
 
-class MainActivity : AppCompatActivity() {
+class TicTacToe : AppCompatActivity() {
 
     private lateinit var binding: TictactoeBinding
 
