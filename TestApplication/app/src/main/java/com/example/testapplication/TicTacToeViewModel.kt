@@ -12,12 +12,10 @@ class TicTacToeViewModel: ViewModel() {
         arrayOf("", "", ""),
     )
 
-    var game = Game()
-
-    var field = Field(emptyboard, game)
+    var game = Game(emptyboard)
 
     fun click(x:Int, y:Int){
-        field.click(x, y)
+        game.click(x, y)
     }
 
 }

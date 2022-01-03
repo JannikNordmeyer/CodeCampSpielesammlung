@@ -49,17 +49,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun update(){
-            binding.topleft.setText(viewmodel.field.board[0][0])
-            binding.topmid.setText(viewmodel.field.board[0][1])
-            binding.topright.setText(viewmodel.field.board[0][2])
+            binding.topleft.setText(viewmodel.game.board[0][0])
+            binding.topmid.setText(viewmodel.game.board[0][1])
+            binding.topright.setText(viewmodel.game.board[0][2])
 
-            binding.midleft.setText(viewmodel.field.board[1][0])
-            binding.midmid.setText(viewmodel.field.board[1][1])
-            binding.midright.setText(viewmodel.field.board[1][2])
+            binding.midleft.setText(viewmodel.game.board[1][0])
+            binding.midmid.setText(viewmodel.game.board[1][1])
+            binding.midright.setText(viewmodel.game.board[1][2])
 
-            binding.botleft.setText(viewmodel.field.board[2][0])
-            binding.botmid.setText(viewmodel.field.board[2][1])
-            binding.botright.setText(viewmodel.field.board[2][2])
+            binding.botleft.setText(viewmodel.game.board[2][0])
+            binding.botmid.setText(viewmodel.game.board[2][1])
+            binding.botright.setText(viewmodel.game.board[2][2])
             updatePrompt()
         }
 
