@@ -5,19 +5,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.testapplication.databinding.TictactoeBinding
+import com.example.testapplication.databinding.ActivityTictactoeBinding
 
 
 class TicTacToe : AppCompatActivity() {
 
-    private lateinit var binding: TictactoeBinding
+    private lateinit var binding: ActivityTictactoeBinding
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = TictactoeBinding.inflate(layoutInflater)
+        binding = ActivityTictactoeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         var viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
