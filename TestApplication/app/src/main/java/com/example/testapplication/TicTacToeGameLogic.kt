@@ -5,7 +5,7 @@ import android.os.Looper
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.MutableLiveData
-import com.example.testapplication.databinding.TictactoeBinding
+import com.example.testapplication.databinding.ActivityTictactoeBinding
 
 class TicTacToeGameLogic (var board: Array<Array<String>>){
 
