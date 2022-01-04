@@ -20,7 +20,7 @@ class TicTacToe : AppCompatActivity() {
         binding = ActivityTictactoeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
+        val viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
 
         fun updatePrompt(){
             if(viewmodel.game.winner == null){
