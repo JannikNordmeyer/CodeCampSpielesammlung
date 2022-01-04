@@ -28,6 +28,10 @@ class GameHolder : AppCompatActivity() {
                 fragToLoad = FragmentTest2()
                 Log.d(TAG, "LOADED FRAGMENT TEST 2")
             }
+            GameNames.TICTACTOE -> {
+                fragToLoad = TicTacToe()
+                Log.d(TAG, "LOADED FRAGMENT TICTACTOE")
+            }
             else ->  Log.d(TAG," ERROR: COULDNT LOAD GAME FRAGMENT")
         }
 
