@@ -4,18 +4,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class GameHolder : AppCompatActivity() {
 
     private val TAG = GameHolder::class.java.simpleName
 
+    lateinit var fragToLoad: Fragment
+    lateinit var viewmodel: ViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_holder)
 
-
-        lateinit var fragToLoad: Fragment
         var thing = MyApplication.globalSelectedGame
         Log.d(TAG, thing.toString())
 
@@ -30,6 +32,7 @@ class GameHolder : AppCompatActivity() {
             }
             GameNames.TICTACTOE -> {
                 fragToLoad = TicTacToe()
+                viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
                 Log.d(TAG, "LOADED FRAGMENT TICTACTOE")
             }
             else ->  Log.d(TAG," ERROR: COULDNT LOAD GAME FRAGMENT")

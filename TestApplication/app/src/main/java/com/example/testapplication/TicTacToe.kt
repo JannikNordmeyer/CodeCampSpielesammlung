@@ -3,6 +3,7 @@ package com.example.testapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,15 +17,15 @@ class TicTacToe : Fragment() {
 
     private lateinit var binding: ActivityTictactoeBinding
 
+    private val TAG = TicTacToe::class.java.simpleName
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        //super.onCreate(savedInstanceState)
 
         binding = ActivityTictactoeBinding.inflate(inflater,container,false)
-        var view = binding.root
-        //setContentView(binding.root)
+        val view = binding.root
 
-        val viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
+        val viewmodel = ViewModelProvider(requireActivity()).get(TicTacToeViewModel::class.java) //Shared Viewmodel w/ GameHolder
 
         fun updatePrompt(){
             if(viewmodel.game.winner == null){
@@ -67,14 +68,15 @@ class TicTacToe : Fragment() {
             updatePrompt()
         }
 
-        //viewmodel.game.change.observe(this, {
-        //
-        //    update()
-        //})
+        viewmodel.game.change.observe(viewLifecycleOwner, {
+
+            update()
+        })
 
         update()
 
         binding.returnbutton.setOnClickListener(){
+            Log.d(TAG,"PRESSED RETURN BUTTON")
             (this.getActivity())!!.finish()
         }
 
@@ -128,8 +130,7 @@ class TicTacToe : Fragment() {
             update()
         }
 
-        return inflater.inflate(R.layout.activity_tictactoe,container,false)
-
+        return view
     }
 
 }
