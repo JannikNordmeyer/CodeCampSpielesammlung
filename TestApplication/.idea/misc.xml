@@ -3,6 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_select.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_login.xml" value="0.27355072463768115" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_main_tic_tac_toe_with_friend.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_multiplayer_game_selection.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_online_code_generator.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_online_multiplayer_game.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_registration.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/choose_mode_tictactoe.xml" value="0.5" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/test.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/tictactoe.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/tictactoe_friends.xml" value="0.5" />
         <entry key="..\:/Users/Jannik/AndroidStudioProjects/TestApplication/app/src/main/res/layout/activity_game_select.xml" value="0.26268115942028986" />
         <entry key="..\:/Users/Jannik/AndroidStudioProjects/TestApplication/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
         <entry key="..\:/Users/Jannik/AndroidStudioProjects/TestApplication/app/src/main/res/layout/activity_main.xml" value="0.1" />
