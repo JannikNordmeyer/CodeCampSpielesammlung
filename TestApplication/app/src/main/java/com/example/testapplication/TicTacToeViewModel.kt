@@ -1,10 +1,8 @@
 package com.example.testapplication
 
-
 import androidx.lifecycle.ViewModel
 
 class TicTacToeViewModel: ViewModel() {
-
 
     val emptyboard = arrayOf(
         arrayOf("", "", ""),
@@ -12,12 +10,10 @@ class TicTacToeViewModel: ViewModel() {
         arrayOf("", "", ""),
     )
 
-    var game = Game()
-
-    var field = Field(emptyboard, game)
+    var game = TicTacToeGameLogic(emptyboard)
 
     fun click(x:Int, y:Int){
-        field.click(x, y)
+        game.click(x, y)
     }
 
 }
