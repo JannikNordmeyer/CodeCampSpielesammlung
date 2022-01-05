@@ -1,10 +1,8 @@
 package com.example.testapplication
 
-
 import androidx.lifecycle.ViewModel
 
 class TicTacToeViewModel: ViewModel() {
-
 
     val emptyboard = arrayOf(
         arrayOf("", "", ""),

@@ -7,70 +7,113 @@
     tools:context=".GameSelect">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/TextViewAuswahl"
         android:layout_width="200sp"
         android:layout_height="40sp"
-        android:text="Auswahl:"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textSize="30sp"
         android:gravity="center"
-        />
-
-    <Button
-        android:id="@+id/TicTacToeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TicTacToe"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Auswahl:"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/loginbutton"
+        android:id="@+id/ButtonLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="16dp"
         android:text="LOGIN"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/buttonlogout"
+        android:id="@+id/ButtonLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Logout"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="16dp"
+        android:text="LOGOUT"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/logstatus"
+        android:id="@+id/TextViewLoginStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="You are not currently logged in."
+        android:layout_marginBottom="84dp"
+        android:text="You are currently not logged in."
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/loginbutton"
-        app:layout_constraintStart_toEndOf="@+id/buttonlogout" />
+        app:layout_constraintEnd_toStartOf="@+id/ButtonLogin"
+        app:layout_constraintHorizontal_bias="0.545"
+        app:layout_constraintStart_toEndOf="@+id/ButtonLogout" />
 
     <Button
-        android:id="@+id/ButtonTest1"
+        android:id="@+id/ButtonTicTacToe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test1"
-        app:layout_constraintBottom_toTopOf="@+id/TicTacToeButton"
+        android:text="TicTacToe"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.17"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/TextViewAuswahl"
+        app:layout_constraintVertical_bias="0.116" />
 
     <Button
-        android:id="@+id/ButtonTest2"
+        android:id="@+id/ButtonPlaceholderSpiel3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test2"
-        app:layout_constraintBottom_toTopOf="@+id/TicTacToeButton"
+        android:layout_marginTop="92dp"
+        android:text="Placeholder3"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.446"
+        app:layout_constraintStart_toEndOf="@+id/ButtonPlaceholderSpiel2"
+        app:layout_constraintTop_toBottomOf="@+id/ButtonPlaceholderSpiel5" />
+
+    <Button
+        android:id="@+id/ButtonPlaceholderSpiel2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="92dp"
+        android:text="Placeholder2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.196"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ButtonTest1" />
+        app:layout_constraintTop_toBottomOf="@+id/ButtonPlaceholderSpiel4" />
+
+    <Button
+        android:id="@+id/ButtonPlaceholderSpiel1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="68dp"
+        android:text="Placeholder1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.841"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextViewAuswahl" />
+
+    <Button
+        android:id="@+id/ButtonPlaceholderSpiel5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Placeholder5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.446"
+        app:layout_constraintStart_toEndOf="@+id/ButtonPlaceholderSpiel4"
+        app:layout_constraintTop_toBottomOf="@+id/ButtonPlaceholderSpiel1" />
+
+    <Button
+        android:id="@+id/ButtonPlaceholderSpiel4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Placeholder4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ButtonTicTacToe" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

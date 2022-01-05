@@ -22,9 +22,7 @@ class Registration : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.buttonreturn.setOnClickListener() {
-
             finish()
-
         }
 
         binding.buttonregister.setOnClickListener(){

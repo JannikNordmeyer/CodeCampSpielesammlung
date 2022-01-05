@@ -1,28 +1,22 @@
 package com.example.testapplication
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.testapplication.databinding.ActivityTictactoeBinding
+import com.example.testapplication.databinding.FragmentTictactoeBinding
 
 
 class TicTacToe : Fragment() {
 
-    private lateinit var binding: ActivityTictactoeBinding
-
-    private val TAG = TicTacToe::class.java.simpleName
+    private lateinit var binding: FragmentTictactoeBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        binding = ActivityTictactoeBinding.inflate(inflater,container,false)
+        binding = FragmentTictactoeBinding.inflate(inflater,container,false)
         val view = binding.root
 
         val viewmodel = ViewModelProvider(requireActivity()).get(TicTacToeViewModel::class.java) //Shared Viewmodel w/ GameHolder
@@ -34,26 +28,22 @@ class TicTacToe : Fragment() {
                 else{
                     binding.playerprompt.setText("Player 2's Turn:")
                 }
-
             }
             else{
                 if(viewmodel.game.winner == 0){
-
                     binding.playerprompt.setText("It's a Draw.")
-
                 }
                 else{
-
                     binding.playerprompt.setText("Player "+viewmodel.game.winner+" wins.")
-
                 }
-
-
             }
-
         }
 
-        fun update(){
+        viewmodel.game.livewinner.observe(viewLifecycleOwner, ){
+            updatePrompt()
+        }
+
+        viewmodel.game.liveboard.observe(viewLifecycleOwner, {
             binding.topleft.setText(viewmodel.game.board[0][0])
             binding.topmid.setText(viewmodel.game.board[0][1])
             binding.topright.setText(viewmodel.game.board[0][2])
@@ -66,69 +56,17 @@ class TicTacToe : Fragment() {
             binding.botmid.setText(viewmodel.game.board[2][1])
             binding.botright.setText(viewmodel.game.board[2][2])
             updatePrompt()
-        }
-
-        viewmodel.game.change.observe(viewLifecycleOwner, {
-
-            update()
         })
 
-        update()
-
-        binding.returnbutton.setOnClickListener(){
-            Log.d(TAG,"PRESSED RETURN BUTTON")
-            (this.getActivity())!!.finish()
-        }
-
-        binding.topleft.setOnClickListener(){
-
-            viewmodel.click(0, 0)
-            update()
-        }
-        binding.topmid.setOnClickListener(){
-
-            viewmodel.click(0, 1)
-            update()
-        }
-        binding.topright.setOnClickListener(){
-
-            viewmodel.click(0, 2)
-            update()
-        }
-
-
-        binding.midleft.setOnClickListener(){
-
-            viewmodel.click(1, 0)
-            update()
-        }
-        binding.midmid.setOnClickListener(){
-
-            viewmodel.click(1, 1)
-            update()
-        }
-        binding.midright.setOnClickListener(){
-
-            viewmodel.click(1, 2)
-            update()
-        }
-
-
-        binding.botleft.setOnClickListener(){
-
-            viewmodel.click(2, 0)
-            update()
-        }
-        binding.botmid.setOnClickListener(){
-
-            viewmodel.click(2, 1)
-            update()
-        }
-        binding.botright.setOnClickListener(){
-
-            viewmodel.click(2, 2)
-            update()
-        }
+        binding.topleft.setOnClickListener(){ viewmodel.click(0, 0) }
+        binding.topmid.setOnClickListener(){ viewmodel.click(0, 1) }
+        binding.topright.setOnClickListener(){ viewmodel.click(0, 2) }
+        binding.midleft.setOnClickListener(){ viewmodel.click(1, 0) }
+        binding.midmid.setOnClickListener(){ viewmodel.click(1, 1) }
+        binding.midright.setOnClickListener(){ viewmodel.click(1, 2) }
+        binding.botleft.setOnClickListener(){ viewmodel.click(2, 0) }
+        binding.botmid.setOnClickListener(){ viewmodel.click(2, 1) }
+        binding.botright.setOnClickListener(){ viewmodel.click(2, 2) }
 
         return view
     }

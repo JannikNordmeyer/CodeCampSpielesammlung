@@ -6,8 +6,12 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.testapplication.databinding.ActivityGameHolderBinding
+import com.example.testapplication.databinding.FragmentTictactoeBinding
 
 class GameHolder : AppCompatActivity() {
+
+    private lateinit var binding: ActivityGameHolderBinding
 
     private val TAG = GameHolder::class.java.simpleName
 
@@ -18,29 +22,50 @@ class GameHolder : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_holder)
 
-        var thing = MyApplication.globalSelectedGame
-        Log.d(TAG, thing.toString())
+        binding = ActivityGameHolderBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         when(MyApplication.globalSelectedGame) {
-            GameNames.TEST1 -> {
-                fragToLoad = FragmentTest1()
-                Log.d(TAG, "LOADED FRAGMENT TEST 1")
+            GameNames.PLACEHOLDERSPIEL1 -> {
+                fragToLoad = PlaceholderSpiel1()
+                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel::class.java)
+                Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
             }
-            GameNames.TEST2 -> {
-                fragToLoad = FragmentTest2()
-                Log.d(TAG, "LOADED FRAGMENT TEST 2")
+            GameNames.PLACEHOLDERSPIEL2 -> {
+                fragToLoad = PlaceholderSpiel2()
+                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel2ViewModel::class.java)
+                Log.d(TAG, "LOADED PLACEHOLDERSPIEL2")
+            }
+            GameNames.PLACEHOLDERSPIEL3 -> {
+                fragToLoad = PlaceholderSpiel3()
+                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel3ViewModel::class.java)
+                Log.d(TAG, "LOADED PLACEHOLDERSPIEL3")
+            }
+            GameNames.PLACEHOLDERSPIEL4 -> {
+                fragToLoad = PlaceholderSpiel4()
+                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel4ViewModel::class.java)
+                Log.d(TAG, "LOADED PLACEHOLDERSPIEL4")
+            }
+            GameNames.PLACEHOLDERSPIEL5 -> {
+                fragToLoad = PlaceholderSpiel5()
+                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel5ViewModel::class.java)
+                Log.d(TAG, "LOADED PLACEHOLDERSPIEL5")
             }
             GameNames.TICTACTOE -> {
                 fragToLoad = TicTacToe()
                 viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
-                Log.d(TAG, "LOADED FRAGMENT TICTACTOE")
+                Log.d(TAG, "LOADED TICTACTOE")
             }
-            else ->  Log.d(TAG," ERROR: COULDNT LOAD GAME FRAGMENT")
+            else ->  Log.d(TAG," ERROR: FAILED TO LOAD GAME")
         }
 
         supportFragmentManager.beginTransaction().apply{
-            replace(R.id.flTest,fragToLoad)
+            replace(R.id.FrameLayoutGameHolder,fragToLoad)
             commit()
+        }
+
+        binding.ButtonGiveUp.setOnClickListener(){
+            finish()
         }
 
     }

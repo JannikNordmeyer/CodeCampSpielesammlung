@@ -7,10 +7,9 @@
     tools:context=".GameHolder">
 
     <FrameLayout
-        android:id="@+id/flTest"
+        android:id="@+id/FrameLayoutGameHolder"
         android:layout_width="409dp"
         android:layout_height="669dp"
-        android:text="Ich bin ein Fragment"
         app:layout_constraintBottom_toTopOf="@+id/ButtonGiveUp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

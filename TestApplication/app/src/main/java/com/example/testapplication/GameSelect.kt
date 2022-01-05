@@ -27,41 +27,45 @@ class GameSelect : AppCompatActivity() {
 
         var currentuser = FirebaseAuth.getInstance().currentUser
         if(currentuser != null) {
-
-            binding.logstatus.setText("Logged in as " + currentuser.email)
+            binding.TextViewLoginStatus.setText("Logged in as " + currentuser.email)
         }
 
-        binding.buttonlogout.setOnClickListener(){
-
+        binding.ButtonLogout.setOnClickListener(){
             FirebaseAuth.getInstance().signOut()
-            binding.logstatus.setText("You are not currently logged in.")
-
+            binding.TextViewLoginStatus.setText("You are not currently logged in.")
         }
 
-        binding.TicTacToeButton.setOnClickListener(){
-
-            //val intent = Intent(this, TicTacToe::class.java);
-            //startActivity(intent)
+        binding.ButtonTicTacToe.setOnClickListener(){
             MyApplication.globalSelectedGame = GameNames.TICTACTOE
             startGame()
-
         }
 
-        binding.ButtonTest1.setOnClickListener(){
-
-            MyApplication.globalSelectedGame = GameNames.TEST1
+        binding.ButtonPlaceholderSpiel1.setOnClickListener(){
+            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL1
             startGame()
-
         }
 
-        binding.ButtonTest2.setOnClickListener(){
-
-            MyApplication.globalSelectedGame = GameNames.TEST2
+        binding.ButtonPlaceholderSpiel2.setOnClickListener(){
+            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL2
             startGame()
-
         }
 
-        binding.loginbutton.setOnClickListener(){
+        binding.ButtonPlaceholderSpiel3.setOnClickListener(){
+            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL3
+            startGame()
+        }
+
+        binding.ButtonPlaceholderSpiel4.setOnClickListener(){
+            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL4
+            startGame()
+        }
+
+        binding.ButtonPlaceholderSpiel5.setOnClickListener(){
+            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL5
+            startGame()
+        }
+
+        binding.ButtonLogin.setOnClickListener(){
 
             val intent = Intent(this, Login::class.java);
             startActivity(intent)
