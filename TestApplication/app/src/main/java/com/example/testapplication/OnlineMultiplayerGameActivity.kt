@@ -125,8 +125,8 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             player1.contains(1) && player1.contains(4) && player1.contains(7) ||
             player1.contains(2) && player1.contains(5) && player1.contains(8) ||
             player1.contains(3) && player1.contains(6) && player1.contains(9) ||
-            player1.contains(1) && player1.contains(4) && player1.contains(9) ||
-            player1.contains(7) && player1.contains(4) && player1.contains(3) ){
+            player1.contains(1) && player1.contains(5) && player1.contains(9) ||
+            player1.contains(7) && player1.contains(5) && player1.contains(3) ){
             player1count += 1
             buttonDisable()
             disableReset()
@@ -148,8 +148,8 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             player2.contains(1) && player2.contains(4) && player2.contains(7) ||
             player2.contains(2) && player2.contains(5) && player2.contains(8) ||
             player2.contains(3) && player2.contains(6) && player2.contains(9) ||
-            player2.contains(1) && player2.contains(4) && player2.contains(9) ||
-            player2.contains(7) && player2.contains(4) && player2.contains(3) ){
+            player2.contains(1) && player2.contains(5) && player2.contains(9) ||
+            player2.contains(7) && player2.contains(5) && player2.contains(3) ){
             player2count += 1
             buttonDisable()
             disableReset()
@@ -191,7 +191,7 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
         player1.add(currCell)
         emptyCells.add(currCell)
         buttonSelected.isEnabled = false
-
+        checkWinner()
     }
 
     private fun reset() {
