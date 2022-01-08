@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestApplication">
         <activity
+            android:name=".test"
+            android:exported="false" />
+        <activity
             android:name=".TicTacToeWithFriend"
             android:exported="false" />
         <activity

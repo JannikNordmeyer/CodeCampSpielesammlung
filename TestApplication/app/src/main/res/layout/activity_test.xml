@@ -27,7 +27,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
-        android:hint="Enter Email" />
+        android:hint="Enter Email (up to the @)" />
 
     <Button
         android:id="@+id/idBtnInvite"

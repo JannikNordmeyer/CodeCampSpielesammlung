@@ -27,7 +27,7 @@ class MultiplayerGameSelection : AppCompatActivity() {
         }
 
         onlineFriendBtn.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java);
+            val intent = Intent(this, TicTacToeWithFriend::class.java);
             startActivity(intent)
         }
     }

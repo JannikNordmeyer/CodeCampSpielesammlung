@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -138,6 +139,7 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             }
             build.setNegativeButton("Exit") {dialog, which->
                 removeCode()
+                myRef.child("Users").child(FirebaseAuth.getInstance().currentUser!!.email.toString()).child("Request").setValue("")
                 exitProcess(1)
             }
             Handler(Looper.getMainLooper()).postDelayed(Runnable { build.show() }, 2000)
@@ -161,6 +163,7 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             }
             build.setNegativeButton("Exit") {dialog, which->
                 removeCode()
+                myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue("")
                 exitProcess(1)
             }
             Handler(Looper.getMainLooper()).postDelayed(Runnable { build.show() }, 2000)
@@ -286,5 +289,12 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             playNow(but, cellOnline)
             updateDatabase(cellOnline)
         }
+    }
+
+
+    //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
+    fun SplitString(str:String): String{
+        var split=str.split("@")
+        return split[0]
     }
 }
