@@ -203,6 +203,7 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             build.setNegativeButton("Exit") {dialog, which->
                 removeCode()
                 reset()
+                myRef.child("data").child(code).removeValue()
                 exit = true
                 myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").get().addOnSuccessListener {
                     if(it.value != null && it.value != ""){
@@ -237,6 +238,7 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             build.setNegativeButton("Exit") {dialog, which->
                 removeCode()
                 reset()
+                myRef.child("data").child(code).removeValue()
                 exit = true
                 myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").get().addOnSuccessListener {
                     if(it.value != null && it.value != ""){
@@ -260,6 +262,7 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             build.setNegativeButton("Exit") {dialog, which ->
                 exitProcess(1)
                 reset()
+                myRef.child("data").child(code).removeValue()
                 removeCode()
             }
             build.show()
@@ -306,7 +309,7 @@ class OnlineMultiplayerGameActivity : AppCompatActivity() {
             buttonSelected.text = ""
             isMyMove = isCodeMaker
             //f (isCodeMaker) {
-            myRef.child("data").child(code).removeValue()
+            myRef.child("data").child(code).child("Field").removeValue()
             //}
         }
     }

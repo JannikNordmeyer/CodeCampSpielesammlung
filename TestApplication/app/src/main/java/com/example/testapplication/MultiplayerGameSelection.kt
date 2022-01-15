@@ -25,6 +25,7 @@ class MultiplayerGameSelection : AppCompatActivity() {
     lateinit var cancelBtn : Button
     lateinit var headTV : TextView
     lateinit var loadingPB : ProgressBar
+    var host : Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_multiplayer_game_selection)
@@ -53,7 +54,7 @@ class MultiplayerGameSelection : AppCompatActivity() {
 
         myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.value != null && snapshot.value != "")
+                if (snapshot.value != null && snapshot.value != "" && host)
                     startGame(snapshot.value as String)
             }
 
@@ -77,6 +78,7 @@ class MultiplayerGameSelection : AppCompatActivity() {
                     myRef.child("Quickplay").setValue(null)
                     stopLoad()
                 } else {
+                    host = true
                     myRef.child("Quickplay").setValue(FirebaseAuth.getInstance().currentUser!!.email)
                 }
 
@@ -85,6 +87,7 @@ class MultiplayerGameSelection : AppCompatActivity() {
 
         cancelBtn.setOnClickListener {
             myRef.child("Quickplay").setValue(null)
+            host = false
             stopLoad()
         }
 
