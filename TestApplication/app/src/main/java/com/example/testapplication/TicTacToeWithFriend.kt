@@ -27,6 +27,7 @@ class TicTacToeWithFriend : AppCompatActivity() {
     lateinit var joinCodeBtn : Button
     lateinit var loadingPB : ProgressBar
     var request : String? = null
+    var sendRequest = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +38,10 @@ class TicTacToeWithFriend : AppCompatActivity() {
         joinCodeBtn = findViewById(R.id.idBtnJoin)
         loadingPB = findViewById(R.id.idPBLoading)
 
+        myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").get().addOnSuccessListener {
+            request = it.value.toString()
+        }
+
         myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
 
@@ -44,10 +49,15 @@ class TicTacToeWithFriend : AppCompatActivity() {
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 request = snapshot.value.toString()
-                if(request != "")
+                if(request != "" && !sendRequest){
                     notification()
+                } else if(sendRequest) {
+                    myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Host").setValue(true)
+                    accepted(true)
+                }
+                stopLoad()
 
-                Toast.makeText(this@TicTacToeWithFriend, request, Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@TicTacToeWithFriend, request, Toast.LENGTH_SHORT).show()
                 }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -64,18 +74,50 @@ class TicTacToeWithFriend : AppCompatActivity() {
 
         })
         createCodeBtn.setOnClickListener {
-            myRef.child("Users").child(SplitString(codeEdt.text.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-            accepted(true)
+            //myRef.child("Users").child(SplitString(codeEdt.text.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+            //accepted(true)
 
-            /*if(myRef.child("Users").child(SplitString(codeEdt.text.toString())).child("Request").get().val()) {
-                myRef.child("Users").child(SplitString(codeEdt.text.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-                val intent = Intent(this, OnlineMultiplayerGameActivity::class.java)
-                code = codeEdt.text.toString() + FirebaseAuth.getInstance().currentUser!!.email
-                intent.putExtra("code", code)
-                startActivity(intent);
-            } else {
-                Toast.makeText(this@TicTacToeWithFriend, "requested user is already in a game", Toast.LENGTH_SHORT).show()
-            }*/
+            myRef.child("Users").child(SplitString(codeEdt.text.toString())).child("Request").get().addOnSuccessListener {
+                val busy = it.value.toString()
+                val opponent = codeEdt.text.toString()
+                Toast.makeText(this@TicTacToeWithFriend, busy, Toast.LENGTH_SHORT).show()
+
+                if(busy == "" || busy == null) {
+                    myRef.child("Users").child(SplitString(opponent)).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+                    myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(opponent)
+                    sendRequest = true
+                    startLoad()
+                //accepted(true)
+                } else {
+                    Toast.makeText(this@TicTacToeWithFriend, "requested user is already in a game", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }
+
+        joinCodeBtn.setOnClickListener {
+
+            myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Host").get().addOnSuccessListener {
+                isCodeMaker = it.value as Boolean
+                //Toast.makeText(this@TicTacToeWithFriend, isCodeMaker.toString(), Toast.LENGTH_SHORT).show()
+
+
+                code = if(isCodeMaker) {
+                    SplitString(request!!) + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())
+                } else {
+                    SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + SplitString(request!!)
+                }
+                //Toast.makeText(this@TicTacToeWithFriend, code, Toast.LENGTH_SHORT).show()
+                if(code != "" && code != "null") {
+                    val intent = Intent(this, OnlineMultiplayerGameActivity::class.java)
+                    startActivity(intent)
+                    stopLoad()
+                }
+            }
+                .addOnFailureListener {
+                    Toast.makeText(this@TicTacToeWithFriend, "no active game found", Toast.LENGTH_SHORT).show()
+                }
+
         }
 
 
@@ -124,12 +166,16 @@ class TicTacToeWithFriend : AppCompatActivity() {
         build.setTitle("Game Request")
         build.setMessage("Game request by $request\nDo you want to accept?")
         build.setPositiveButton("yes"){dialog, which->
+            myRef.child("Users").child(SplitString(request!!)).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+            myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Host").setValue(false)
             accepted(false)
         }
         build.setNegativeButton("no") {dialog, which->
+            myRef.child("Users").child(SplitString(request!!)).child("Request").setValue("")
             myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue("")
-            exitProcess(1)
+            //exitProcess(1)
         }
-        Handler(Looper.getMainLooper()).postDelayed(Runnable { build.show() }, 2000)
+        build.show()
+        //Handler(Looper.getMainLooper()).postDelayed(Runnable { build.show() }, 2000)
     }
 }

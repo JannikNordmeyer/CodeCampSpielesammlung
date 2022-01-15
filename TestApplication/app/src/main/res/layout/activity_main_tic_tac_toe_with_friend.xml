@@ -40,15 +40,14 @@
         android:textAllCaps="false" />
 
     <Button
+        android:id="@+id/idBtnJoin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/idBtnInvite"
-        android:id="@+id/idBtnJoin"
-        android:text="Join"
-        android:textAllCaps="false"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        />
+        android:text="Join Active Game"
+        android:textAllCaps="false" />
 
     <ProgressBar
         android:layout_width="wrap_content"
