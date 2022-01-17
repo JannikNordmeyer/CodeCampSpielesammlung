@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameHolderBinding
 import com.example.testapplication.databinding.FragmentTictactoeBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class GameHolder : AppCompatActivity() {
 
@@ -24,6 +25,19 @@ class GameHolder : AppCompatActivity() {
 
         binding = ActivityGameHolderBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //If we are in onlineMode, Setup a room and Field Listeners to call the Fragment's updateField functions!
+        if(MyApplication.onlineMode){
+            //Setup Host and Guest in Database
+            if (MyApplication.isCodeMaker){
+                MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+            } else {
+                MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+            }
+
+
+
+        }
 
         when(MyApplication.globalSelectedGame) {
             GameNames.PLACEHOLDERSPIEL1 -> {
@@ -64,6 +78,7 @@ class GameHolder : AppCompatActivity() {
             commit()
         }
 
+        //TODO: What if we are in online mode? Need to make a generic escape regardless of game!
         binding.ButtonGiveUp.setOnClickListener(){
             finish()
         }

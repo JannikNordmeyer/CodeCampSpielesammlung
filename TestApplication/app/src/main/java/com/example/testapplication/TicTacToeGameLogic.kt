@@ -2,6 +2,8 @@ package com.example.testapplication
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class TicTacToeGameLogic (var board: Array<Array<String>>){
 
@@ -84,7 +86,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
             livewinner.value = winner
             return true
         }
-
         return false
     }
 

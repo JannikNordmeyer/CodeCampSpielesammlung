@@ -15,11 +15,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
+//TODO: Database sollte einen entry haben für welches Spiel man überhaupt spielt für verschiende Queues. Benutze die selectedGames Konstante dafür!
+
 class GameSelectNetwork : AppCompatActivity() {
-    //database instance
     private lateinit var binding: ActivityGameSelectNetworkBinding
-    private var database= FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
-    private var myRef=database.reference
     var host : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,22 +28,28 @@ class GameSelectNetwork : AppCompatActivity() {
         binding = ActivityGameSelectNetworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //TO-DO: Figure out what the fuck code and isCoderMaker are
-        fun startGameOnline(opponent : String){
-            val intent = Intent(this, OnlineMultiplayerGameActivity::class.java);
-            MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
-            MyApplication.isCodeMaker = true
-            startActivity(intent)
-            myRef.child("Quickplay").setValue(null)
-            stopLoad()
-        }
-
-        fun startGameOffline(){
+        fun startGame(onlineMode : Boolean){
+            MyApplication.onlineMode = onlineMode
             val intent = Intent(this, GameHolder::class.java)
             startActivity(intent)
         }
 
-        myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
+        fun startGameOnline(opponent : String){
+            MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
+            MyApplication.isCodeMaker = true
+            MyApplication.myRef.child("Quickplay").setValue(null)
+            startGame(true)
+            stopLoad()
+        }
+
+        fun joinGameOnline(){
+            MyApplication.onlineMode = true;
+            val intent = Intent(this, GameHolder::class.java)
+            startActivity(intent)
+        }
+
+        //Falls jemand den request state eines users ändert, wirf die beiden in ein Spiel zusammen.
+        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null && snapshot.value != "" && host)
                     startGameOnline(snapshot.value as String)
@@ -56,61 +61,63 @@ class GameSelectNetwork : AppCompatActivity() {
 
         })
 
+        //region TODO: Was ist das? Ist das nicht einfach nur Quickplay?
         binding.BtnOnline.setOnClickListener {
-            //TO-DO: Set some settings for Online mode?
 
             //Old Code v v
             //val intent = Intent(this, OnlineCodeGeneratorActivity::class.java);
             //startActivity(intent)
 
-            //TODO: Implement this? What string to feed?
             //startGameOnline()
         }
+        //endregion
 
         binding.BtnOffline.setOnClickListener {
-            //TO-DO: Set some settings for Offline mode?
-
-            //Old Code v v
-            //val intent = Intent(this, MainActivity::class.java);
-            //startActivity(intent)
-
-            startGameOffline()
+            startGame(false)
         }
 
+        //region TODO: Was ist überhaupt dein TicTacToeWithFriend Ding? Deprecated?
         binding.BtnFriend.setOnClickListener {
-            //TO-DO: Set some settings for Friend mode?
 
             //Old Code v v
             //val intent = Intent(this, TicTacToeWithFriend::class.java);
             //startActivity(intent)
 
-            //TODO: Implement this? What string to feed?
             //startGameOnline()
         }
+        //endregion
 
-        //TODO: Understand what the fuck is happening here
         binding.BtnQuickplay.setOnClickListener {
             startLoad()
-            myRef.child("Quickplay").get().addOnSuccessListener {
-                if(it.value != null){
-                    myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-                    myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
-                    val intent = Intent(this, OnlineMultiplayerGameActivity::class.java);
+            //Hole die Liste von Spielern in der Quickplay Lobby
+            MyApplication.myRef.child("Quickplay").get().addOnSuccessListener {
+                if(it.value != null){  //Falls es Spieler gibt...
+                    //Heirate
+                    MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+                    MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
+
+                    //Merke Raum Code
                     MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(it.value.toString())/*Host Email*/
                     MyApplication.isCodeMaker = false
-                    startActivity(intent)
-                    myRef.child("Quickplay").setValue(null)
+
+                    //Verlasse Quickplay Lobby
+                    MyApplication.myRef.child("Quickplay").setValue(null)
+
+                    //Join game
+                    joinGameOnline()
+
                     stopLoad()
-                } else {
+                } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
                     host = true
-                    myRef.child("Quickplay").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+                    MyApplication.myRef.child("Quickplay").setValue(FirebaseAuth.getInstance().currentUser!!.email)
                 }
 
             }
         }
 
+        //Verlasse Quickplay Lobby wenn man als Host Wartet
         binding.BtnCancel.setOnClickListener {
-            myRef.child("Quickplay").setValue(null)
+            MyApplication.myRef.child("Quickplay").setValue(null)
             host = false
             stopLoad()
         }

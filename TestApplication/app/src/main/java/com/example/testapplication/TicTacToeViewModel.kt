@@ -1,6 +1,8 @@
 package com.example.testapplication
 
 import androidx.lifecycle.ViewModel
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class TicTacToeViewModel: ViewModel() {
 
@@ -10,10 +12,19 @@ class TicTacToeViewModel: ViewModel() {
         arrayOf("", "", ""),
     )
 
-    var game = TicTacToeGameLogic(emptyboard)
+    var logic = TicTacToeGameLogic(emptyboard)
 
     fun click(x:Int, y:Int){
-        game.click(x, y)
+        logic.click(x, y)
     }
+
+    //Online Mode Stuff?
+    var exit = false;
+    var player1count = 0
+    var player2count = 0
+    var player1 = ArrayList<Int>()
+    var player2 = ArrayList<Int>()
+    var emptyCells = ArrayList<Int>()
+    var activeUser = 1
 
 }

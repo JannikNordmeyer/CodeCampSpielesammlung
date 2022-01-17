@@ -14,20 +14,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-//TODO: Sind das hier globale Variablen? Wenn ja sollte man die eigentlich in MyApplication umlegen!
-
-// -> Hab das einfach mal gemacht. Bauchgefühl und so. Sind jetzt in MyApplication.
-
-//var isCodeMaker = true;
-//var code = "null"
-//var codeFound = false
-//var checkTemp = true
-//var keyValue : String = "null"
-
 class OnlineCodeGenerator : AppCompatActivity() {
-    //database instance
-    private var database=FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
-    private var myRef=database.reference
 
     private lateinit var binding: ActivityOnlineCodeGeneratorBinding
 
@@ -47,14 +34,14 @@ class OnlineCodeGenerator : AppCompatActivity() {
             startLoad()
             if(MyApplication.code != "null" && MyApplication.code != ""){
                 MyApplication.isCodeMaker = true
-                myRef.child("codes").addValueEventListener(object : ValueEventListener{
+                MyApplication.myRef.child("codes").addValueEventListener(object : ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         var check = isValueAvailable(snapshot, MyApplication.code)
                         Handler(Looper.getMainLooper()).postDelayed({
                             if(check == true){
                                 stopLoad()
                             } else {
-                                myRef.child("codes").push().setValue(MyApplication.code)
+                                MyApplication.myRef.child("codes").push().setValue(MyApplication.code)
                                 isValueAvailable(snapshot, MyApplication.code)
                                 MyApplication.checkTemp = false
                                 Handler(Looper.getMainLooper()).postDelayed({
@@ -84,7 +71,7 @@ class OnlineCodeGenerator : AppCompatActivity() {
             if(MyApplication.code != "null" && MyApplication.code != ""){
                 startLoad()
                 MyApplication.isCodeMaker = false
-                myRef.child("codes").addValueEventListener(object : ValueEventListener{
+                MyApplication.myRef.child("codes").addValueEventListener(object : ValueEventListener{
                     override fun onDataChange(snapshot: DataSnapshot) {
                         var data : Boolean = isValueAvailable(snapshot, MyApplication.code)
                         Handler(Looper.getMainLooper()).postDelayed({

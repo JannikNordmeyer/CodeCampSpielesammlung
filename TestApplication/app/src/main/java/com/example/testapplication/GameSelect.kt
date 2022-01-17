@@ -14,12 +14,9 @@ import com.google.firebase.database.DatabaseReference
 class GameSelect : AppCompatActivity() {
 
     private lateinit var binding: ActivityGameSelectBinding
-    private var mAuth:FirebaseAuth?=null
-    private var database= FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
-    private var myRef=database.reference
 
     fun startGame(){
-        val intent = Intent(this, GameHolder::class.java)
+        val intent = Intent(this, GameSelectNetwork::class.java)   //Previously went to GameHolder
         startActivity(intent)
     }
 
@@ -29,6 +26,10 @@ class GameSelect : AppCompatActivity() {
 
         binding = ActivityGameSelectBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //Get reference to database once on game launch
+        MyApplication.database = FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
+        MyApplication.myRef = MyApplication.database.reference;
 
         var currentuser = FirebaseAuth.getInstance().currentUser
         if(currentuser != null) {

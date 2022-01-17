@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 
 class PlaceholderSpiel3ViewModel: ViewModel() {
 
-    var game = PlaceholderSpiel3Logic()
+    var logic = PlaceholderSpiel3Logic()
 
     //WEITERER CODE HIER
 
