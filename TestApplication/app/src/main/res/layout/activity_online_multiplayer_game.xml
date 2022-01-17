@@ -1,0 +1,134 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OnlineMultiplayerGameActivity">
+
+    <Button
+        android:id="@+id/topright"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/topmid"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/topmid"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/midmid"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topmid" />
+
+    <Button
+        android:id="@+id/topleft"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toStartOf="@+id/topmid"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/midleft"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toStartOf="@+id/midmid"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topleft" />
+
+    <Button
+        android:id="@+id/botleft"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toStartOf="@+id/botmid"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/midleft" />
+
+    <Button
+        android:id="@+id/botmid"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/midmid" />
+
+    <Button
+        android:id="@+id/botright"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.517"
+        app:layout_constraintStart_toEndOf="@+id/botmid"
+        app:layout_constraintTop_toBottomOf="@+id/midright" />
+
+    <Button
+        android:id="@+id/midright"
+        android:layout_width="100sp"
+        android:layout_height="100sp"
+        android:text="  "
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/midmid"
+        app:layout_constraintTop_toBottomOf="@+id/topright" />
+
+    <TextView
+        android:id="@+id/playerprompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Player 1: Make a move."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/botmid" />
+
+    <TextView
+        android:id="@+id/playerprompt2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Online"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/botmid"
+        app:layout_constraintVertical_bias="0.577" />
+
+    <Button
+        android:id="@+id/returnbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Return"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playerprompt" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

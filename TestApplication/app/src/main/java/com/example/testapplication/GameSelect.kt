@@ -7,11 +7,16 @@ import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DatabaseReference
 
 
 class GameSelect : AppCompatActivity() {
 
     private lateinit var binding: ActivityGameSelectBinding
+    private var mAuth:FirebaseAuth?=null
+    private var database= FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
+    private var myRef=database.reference
 
     fun startGame(){
         val intent = Intent(this, GameHolder::class.java)

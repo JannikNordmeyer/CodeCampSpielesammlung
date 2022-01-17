@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "617639553643",
+	"firebase_url": "https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "spielesammulng",
     "storage_bucket": "spielesammulng.appspot.com"
   },

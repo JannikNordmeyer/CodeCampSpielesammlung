@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GameSelectNetwork">
+
+    <TextView
+        android:id="@+id/TVHead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Online or Offline"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="25sp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Online (Code)"
+        android:id="@+id/BtnOnline"
+        android:layout_below="@id/TVHead"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        />
+
+    <Button
+        android:id="@+id/BtnFriend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/BtnOnline"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Online (Email)" />
+
+    <Button
+        android:id="@+id/BtnQuickplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/BtnFriend"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Quickplay" />
+
+    <Button
+        android:id="@+id/BtnOffline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/BtnQuickplay"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Offline"
+        android:textAllCaps="false" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:id="@+id/PBLoading"
+        />
+
+    <Button
+        android:id="@+id/BtnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/PBLoading"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Cancel"
+        android:visibility="gone"
+        android:textAllCaps="false" />
+
+</RelativeLayout>
