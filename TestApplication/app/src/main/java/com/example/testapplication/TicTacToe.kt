@@ -33,13 +33,6 @@ class TicTacToe : Fragment() {
 
         if(MyApplication.onlineMode){
 
-            //Set Host and Guest in Database | TODO: Should we do this here? Put it in game holder instead, probably.
-            if (MyApplication.isCodeMaker){
-                MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-            } else {
-                MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-            }
-
             //Setup Listener to exit game if other person leaves? TODO: Ask Yonas what is going on here
             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addChildEventListener(object :
                 ChildEventListener {

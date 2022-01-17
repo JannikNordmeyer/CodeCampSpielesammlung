@@ -26,6 +26,10 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         else player = CROSS
     }
 
+    fun networkOnFieldUpdate(data : String?){
+        //TODO: Update Field with data received...
+    }
+
     fun checkField(): Boolean {
 
         var win: Boolean = false

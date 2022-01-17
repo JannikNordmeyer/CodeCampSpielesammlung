@@ -5,6 +5,10 @@ import androidx.lifecycle.MutableLiveData
 
 class PlaceholderSpiel2Logic (){
 
+    fun networkOnFieldUpdate(data : String?){
+        //TODO: Update Field with data received...
+    }
+
     //DEIN CODE HIER
 
 }

@@ -28,31 +28,41 @@ class GameSelectNetwork : AppCompatActivity() {
         binding = ActivityGameSelectNetworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        fun startGame(onlineMode : Boolean){
-            MyApplication.onlineMode = onlineMode
+        fun startGame(){
             val intent = Intent(this, GameHolder::class.java)
             startActivity(intent)
         }
 
-        fun startGameOnline(opponent : String){
+        fun networkHostGame(opponent : String){
+            //Generiere Raum Code
             MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
             MyApplication.isCodeMaker = true
+            //Verlasse Quickplay Lobby
             MyApplication.myRef.child("Quickplay").setValue(null)
-            startGame(true)
+            MyApplication.onlineMode = true;
+            //Markiere mich als Host im Raum
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+            startGame()
             stopLoad()
         }
 
-        fun joinGameOnline(){
+        fun networkJoinGame(){
             MyApplication.onlineMode = true;
-            val intent = Intent(this, GameHolder::class.java)
-            startActivity(intent)
+            //Merke Raum Code
+            MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(it.value.toString())/*Host Email*/
+            MyApplication.isCodeMaker = false
+            //Verlasse Quickplay Lobby
+            MyApplication.myRef.child("Quickplay").setValue(null)
+            //Markiere mich als Guest im Raum
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+            startGame()
         }
 
-        //Falls jemand den request state eines users ändert, wirf die beiden in ein Spiel zusammen.
+        //Wenn jemand während des wartens in der Quickplay Lobby deine Request animmt, hoste spiel.
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null && snapshot.value != "" && host)
-                    startGameOnline(snapshot.value as String)
+                    networkHostGame(snapshot.value as String)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -73,7 +83,8 @@ class GameSelectNetwork : AppCompatActivity() {
         //endregion
 
         binding.BtnOffline.setOnClickListener {
-            startGame(false)
+            MyApplication.onlineMode = false
+            startGame()
         }
 
         //region TODO: Was ist überhaupt dein TicTacToeWithFriend Ding? Deprecated?
@@ -95,17 +106,8 @@ class GameSelectNetwork : AppCompatActivity() {
                     //Heirate
                     MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
                     MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
-
-                    //Merke Raum Code
-                    MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(it.value.toString())/*Host Email*/
-                    MyApplication.isCodeMaker = false
-
-                    //Verlasse Quickplay Lobby
-                    MyApplication.myRef.child("Quickplay").setValue(null)
-
                     //Join game
-                    joinGameOnline()
-
+                    networkJoinGame()
                     stopLoad()
                 } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
                     host = true
