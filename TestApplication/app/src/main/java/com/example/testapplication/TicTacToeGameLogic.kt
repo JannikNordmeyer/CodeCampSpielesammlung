@@ -10,6 +10,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     companion object{
         const val CROSS = "X"
         const val CIRCLE = "O"
+        const val UNDEFINED = ""
         const val WINNER_PLAYER_ONE = 1
         const val WINNER_PLAYER_TWO = 2
         const val WINNER_DRAW = 0
@@ -26,8 +27,40 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         else player = CROSS
     }
 
+    //Called from GameHolder whenever the Field changes.
     fun networkOnFieldUpdate(data : String?){
-        //TODO: Update Field with data received...
+        //Update Local Board with Network Board
+        networkBoardToLocalBoard();
+        //Update Liveboard to update UI and whatever else is controlled by livedata
+        liveboard.value = board;
+    }
+
+    // Updates local board by taking in the values from the network board
+    fun networkBoardToLocalBoard(){
+        val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
+        board[0][0] = field_data.child("0").get().toString()
+        board[0][1] = field_data.child("1").get().toString()
+        board[0][2] = field_data.child("2").get().toString()
+        board[1][0] = field_data.child("3").get().toString()
+        board[1][1] = field_data.child("4").get().toString()
+        board[1][2] = field_data.child("5").get().toString()
+        board[2][0] = field_data.child("6").get().toString()
+        board[2][1] = field_data.child("7").get().toString()
+        board[2][2] = field_data.child("8").get().toString()
+    }
+
+    // Updates network board by translating the values from the local board
+    fun localBoardToNetworkBoard(){
+        val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
+        field_data.child("0").setValue(board[0][0])
+        field_data.child("1").setValue(board[0][1])
+        field_data.child("2").setValue(board[0][2])
+        field_data.child("3").setValue(board[1][0])
+        field_data.child("4").setValue(board[1][1])
+        field_data.child("5").setValue(board[1][2])
+        field_data.child("6").setValue(board[2][0])
+        field_data.child("7").setValue(board[2][1])
+        field_data.child("8").setValue(board[2][2])
     }
 
     fun checkField(): Boolean {
@@ -94,15 +127,18 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     }
 
     fun click(a: Int, b: Int){
-        if(board[a][b] != "" || winner != null){
-            return
+        if(!MyApplication.onlineMode || MyApplication.myTurn) { //TODO: Actually govern myTurn somewhere
+            if (board[a][b] != "" || winner != null) {
+                return
+            }
+            board[a][b] = (player)
+            if(MyApplication.onlineMode) localBoardToNetworkBoard() //Update Network Board...
+            liveboard.value = board     //Update Liveboard, which triggers observer
+            if (checkField()) {
+                return
+            }
+            toggle()
         }
-        board[a][b] = (player)
-        liveboard.value = board     //Update Liveboard, which triggers observer
-        if(checkField()){
-            return
-        }
-        toggle()
     }
 
     fun clear() {

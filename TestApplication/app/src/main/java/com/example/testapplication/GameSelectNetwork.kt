@@ -46,10 +46,10 @@ class GameSelectNetwork : AppCompatActivity() {
             stopLoad()
         }
 
-        fun networkJoinGame(){
+        fun networkJoinGame(opponent : String){
             MyApplication.onlineMode = true;
             //Merke Raum Code
-            MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(it.value.toString())/*Host Email*/
+            MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(opponent)/*Host Email*/
             MyApplication.isCodeMaker = false
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child("Quickplay").setValue(null)
@@ -107,7 +107,7 @@ class GameSelectNetwork : AppCompatActivity() {
                     MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
                     MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
                     //Join game
-                    networkJoinGame()
+                    networkJoinGame(it.value.toString())
                     stopLoad()
                 } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
                     host = true

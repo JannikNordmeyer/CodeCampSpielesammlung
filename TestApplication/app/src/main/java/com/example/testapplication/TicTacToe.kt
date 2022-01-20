@@ -33,30 +33,6 @@ class TicTacToe : Fragment() {
 
         if(MyApplication.onlineMode){
 
-            //Setup Listener to exit game if other person leaves? TODO: Ask Yonas what is going on here
-            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addChildEventListener(object :
-                ChildEventListener {
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    if (!viewmodel.exit) {
-                        exitProcess(1)
-                    }
-                }
-                //region
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    TODO("Not yet implemented")
-                }
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-                //endregion
-            })
-
             //Add Listener so that if something changes in a field, perform code. TODO: Once again, can probably happen in GameHolder.
             //TODO: GameHolder should just trigger the Fragment's "NetworkOnFieldUpdate" Function for modularity.
             MyApplication.myRef.child("data").child(MyApplication.code).child("Field").addChildEventListener(object : ChildEventListener{

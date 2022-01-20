@@ -3,6 +3,7 @@ package com.example.testapplication
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.constraintlayout.widget.Placeholder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import kotlin.system.exitProcess
 
 class GameHolder : AppCompatActivity() {
 
@@ -22,6 +24,13 @@ class GameHolder : AppCompatActivity() {
 
     lateinit var fragToLoad: Fragment
     lateinit var viewmodel: ViewModel
+
+    //TODO: Needing this function every single time is pretty stupid, find a better solution!
+    //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
+    fun SplitString(str:String): String{
+        var split=str.split("@")
+        return split[0]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,10 +80,37 @@ class GameHolder : AppCompatActivity() {
             commit()
         }
 
-        //If we are in online mode, setup listener to call fragment's logic networkOnFieldUpdate function to update field contents.
+        //If we are in online mode...
         if(MyApplication.onlineMode){
+            //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
+            when(viewmodel){
+                is TicTacToeViewModel -> {
+                    val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
+                    data_field.child("0").setValue("");
+                    data_field.child("1").setValue("");
+                    data_field.child("2").setValue("");
+                    data_field.child("3").setValue("");
+                    data_field.child("4").setValue("");
+                    data_field.child("5").setValue("");
+                    data_field.child("6").setValue("");
+                    data_field.child("7").setValue("");
+                    data_field.child("8").setValue("");
+                }
+                is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
+                    }
+                is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
+                    }
+                is PlaceholderSpiel3ViewModel -> { //Your Setup Code here...
+                    }
+                is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
+                    }
+                is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
+                    }
+            }
+
+            //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
             MyApplication.myRef.child(MyApplication.code).child("Field").addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                     var data = snapshot.key
                     when(viewmodel){
                         is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
@@ -86,10 +122,37 @@ class GameHolder : AppCompatActivity() {
                     }
                 }
                 //region
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
                     TODO("Not yet implemented")
                 }
 
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+                //endregion
+            })
+
+            //setup listener to quit game if Opponent leaves mid-match...
+            //TODO: Setup exit function? When is it set?
+            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    if(exit) {
+                        exitProcess(1)
+                        Toast.makeText(this@OnlineMultiplayerGameActivity, "Opponent left the game", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                //region
                 override fun onChildRemoved(snapshot: DataSnapshot) {
                     TODO("Not yet implemented")
                 }
