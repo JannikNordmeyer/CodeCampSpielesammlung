@@ -27,8 +27,8 @@ class GameHolder : AppCompatActivity() {
 
     //TODO: Needing this function every single time is pretty stupid, find a better solution!
     //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
-    fun SplitString(str:String): String{
-        var split=str.split("@")
+    fun SplitString(str: String): String {
+        var split = str.split("@")
         return split[0]
     }
 
@@ -40,7 +40,7 @@ class GameHolder : AppCompatActivity() {
         setContentView(binding.root)
 
         //Select Fragment and load it's Viewmodel
-        when(MyApplication.globalSelectedGame) {
+        when (MyApplication.globalSelectedGame) {
             GameNames.PLACEHOLDERSPIEL1 -> {
                 fragToLoad = PlaceholderSpiel1()
                 viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel::class.java)
@@ -71,107 +71,184 @@ class GameHolder : AppCompatActivity() {
                 viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
                 Log.d(TAG, "LOADED TICTACTOE")
             }
-            else ->  Log.d(TAG," ERROR: FAILED TO LOAD GAME")
+            else -> Log.d(TAG, " ERROR: FAILED TO LOAD GAME")
         }
 
         //Load Fragment
-        supportFragmentManager.beginTransaction().apply{
-            replace(R.id.FrameLayoutGameHolder,fragToLoad)
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.FrameLayoutGameHolder, fragToLoad)
             commit()
         }
 
         //If we are in online mode...
-        if(MyApplication.onlineMode){
+        if (MyApplication.onlineMode) {
+            //Network setup work independent of game
+            //Get and save ID of host and guest as a global control var
+            MyApplication.hostID = MyApplication.myRef.child("Host").get().toString()
+            MyApplication.guestID = MyApplication.myRef.child("Guest").get().toString()
+
+            //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
+                .setValue(MyApplication.hostID)
+
+            //Setup ExitPlayer to determine if and who has left a game.
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
+
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
-            when(viewmodel){
+            when (viewmodel) {
                 is TicTacToeViewModel -> {
-                    val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
-                    data_field.child("0").setValue("");
-                    data_field.child("1").setValue("");
-                    data_field.child("2").setValue("");
-                    data_field.child("3").setValue("");
-                    data_field.child("4").setValue("");
-                    data_field.child("5").setValue("");
-                    data_field.child("6").setValue("");
-                    data_field.child("7").setValue("");
-                    data_field.child("8").setValue("");
+                    val data_field =
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
+                    data_field.child("0").setValue("")
+                    data_field.child("1").setValue("")
+                    data_field.child("2").setValue("")
+                    data_field.child("3").setValue("")
+                    data_field.child("4").setValue("")
+                    data_field.child("5").setValue("")
+                    data_field.child("6").setValue("")
+                    data_field.child("7").setValue("")
+                    data_field.child("8").setValue("")
                 }
                 is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
-                    }
+                }
                 is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
-                    }
+                }
                 is PlaceholderSpiel3ViewModel -> { //Your Setup Code here...
-                    }
+                }
                 is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
-                    }
+                }
                 is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
-                    }
+                }
             }
 
-            //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
-            MyApplication.myRef.child(MyApplication.code).child("Field").addChildEventListener(object : ChildEventListener {
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    var data = snapshot.key
-                    when(viewmodel){
-                        is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
-                        is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
-                        is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
-                        is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(data)
-                        is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
-                        is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
+            //Setup field, listener and logic for the variable that controls whose turn it is
+            MyApplication.myRef.child(MyApplication.code).child("ActivePlayer")
+                .addChildEventListener(object : ChildEventListener {
+
+                    override fun onChildChanged(
+                        snapshot: DataSnapshot,
+                        previousChildName: String?
+                    ) {
+                        val data_activePlayer =
+                            MyApplication.myRef.child("data").child(MyApplication.code)
+                                .child("ActivePlayer").get().toString()
+                        if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn =
+                            true
+                        else if ((data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker) MyApplication.myTurn =
+                            true
+                        else MyApplication.myTurn = false
                     }
-                }
-                //region
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                }
 
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    TODO("Not yet implemented")
-                }
+                    //region
+                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                        TODO("Not yet implemented")
+                    }
 
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
+                    override fun onChildRemoved(snapshot: DataSnapshot) {
+                        TODO("Not yet implemented")
+                    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-                //endregion
-            })
+                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                    //endregion
+                })
+
+            //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
+            MyApplication.myRef.child(MyApplication.code).child("Field")
+                .addChildEventListener(object : ChildEventListener {
+                    override fun onChildChanged(
+                        snapshot: DataSnapshot,
+                        previousChildName: String?
+                    ) {
+                        var data = snapshot.key
+                        when (viewmodel) {
+                            is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(
+                                data
+                            )
+                            is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(
+                                data
+                            )
+                            is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(
+                                data
+                            )
+                            is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(
+                                data
+                            )
+                            is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(
+                                data
+                            )
+                            is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(
+                                data
+                            )
+                        }
+                    }
+
+                    //region
+                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    }
+
+                    override fun onChildRemoved(snapshot: DataSnapshot) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                    //endregion
+                })
 
             //setup listener to quit game if Opponent leaves mid-match...
-            //TODO: Setup exit function? When is it set?
-            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    if(exit) {
+            MyApplication.myRef.child(MyApplication.code).child("ExitPlayer")
+                .addChildEventListener(object : ChildEventListener {
+                    override fun onChildChanged(
+                        snapshot: DataSnapshot,
+                        previousChildName: String?
+                    ) {
+                        val data = snapshot.key //Who left?
+                        //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
                         exitProcess(1)
-                        Toast.makeText(this@OnlineMultiplayerGameActivity, "Opponent left the game", Toast.LENGTH_SHORT).show()
                     }
-                }
-                //region
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    TODO("Not yet implemented")
-                }
 
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
+                    //region
+                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                        TODO("Not yet implemented")
+                    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    override fun onChildRemoved(snapshot: DataSnapshot) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                    //endregion
+
+                })
+
+            binding.ButtonGiveUp.setOnClickListener() {
+                if(MyApplication.onlineMode){
+                    //Announce that you are leaving when hitting Give Up.
+                    var to_enter = ""
+                    if(MyApplication.isCodeMaker) to_enter = MyApplication.hostID
+                    else to_enter = MyApplication.guestID
+                    MyApplication.myRef.child(MyApplication.code).child("ExitPlayer").setValue(to_enter)
                 }
-                //endregion
-            })
+                finish()
+            }
+
         }
-
-        //TODO: What if we are in online mode? Need to make a generic escape regardless of game!
-        binding.ButtonGiveUp.setOnClickListener(){
-            finish()
-        }
-
     }
 }
