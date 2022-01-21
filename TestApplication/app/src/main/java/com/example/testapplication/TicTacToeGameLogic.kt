@@ -1,4 +1,5 @@
 package com.example.testapplication
+import android.app.PendingIntent.getActivity
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
@@ -22,9 +23,14 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var player = CROSS
     var winner:Int? = null
 
-    fun toggle(){
-        if(player == CROSS) player = CIRCLE
+    fun toggle(){   //Also switches the turn for Network
+        if(player == CROSS){ player = CIRCLE }
         else player = CROSS
+        if(MyApplication.onlineMode) {  //TODO: Figure out how to call GameHolder's toggleNetworkTurn() instead.
+            val networkActivePlayer = MyApplication.myRef.child(MyApplication.code).child("ActivePlayer")
+            if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID)
+            else networkActivePlayer.setValue(MyApplication.hostID)
+        }
     }
 
     //Called from GameHolder whenever the Field changes.
@@ -127,12 +133,14 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     }
 
     fun click(a: Int, b: Int){
-        if(!MyApplication.onlineMode || MyApplication.myTurn) { //TODO: Actually govern myTurn somewhere
+        if(!MyApplication.onlineMode || MyApplication.myTurn) {
             if (board[a][b] != "" || winner != null) {
                 return
             }
             board[a][b] = (player)
-            if(MyApplication.onlineMode) localBoardToNetworkBoard() //Update Network Board...
+            if(MyApplication.onlineMode){ //Update Network Board
+                localBoardToNetworkBoard()
+            }
             liveboard.value = board     //Update Liveboard, which triggers observer
             if (checkField()) {
                 return

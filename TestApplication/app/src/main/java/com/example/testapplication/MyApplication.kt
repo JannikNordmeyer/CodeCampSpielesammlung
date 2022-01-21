@@ -20,6 +20,7 @@ class MyApplication : Application() {
         var myTurn = false;                             //If, regardless of game, the local player can make a move.
         var hostID = "null"
         var guestID = "null"
+        var networkSetupComplete = false;
 
         lateinit var database: FirebaseDatabase
         lateinit var myRef: DatabaseReference

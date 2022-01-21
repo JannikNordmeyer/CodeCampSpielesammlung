@@ -31,50 +31,6 @@ class TicTacToe : Fragment() {
 
         val viewmodel = ViewModelProvider(requireActivity()).get(TicTacToeViewModel::class.java) //Shared Viewmodel w/ GameHolder
 
-        if(MyApplication.onlineMode){
-
-            //Add Listener so that if something changes in a field, perform code. TODO: Once again, can probably happen in GameHolder.
-            //TODO: GameHolder should just trigger the Fragment's "NetworkOnFieldUpdate" Function for modularity.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Field").addChildEventListener(object : ChildEventListener{
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    var data = snapshot.key
-
-                    //TODO: Optimize this, unnecessary duplicate code + should use the companion object enum
-                    if(snapshot.value == "X") {
-                        viewmodel.player1.add(data!!.toInt())
-                        viewmodel.emptyCells.add(data!!.toInt())
-                        MyApplication.myTurn = !MyApplication.isCodeMaker
-                        //TODO: Trigger Observer instead by updating the viewmodel board!
-                        //e.g. viewmodel.logic.liveboard/winner.value = [stuff]
-                        //updateField(data!!.toInt(), snapshot.value.toString())
-                    } else if(snapshot.value == "O"){
-                        viewmodel.player2.add(data!!.toInt())
-                        viewmodel.emptyCells.add(data!!.toInt())
-                        MyApplication.myTurn = MyApplication.isCodeMaker    //Not negated
-
-                        //updateField(data!!.toInt(), snapshot.value.toString())
-                    }
-
-                }
-                //region
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    //TODO: Implement Reset?
-                    //reset()
-                }
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-                //endregion
-            })
-
-        }
-
         fun updatePrompt(){
             if(viewmodel.logic.winner == null){
                 if(viewmodel.logic.player == "X"){

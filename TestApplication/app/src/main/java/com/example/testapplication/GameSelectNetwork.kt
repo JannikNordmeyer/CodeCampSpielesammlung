@@ -29,6 +29,7 @@ class GameSelectNetwork : AppCompatActivity() {
         setContentView(binding.root)
 
         fun startGame(){
+            if(MyApplication.onlineMode) MyApplication.networkSetupComplete = false
             val intent = Intent(this, GameHolder::class.java)
             startActivity(intent)
         }

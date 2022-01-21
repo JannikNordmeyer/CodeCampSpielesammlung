@@ -32,6 +32,13 @@ class GameHolder : AppCompatActivity() {
         return split[0]
     }
 
+    //Call this function within games to switch network Turn! //TODO: Actually figure out how to do that instead of copy and pasting it in there
+    fun toggleNetworkTurn(){
+        val networkActivePlayer = MyApplication.myRef.child(MyApplication.code).child("ActivePlayer")
+        if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID)
+        else networkActivePlayer.setValue(MyApplication.hostID)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_holder)
@@ -81,24 +88,25 @@ class GameHolder : AppCompatActivity() {
         }
 
         //If we are in online mode...
-        if (MyApplication.onlineMode) {
+        if (MyApplication.onlineMode && !MyApplication.networkSetupComplete) {
             //Network setup work independent of game
             //Get and save ID of host and guest as a global control var
             MyApplication.hostID = MyApplication.myRef.child("Host").get().toString()
             MyApplication.guestID = MyApplication.myRef.child("Guest").get().toString()
 
             //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
-                .setValue(MyApplication.hostID)
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
 
             //Setup ExitPlayer to determine if and who has left a game.
             MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
 
+            //Setup WinnerPlayer to determine if and who has won a game.
+            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer")
+
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
             when (viewmodel) {
                 is TicTacToeViewModel -> {
-                    val data_field =
-                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
+                    val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
                     data_field.child("0").setValue("")
                     data_field.child("1").setValue("")
                     data_field.child("2").setValue("")
@@ -122,20 +130,11 @@ class GameHolder : AppCompatActivity() {
             }
 
             //Setup field, listener and logic for the variable that controls whose turn it is
-            MyApplication.myRef.child(MyApplication.code).child("ActivePlayer")
-                .addChildEventListener(object : ChildEventListener {
-
-                    override fun onChildChanged(
-                        snapshot: DataSnapshot,
-                        previousChildName: String?
-                    ) {
-                        val data_activePlayer =
-                            MyApplication.myRef.child("data").child(MyApplication.code)
-                                .child("ActivePlayer").get().toString()
-                        if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn =
-                            true
-                        else if ((data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker) MyApplication.myTurn =
-                            true
+            MyApplication.myRef.child(MyApplication.code).child("ActivePlayer").addChildEventListener(object : ChildEventListener {
+                    override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                        val data_activePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").get().toString()
+                        if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn = true
+                        else if ((data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker) MyApplication.myTurn = true
                         else MyApplication.myTurn = false
                     }
 
@@ -158,6 +157,31 @@ class GameHolder : AppCompatActivity() {
                     //endregion
                 })
 
+            //Setup field, listener and logic for the variable that controls who won
+            MyApplication.myRef.child(MyApplication.code).child("WinnerPlayer").addChildEventListener(object : ChildEventListener {
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    //TODO: Actually unsure if this is needed. Test the thing.
+                }
+
+                //region
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+                //endregion
+            })
+
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
             MyApplication.myRef.child(MyApplication.code).child("Field")
                 .addChildEventListener(object : ChildEventListener {
@@ -167,24 +191,12 @@ class GameHolder : AppCompatActivity() {
                     ) {
                         var data = snapshot.key
                         when (viewmodel) {
-                            is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(
-                                data
-                            )
-                            is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(
-                                data
-                            )
-                            is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(
-                                data
-                            )
-                            is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(
-                                data
-                            )
-                            is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(
-                                data
-                            )
-                            is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(
-                                data
-                            )
+                            is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
                         }
                     }
 
@@ -209,10 +221,7 @@ class GameHolder : AppCompatActivity() {
             //setup listener to quit game if Opponent leaves mid-match...
             MyApplication.myRef.child(MyApplication.code).child("ExitPlayer")
                 .addChildEventListener(object : ChildEventListener {
-                    override fun onChildChanged(
-                        snapshot: DataSnapshot,
-                        previousChildName: String?
-                    ) {
+                    override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                         val data = snapshot.key //Who left?
                         //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
                         exitProcess(1)
