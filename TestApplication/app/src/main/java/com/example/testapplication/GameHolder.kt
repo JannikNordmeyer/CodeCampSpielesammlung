@@ -247,17 +247,18 @@ class GameHolder : AppCompatActivity() {
 
                 })
 
-            binding.ButtonGiveUp.setOnClickListener() {
-                if(MyApplication.onlineMode){
-                    //Announce that you are leaving when hitting Give Up.
-                    var to_enter = ""
-                    if(MyApplication.isCodeMaker) to_enter = MyApplication.hostID
-                    else to_enter = MyApplication.guestID
-                    MyApplication.myRef.child(MyApplication.code).child("ExitPlayer").setValue(to_enter)
-                }
-                finish()
-            }
-
         }
+
+        binding.ButtonGiveUp.setOnClickListener() {
+            if(MyApplication.onlineMode){
+                //Announce that you are leaving when hitting Give Up.
+                var to_enter = ""
+                if(MyApplication.isCodeMaker) to_enter = MyApplication.hostID
+                else to_enter = MyApplication.guestID
+                MyApplication.myRef.child(MyApplication.code).child("ExitPlayer").setValue(to_enter)
+            }
+            finish()
+        }
+
     }
 }

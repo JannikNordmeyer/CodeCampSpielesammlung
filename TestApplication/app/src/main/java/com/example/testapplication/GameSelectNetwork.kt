@@ -59,6 +59,7 @@ class GameSelectNetwork : AppCompatActivity() {
             startGame()
         }
 
+        //TODO: App sollte nicht explodieren wenn man nicht eingeloggt ist und offline spielen will
         //Wenn jemand während des wartens in der Quickplay Lobby deine Request animmt, hoste spiel.
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {

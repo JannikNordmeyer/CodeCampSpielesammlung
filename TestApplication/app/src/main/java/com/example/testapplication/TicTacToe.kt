@@ -30,7 +30,6 @@ class TicTacToe : Fragment() {
         val view = binding.root
 
         val viewmodel = ViewModelProvider(requireActivity()).get(TicTacToeViewModel::class.java) //Shared Viewmodel w/ GameHolder
-
         fun updatePrompt(){
             if(viewmodel.logic.winner == null){
                 if(viewmodel.logic.player == "X"){

@@ -140,14 +140,12 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                 return
             }
             board[a][b] = (player)
+            checkField()
+            toggle()
+            liveboard.value = board     //Update Liveboard, which triggers observer
             if(MyApplication.onlineMode){ //Update Network Board
                 localBoardToNetworkBoard()
             }
-            liveboard.value = board     //Update Liveboard, which triggers observer
-            if (checkField()) {
-                return
-            }
-            toggle()
         }
     }
 

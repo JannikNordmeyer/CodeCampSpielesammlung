@@ -16,6 +16,12 @@
             android:name=".GameHolder"
             android:exported="false" />
         <activity
+            android:name=".GameSelectNetwork"
+            android:exported="false" />
+        <activity
+            android:name=".OnlineCodeGenerator"
+            android:exported="false" />
+        <activity
             android:name=".Registration"
             android:exported="false" />
         <activity
