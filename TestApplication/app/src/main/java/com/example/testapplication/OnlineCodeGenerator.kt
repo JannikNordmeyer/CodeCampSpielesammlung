@@ -105,7 +105,7 @@ class OnlineCodeGenerator : AppCompatActivity() {
     }
 
     fun accepted() {
-        val intent = Intent(this, OnlineMultiplayerGameActivity::class.java)
+        val intent = Intent(this, GameHolder::class.java)
         intent.putExtra("code", MyApplication.code)
         startActivity(intent);
         stopLoad()

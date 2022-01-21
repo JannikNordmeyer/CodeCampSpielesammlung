@@ -38,7 +38,9 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         //Update Local Board with Network Board
         networkBoardToLocalBoard();
         //Update Liveboard to update UI and whatever else is controlled by livedata
-        liveboard.value = board;
+        liveboard.value = board
+        //Check board
+        checkField()
     }
 
     // Updates local board by taking in the values from the network board
