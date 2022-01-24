@@ -91,13 +91,13 @@ class GameHolder : AppCompatActivity() {
         if (MyApplication.onlineMode && !MyApplication.networkSetupComplete) {
             //Network setup work independent of game
             //Get and save ID of host and guest as a global control var
-            MyApplication.myRef.child("Host").get().addOnSuccessListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Host").get().addOnSuccessListener {
                 MyApplication.hostID = it.value.toString()
-
+                Log.d(TAG, MyApplication.hostID)
                 //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
                 MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
             }
-            MyApplication.myRef.child("Guest").get().addOnSuccessListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").get().addOnSuccessListener {
                 MyApplication.guestID = it.value.toString()
             }
 
@@ -262,7 +262,7 @@ class GameHolder : AppCompatActivity() {
                 var to_enter = ""
                 if(MyApplication.isCodeMaker) to_enter = MyApplication.hostID
                 else to_enter = MyApplication.guestID
-                MyApplication.myRef.child(MyApplication.code).child("ExitPlayer").setValue(to_enter)
+                MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(to_enter)
             }
             finish()
         }
