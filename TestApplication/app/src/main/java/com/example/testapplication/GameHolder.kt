@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import kotlin.system.exitProcess
 
 class GameHolder : AppCompatActivity() {
@@ -136,9 +137,11 @@ class GameHolder : AppCompatActivity() {
                 }
             }
 
+            Log.d(TAG, MyApplication.code)
+
             //Setup field, listener and logic for the variable that controls whose turn it is
-            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addChildEventListener(object : ChildEventListener {
-                    override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+            MyApplication.myRef.child("data").child(MyApplication.code).addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
                         Log.d(TAG, "ACTIVE PLAYER LISTENER TRIGGERED")
                         val data_activePlayer = snapshot.value.toString()
                         Log.d(TAG, data_activePlayer)
@@ -147,48 +150,22 @@ class GameHolder : AppCompatActivity() {
                         Log.d(TAG, MyApplication.myTurn.toString())
                     }
 
-                    //region
-                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                        TODO("Not yet implemented")
-                    }
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
 
-                    override fun onChildRemoved(snapshot: DataSnapshot) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
-                    }
-                    //endregion
-                })
+            })
 
             //Setup field, listener and logic for the variable that controls who won
-            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addChildEventListener(object : ChildEventListener {
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    //TODO: Actually unsure if this is needed. Test the thing.
-                }
-
-                //region
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
                     TODO("Not yet implemented")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
-                //endregion
+
             })
 
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
@@ -198,6 +175,7 @@ class GameHolder : AppCompatActivity() {
                         snapshot: DataSnapshot,
                         previousChildName: String?
                     ) {
+                        Log.d(TAG, "Field update")
                         var data = snapshot.key
                         when (viewmodel) {
                             is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
@@ -229,24 +207,11 @@ class GameHolder : AppCompatActivity() {
 
             //setup listener to quit game if Opponent leaves mid-match...
             MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
-                .addChildEventListener(object : ChildEventListener {
-                    override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
                         val data = snapshot.key //Who left?
                         //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
                         finish()
-                    }
-
-                    //region
-                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onChildRemoved(snapshot: DataSnapshot) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                        TODO("Not yet implemented")
                     }
 
                     override fun onCancelled(error: DatabaseError) {
