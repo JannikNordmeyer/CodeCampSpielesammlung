@@ -124,6 +124,9 @@ class GameHolder : AppCompatActivity() {
                     data_field.child("6").setValue("")
                     data_field.child("7").setValue("")
                     data_field.child("8").setValue("")
+                    if (!MyApplication.isCodeMaker) {
+                        (viewmodel as TicTacToeViewModel).logic.player = "O"
+                    }
                 }
                 is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
                 }
