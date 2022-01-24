@@ -101,6 +101,7 @@ class GameHolder : AppCompatActivity() {
             //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
             MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
 
+            // TODO: CLEAN UP DATABASE + FIX
             //Setup ExitPlayer to determine if and who has left a game.
             MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(false) //nodes needs a value != null to exist
 
