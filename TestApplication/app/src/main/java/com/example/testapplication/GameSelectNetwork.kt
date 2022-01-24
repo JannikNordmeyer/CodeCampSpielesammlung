@@ -3,6 +3,7 @@ package com.example.testapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -45,9 +46,20 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.myRef.child("Quickplay").setValue(null)
             MyApplication.onlineMode = true;
             //Markiere mich als Host im Raum
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-            startGame()
-            stopLoad()
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
+                if (error == null) {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener (object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            startGame()
+                            stopLoad()
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+                    })
+                    }
+            })
         }
 
         fun networkJoinGame(opponent : String){
@@ -58,8 +70,19 @@ class GameSelectNetwork : AppCompatActivity() {
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child("Quickplay").setValue(null)
             //Markiere mich als Guest im Raum
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-            startGame()
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
+                if (error == null) {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Host").addValueEventListener (object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            startGame()
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+                    })
+                }
+            })
         }
 
         //TODO: App sollte nicht explodieren wenn man nicht eingeloggt ist und offline spielen will

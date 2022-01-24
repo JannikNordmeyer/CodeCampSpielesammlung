@@ -96,7 +96,8 @@ class GameHolder : AppCompatActivity() {
                 MyApplication.hostID = it.value.toString()
                 Log.d(TAG, MyApplication.hostID)
                 //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
-                MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
+                if (MyApplication.isCodeMaker)
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
             }
             MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").get().addOnSuccessListener {
                 MyApplication.guestID = it.value.toString()
