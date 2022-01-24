@@ -139,10 +139,12 @@ class GameHolder : AppCompatActivity() {
             //Setup field, listener and logic for the variable that controls whose turn it is
             MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addChildEventListener(object : ChildEventListener {
                     override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                        Log.d(TAG, "ACTIVE PLAYER LISTENER TRIGGERED")
                         val data_activePlayer = snapshot.value.toString()
+                        Log.d(TAG, data_activePlayer)
                         if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn = true
-                        else if ((data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker) MyApplication.myTurn = true
-                        else MyApplication.myTurn = false
+                        else MyApplication.myTurn = (data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker
+                        Log.d(TAG, MyApplication.myTurn.toString())
                     }
 
                     //region
