@@ -91,17 +91,21 @@ class GameHolder : AppCompatActivity() {
         if (MyApplication.onlineMode && !MyApplication.networkSetupComplete) {
             //Network setup work independent of game
             //Get and save ID of host and guest as a global control var
-            MyApplication.hostID = MyApplication.myRef.child("Host").get().toString()
-            MyApplication.guestID = MyApplication.myRef.child("Guest").get().toString()
+            MyApplication.myRef.child("Host").get().addOnSuccessListener {
+                MyApplication.hostID = it.value.toString()
+            }
+            MyApplication.myRef.child("Guest").get().addOnSuccessListener {
+                MyApplication.guestID = it.value.toString()
+            }
 
             //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
             MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
 
             //Setup ExitPlayer to determine if and who has left a game.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(false) //nodes needs a value != null to exist
 
             //Setup WinnerPlayer to determine if and who has won a game.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer")
+            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(false) //nodes needs a value != null to exist
 
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
             when (viewmodel) {
@@ -132,7 +136,7 @@ class GameHolder : AppCompatActivity() {
             //Setup field, listener and logic for the variable that controls whose turn it is
             MyApplication.myRef.child(MyApplication.code).child("ActivePlayer").addChildEventListener(object : ChildEventListener {
                     override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                        val data_activePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").get().toString()
+                        val data_activePlayer = snapshot.value.toString()
                         if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn = true
                         else if ((data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker) MyApplication.myTurn = true
                         else MyApplication.myTurn = false

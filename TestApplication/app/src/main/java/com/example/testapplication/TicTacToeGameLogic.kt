@@ -46,15 +46,33 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     // Updates local board by taking in the values from the network board
     fun networkBoardToLocalBoard(){
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
-        board[0][0] = field_data.child("0").get().toString()
-        board[0][1] = field_data.child("1").get().toString()
-        board[0][2] = field_data.child("2").get().toString()
-        board[1][0] = field_data.child("3").get().toString()
-        board[1][1] = field_data.child("4").get().toString()
-        board[1][2] = field_data.child("5").get().toString()
-        board[2][0] = field_data.child("6").get().toString()
-        board[2][1] = field_data.child("7").get().toString()
-        board[2][2] = field_data.child("8").get().toString()
+        field_data.child("0").get().addOnSuccessListener {
+            board[0][0] = it.value.toString()
+        }
+        field_data.child("1").get().addOnSuccessListener {
+            board[0][1] = it.value.toString()
+        }
+        field_data.child("2").get().addOnSuccessListener {
+            board[0][2] = it.value.toString()
+        }
+        field_data.child("3").get().addOnSuccessListener {
+            board[1][0] = it.value.toString()
+        }
+        field_data.child("4").get().addOnSuccessListener {
+            board[1][1] = it.value.toString()
+        }
+        field_data.child("5").get().addOnSuccessListener {
+            board[1][2] = it.value.toString()
+        }
+        field_data.child("6").get().addOnSuccessListener {
+            board[2][0] = it.value.toString()
+        }
+        field_data.child("7").get().addOnSuccessListener {
+            board[2][1] = it.value.toString()
+        }
+        field_data.child("8").get().addOnSuccessListener {
+            board[2][2] = it.value.toString()
+        }
     }
 
     // Updates network board by translating the values from the local board
