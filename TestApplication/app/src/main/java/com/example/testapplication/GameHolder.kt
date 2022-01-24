@@ -165,7 +165,7 @@ class GameHolder : AppCompatActivity() {
                 })
 
             //Setup field, listener and logic for the variable that controls who won
-            MyApplication.myRef.child(MyApplication.code).child("WinnerPlayer").addChildEventListener(object : ChildEventListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addChildEventListener(object : ChildEventListener {
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                     //TODO: Actually unsure if this is needed. Test the thing.
                 }
@@ -190,7 +190,7 @@ class GameHolder : AppCompatActivity() {
             })
 
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
-            MyApplication.myRef.child(MyApplication.code).child("Field")
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
                 .addChildEventListener(object : ChildEventListener {
                     override fun onChildChanged(
                         snapshot: DataSnapshot,
@@ -226,12 +226,12 @@ class GameHolder : AppCompatActivity() {
                 })
 
             //setup listener to quit game if Opponent leaves mid-match...
-            MyApplication.myRef.child(MyApplication.code).child("ExitPlayer")
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
                 .addChildEventListener(object : ChildEventListener {
                     override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                         val data = snapshot.key //Who left?
                         //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
-                        exitProcess(1)
+                        finish()
                     }
 
                     //region
