@@ -160,8 +160,10 @@ class GameHolder : AppCompatActivity() {
             //Setup field, listener and logic for the variable that controls who won
             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d(TAG, "WINNER TRIGGERED")
-                    finish()
+                    if (snapshot.value != null) {
+                        Log.d(TAG, "WINNER TRIGGERED")
+                        finish()
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -212,10 +214,13 @@ class GameHolder : AppCompatActivity() {
             MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        Log.d(TAG, "EXIT TRIGGERED")
-                        val data = snapshot.key //Who left?
-                        //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
-                        finish()
+                        if (snapshot.value != null){
+                            Log.d(TAG, "EXIT TRIGGERED")
+                            val data = snapshot.key //Who left?
+                            //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
+                            finish()
+                        }
+
                     }
 
                     override fun onCancelled(error: DatabaseError) {
