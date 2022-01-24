@@ -162,6 +162,7 @@ class GameHolder : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
                         Log.d(TAG, "WINNER TRIGGERED")
+                        MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
                         finish()
                     }
                 }
@@ -240,6 +241,7 @@ class GameHolder : AppCompatActivity() {
                 if(MyApplication.isCodeMaker) to_enter = MyApplication.hostID
                 else to_enter = MyApplication.guestID
                 MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(to_enter)
+                MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
             }
             finish()
         }

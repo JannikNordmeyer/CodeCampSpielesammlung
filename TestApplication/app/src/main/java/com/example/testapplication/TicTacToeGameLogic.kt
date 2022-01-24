@@ -2,6 +2,7 @@ package com.example.testapplication
 import android.app.PendingIntent.getActivity
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -16,6 +17,8 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         const val WINNER_PLAYER_TWO = 2
         const val WINNER_DRAW = 0
     }
+
+    private val TAG = TicTacToeGameLogic::class.java.simpleName
 
     var liveboard: MutableLiveData<Array<Array<String>>> = MutableLiveData<Array<Array<String>>>()
     var livewinner: MutableLiveData<Int?> = MutableLiveData<Int?>()
@@ -36,6 +39,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     //Called from GameHolder whenever the Field changes.
     fun networkOnFieldUpdate(data : String?){
         //Update Local Board with Network Board
+        Log.d(TAG, "networkOnFieldUpdate")
         networkBoardToLocalBoard();
         //Update Liveboard to update UI and whatever else is controlled by livedata
         liveboard.value = board
@@ -45,6 +49,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
 
     // Updates local board by taking in the values from the network board
     fun networkBoardToLocalBoard(){
+        Log.d(TAG, "networkBoardToLocalBoard")
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
         field_data.child("0").get().addOnSuccessListener {
             board[0][0] = it.value.toString()
@@ -77,6 +82,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
 
     // Updates network board by translating the values from the local board
     fun localBoardToNetworkBoard(){
+        Log.d(TAG, "LOCALBOARDTONETWORKBOARD TRIGGERED")
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
         field_data.child("0").setValue(board[0][0])
         field_data.child("1").setValue(board[0][1])

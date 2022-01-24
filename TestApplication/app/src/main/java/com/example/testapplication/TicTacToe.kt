@@ -1,6 +1,7 @@
 package com.example.testapplication
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,8 @@ class TicTacToe : Fragment() {
         var split=str.split("@")
         return split[0]
     }
+
+    private val TAG = TicTacToeGameLogic::class.java.simpleName
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -53,6 +56,7 @@ class TicTacToe : Fragment() {
         }
 
         viewmodel.logic.liveboard.observe(viewLifecycleOwner, {
+            Log.d(TAG, "Liveboard update")
             binding.topleft.setText(viewmodel.logic.board[0][0])
             binding.topmid.setText(viewmodel.logic.board[0][1])
             binding.topright.setText(viewmodel.logic.board[0][2])
