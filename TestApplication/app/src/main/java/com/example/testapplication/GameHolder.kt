@@ -140,7 +140,7 @@ class GameHolder : AppCompatActivity() {
             Log.d(TAG, MyApplication.code)
 
             //Setup field, listener and logic for the variable that controls whose turn it is
-            MyApplication.myRef.child("data").child(MyApplication.code).addValueEventListener(object : ValueEventListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         Log.d(TAG, "ACTIVE PLAYER LISTENER TRIGGERED")
                         val data_activePlayer = snapshot.value.toString()
@@ -159,6 +159,7 @@ class GameHolder : AppCompatActivity() {
             //Setup field, listener and logic for the variable that controls who won
             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    //test
                     TODO("Not yet implemented")
                 }
 
