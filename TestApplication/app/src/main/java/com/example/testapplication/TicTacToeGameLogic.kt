@@ -41,8 +41,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         //Update Local Board with Network Board
         Log.d(TAG, "networkOnFieldUpdate")
         networkBoardToLocalBoard();
-        //Update Liveboard to update UI and whatever else is controlled by livedata
-        liveboard.value = board
+
         //Check board
         checkField()
     }
@@ -53,30 +52,32 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
         field_data.child("0").get().addOnSuccessListener {
             board[0][0] = it.value.toString()
-        }
-        field_data.child("1").get().addOnSuccessListener {
-            board[0][1] = it.value.toString()
-        }
-        field_data.child("2").get().addOnSuccessListener {
-            board[0][2] = it.value.toString()
-        }
-        field_data.child("3").get().addOnSuccessListener {
-            board[1][0] = it.value.toString()
-        }
-        field_data.child("4").get().addOnSuccessListener {
-            board[1][1] = it.value.toString()
-        }
-        field_data.child("5").get().addOnSuccessListener {
-            board[1][2] = it.value.toString()
-        }
-        field_data.child("6").get().addOnSuccessListener {
-            board[2][0] = it.value.toString()
-        }
-        field_data.child("7").get().addOnSuccessListener {
-            board[2][1] = it.value.toString()
-        }
-        field_data.child("8").get().addOnSuccessListener {
-            board[2][2] = it.value.toString()
+            field_data.child("1").get().addOnSuccessListener {
+                board[0][1] = it.value.toString()
+                field_data.child("2").get().addOnSuccessListener {
+                    board[0][2] = it.value.toString()
+                    field_data.child("3").get().addOnSuccessListener {
+                        board[1][0] = it.value.toString()
+                        field_data.child("4").get().addOnSuccessListener {
+                            board[1][1] = it.value.toString()
+                            field_data.child("5").get().addOnSuccessListener {
+                                board[1][2] = it.value.toString()
+                                field_data.child("6").get().addOnSuccessListener {
+                                    board[2][0] = it.value.toString()
+                                    field_data.child("7").get().addOnSuccessListener {
+                                        board[2][1] = it.value.toString()
+                                        field_data.child("8").get().addOnSuccessListener {
+                                            board[2][2] = it.value.toString()
+                                            //Update Liveboard to update UI and whatever else is controlled by livedata
+                                            liveboard.value = board
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
