@@ -26,13 +26,22 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var player = CROSS
     var winner:Int? = null
 
+    var fieldListenerLock = false
+
     fun toggle(){   //Also switches the turn for Network
-        if(player == CROSS){ player = CIRCLE }
-        else player = CROSS
+        Log.d(TAG, MyApplication.hostID)
+        Log.d(TAG, MyApplication.guestID)
         if(MyApplication.onlineMode) {  //TODO: Figure out how to call GameHolder's toggleNetworkTurn() instead.
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
-            if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID)
-            else networkActivePlayer.setValue(MyApplication.hostID)
+            if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID).addOnFailureListener {
+                Log.d(TAG, "Host couldnt switch to Guest")
+            }
+            else networkActivePlayer.setValue(MyApplication.hostID).addOnFailureListener {
+                Log.d(TAG, "Guest couldnt switch to Host")
+            }
+        } else {
+            if(player == CROSS){ player = CIRCLE }
+            else player = CROSS
         }
     }
 
