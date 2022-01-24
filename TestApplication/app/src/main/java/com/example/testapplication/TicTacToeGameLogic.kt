@@ -4,8 +4,10 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.FirebaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 
 class TicTacToeGameLogic (var board: Array<Array<String>>){
 
@@ -33,11 +35,20 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         Log.d(TAG, MyApplication.guestID)
         if(MyApplication.onlineMode) {  //TODO: Figure out how to call GameHolder's toggleNetworkTurn() instead.
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
-            if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID).addOnFailureListener {
-                Log.d(TAG, "Host couldnt switch to Guest")
-            }
-            else networkActivePlayer.setValue(MyApplication.hostID).addOnFailureListener {
-                Log.d(TAG, "Guest couldnt switch to Host")
+            if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID, { error, ref ->
+                //setValue operation is done, you'll get null in errror and ref is the path reference for firebase database
+                if (error != null) {
+                    Log.d(TAG, "Host to Guest failed")
+                }
+            })
+            else networkActivePlayer.setValue(MyApplication.hostID, { error, ref ->
+                //setValue operation is done, you'll get null in errror and ref is the path reference for firebase database
+                if (error != null) {
+                    Log.d(TAG, "Guest to Host failed")
+                }
+            })
+            networkActivePlayer.get().addOnSuccessListener {
+                Log.d(TAG, it.value.toString())
             }
         } else {
             if(player == CROSS){ player = CIRCLE }
