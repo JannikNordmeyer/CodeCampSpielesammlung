@@ -151,13 +151,14 @@ class GameHolder : AppCompatActivity() {
                     }
 
                 override fun onCancelled(error: DatabaseError) {
+                    Log.d(TAG, "ACTIVE PLAYER CANCELLED LISTENER TRIGGERED")
                     TODO("Not yet implemented")
                 }
 
             })
 
             //Setup field, listener and logic for the variable that controls who won
-            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
+            /*MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     //test
                     TODO("Not yet implemented")
@@ -167,7 +168,7 @@ class GameHolder : AppCompatActivity() {
                     TODO("Not yet implemented")
                 }
 
-            })
+            })*/
 
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
             MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
@@ -201,6 +202,7 @@ class GameHolder : AppCompatActivity() {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
+                        Log.d(TAG, "FIELD CANCELLED TRIGGERED")
                         TODO("Not yet implemented")
                     }
                     //endregion
@@ -210,12 +212,14 @@ class GameHolder : AppCompatActivity() {
             MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        Log.d(TAG, "EXIT TRIGGERED")
                         val data = snapshot.key //Who left?
                         //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
                         finish()
                     }
 
                     override fun onCancelled(error: DatabaseError) {
+                        Log.d(TAG, "EXIT CANCELLED TRIGGERED")
                         TODO("Not yet implemented")
                     }
                     //endregion
