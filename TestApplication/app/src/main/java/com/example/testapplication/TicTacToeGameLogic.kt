@@ -27,7 +27,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         if(player == CROSS){ player = CIRCLE }
         else player = CROSS
         if(MyApplication.onlineMode) {  //TODO: Figure out how to call GameHolder's toggleNetworkTurn() instead.
-            val networkActivePlayer = MyApplication.myRef.child(MyApplication.code).child("ActivePlayer")
+            val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
             if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID)
             else networkActivePlayer.setValue(MyApplication.hostID)
         }

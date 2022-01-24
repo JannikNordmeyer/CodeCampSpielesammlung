@@ -34,7 +34,7 @@ class GameHolder : AppCompatActivity() {
 
     //Call this function within games to switch network Turn! //TODO: Actually figure out how to do that instead of copy and pasting it in there
     fun toggleNetworkTurn(){
-        val networkActivePlayer = MyApplication.myRef.child(MyApplication.code).child("ActivePlayer")
+        val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
         if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID)
         else networkActivePlayer.setValue(MyApplication.hostID)
     }
@@ -93,13 +93,15 @@ class GameHolder : AppCompatActivity() {
             //Get and save ID of host and guest as a global control var
             MyApplication.myRef.child("Host").get().addOnSuccessListener {
                 MyApplication.hostID = it.value.toString()
+
+                //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
+                MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
             }
             MyApplication.myRef.child("Guest").get().addOnSuccessListener {
                 MyApplication.guestID = it.value.toString()
             }
 
-            //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
+
 
             // TODO: CLEAN UP DATABASE + FIX
             //Setup ExitPlayer to determine if and who has left a game.
@@ -135,7 +137,7 @@ class GameHolder : AppCompatActivity() {
             }
 
             //Setup field, listener and logic for the variable that controls whose turn it is
-            MyApplication.myRef.child(MyApplication.code).child("ActivePlayer").addChildEventListener(object : ChildEventListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addChildEventListener(object : ChildEventListener {
                     override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                         val data_activePlayer = snapshot.value.toString()
                         if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn = true
