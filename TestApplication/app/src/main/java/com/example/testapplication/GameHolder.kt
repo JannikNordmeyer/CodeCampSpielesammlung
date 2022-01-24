@@ -106,10 +106,10 @@ class GameHolder : AppCompatActivity() {
 
             // TODO: CLEAN UP DATABASE + FIX
             //Setup ExitPlayer to determine if and who has left a game.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(false) //nodes needs a value != null to exist
+            //MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(false) //nodes needs a value != null to exist
 
             //Setup WinnerPlayer to determine if and who has won a game.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(false) //nodes needs a value != null to exist
+            //MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(false) //nodes needs a value != null to exist
 
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
             when (viewmodel) {
@@ -158,17 +158,17 @@ class GameHolder : AppCompatActivity() {
             })
 
             //Setup field, listener and logic for the variable that controls who won
-            /*MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    //test
-                    TODO("Not yet implemented")
+                    Log.d(TAG, "WINNER TRIGGERED")
+                    finish()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
 
-            })*/
+            })
 
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
             MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
