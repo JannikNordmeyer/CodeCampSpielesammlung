@@ -155,6 +155,21 @@ class GameHolder : AppCompatActivity() {
 
                         build.setPositiveButton("rematch") { dialog, which ->
                             networkSetup(viewmodel)
+                            when (viewmodel) {
+                                is TicTacToeViewModel -> {
+                                    (viewmodel as TicTacToeViewModel).logic.clear()
+                                }
+                                is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
+                                }
+                                is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
+                                }
+                                is PlaceholderSpiel3ViewModel -> { //Your Setup Code here...
+                                }
+                                is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
+                                }
+                                is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
+                                }
+                            }
                         }
 
                         build.setNegativeButton("exit") { dialog, which ->
@@ -272,9 +287,8 @@ class GameHolder : AppCompatActivity() {
                 data_field.child("7").setValue("")
                 data_field.child("8").setValue("")
                 if (!MyApplication.isCodeMaker) {
-                    viewmodel.logic.player = "O"
+                    (viewmodel as TicTacToeViewModel).logic.player = "O"
                 }
-                viewmodel.logic.winner = null
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
             }
