@@ -155,7 +155,7 @@ class GameHolder : AppCompatActivity() {
 
                         build.setPositiveButton("rematch") { dialog, which ->
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
-                            when (viewmodel) {
+                            /*when (viewmodel) {
                                 is TicTacToeViewModel -> {
                                     (viewmodel as TicTacToeViewModel).logic.clear()
                                 }
@@ -169,7 +169,7 @@ class GameHolder : AppCompatActivity() {
                                 }
                                 is PlaceholderSpiel5ViewModel -> { //Your winnerLock Code here...
                                 }
-                            }
+                            }*/
                             networkSetup(viewmodel)
                         }
 
@@ -278,15 +278,30 @@ class GameHolder : AppCompatActivity() {
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
-                data_field.child("0").setValue("")
-                data_field.child("1").setValue("")
-                data_field.child("2").setValue("")
-                data_field.child("3").setValue("")
-                data_field.child("4").setValue("")
-                data_field.child("5").setValue("")
-                data_field.child("6").setValue("")
-                data_field.child("7").setValue("")
-                data_field.child("8").setValue("")
+                data_field.child("0").setValue("", { error, ref ->
+                    data_field.child("1").setValue("", { error, ref ->
+                        data_field.child("2").setValue("", { error, ref ->
+                            data_field.child("3").setValue("", { error, ref ->
+                                data_field.child("4").setValue("", { error, ref ->
+                                    data_field.child("5").setValue("", { error, ref ->
+                                        data_field.child("6").setValue("", { error, ref ->
+                                            data_field.child("7").setValue("", { error, ref ->
+                                                data_field.child("8").setValue("")
+                                            })
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+
+
+
+
+
+
+
                 if (!MyApplication.isCodeMaker) {
                     (viewmodel as TicTacToeViewModel).logic.player = "O"
                 }

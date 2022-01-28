@@ -163,6 +163,8 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         }
 
         if(win || full){
+            Log.d(TAG, "win: " + win.toString())
+            Log.d(TAG, "full: " + full.toString())
             if(win){
                 if(player == CROSS) winner = WINNER_PLAYER_ONE
                 else winner = WINNER_PLAYER_TWO
@@ -183,6 +185,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                     MyApplication.guestID
                 }
                 MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                winner = null
             }
             return true
         }
