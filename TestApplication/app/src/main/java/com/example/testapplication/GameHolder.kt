@@ -1,5 +1,7 @@
 package com.example.testapplication
 
+import android.app.AlertDialog
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -113,33 +115,7 @@ class GameHolder : AppCompatActivity() {
             //MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(false) //nodes needs a value != null to exist
 
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
-            when (viewmodel) {
-                is TicTacToeViewModel -> {
-                    val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
-                    data_field.child("0").setValue("")
-                    data_field.child("1").setValue("")
-                    data_field.child("2").setValue("")
-                    data_field.child("3").setValue("")
-                    data_field.child("4").setValue("")
-                    data_field.child("5").setValue("")
-                    data_field.child("6").setValue("")
-                    data_field.child("7").setValue("")
-                    data_field.child("8").setValue("")
-                    if (!MyApplication.isCodeMaker) {
-                        (viewmodel as TicTacToeViewModel).logic.player = "O"
-                    }
-                }
-                is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
-                }
-                is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
-                }
-                is PlaceholderSpiel3ViewModel -> { //Your Setup Code here...
-                }
-                is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
-                }
-                is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
-                }
-            }
+            networkSetup(viewmodel)
 
             Log.d(TAG, MyApplication.code)
 
@@ -166,8 +142,26 @@ class GameHolder : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
                         Log.d(TAG, "WINNER TRIGGERED")
-                        MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
-                        finish()
+                        val value = snapshot.value
+                        val build = AlertDialog.Builder(this@GameHolder);
+                        if (value == -1) {
+                            build.setTitle("Draw")
+                            build.setMessage("Game is a draw")
+                        } else {
+                            build.setTitle("Game Over!")
+                            build.setMessage("$value has won the game!")
+                        }
+
+                        build.setPositiveButton("rematch") { dialog, which ->
+                            networkSetup(viewmodel)
+                        }
+
+                        build.setNegativeButton("exit") { dialog, which ->
+                            finish()
+                        }
+
+                        build.show()
+                        //MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
                     }
                 }
 
@@ -250,5 +244,36 @@ class GameHolder : AppCompatActivity() {
             finish()
         }
 
+    }
+
+    fun networkSetup(viewmodel : ViewModel) {
+        Log.d(TAG, "NETWORK SETUP TRIGGERED")
+        when (viewmodel) {
+            is TicTacToeViewModel -> {
+                val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
+                data_field.child("0").setValue("")
+                data_field.child("1").setValue("")
+                data_field.child("2").setValue("")
+                data_field.child("3").setValue("")
+                data_field.child("4").setValue("")
+                data_field.child("5").setValue("")
+                data_field.child("6").setValue("")
+                data_field.child("7").setValue("")
+                data_field.child("8").setValue("")
+                if (!MyApplication.isCodeMaker) {
+                    (viewmodel as TicTacToeViewModel).logic.player = "O"
+                }
+            }
+            is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
+            }
+            is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
+            }
+            is PlaceholderSpiel3ViewModel -> { //Your Setup Code here...
+            }
+            is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
+            }
+            is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
+            }
+        }
     }
 }
