@@ -128,17 +128,6 @@ class GameHolder : AppCompatActivity() {
                         if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn = true
                         else MyApplication.myTurn = (data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker
                         Log.d(TAG, MyApplication.myTurn.toString())
-
-                        Log.d(TAG, "Field update")
-                        var data = snapshot.key
-                        when (viewmodel) {
-                            is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
-                        }
                     }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -201,7 +190,7 @@ class GameHolder : AppCompatActivity() {
             })
 
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
-            /*MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
                 .addChildEventListener(object : ChildEventListener {
                     override fun onChildChanged(
                         snapshot: DataSnapshot,
@@ -236,7 +225,7 @@ class GameHolder : AppCompatActivity() {
                         TODO("Not yet implemented")
                     }
                     //endregion
-                })*/
+                })
 
             //setup listener to quit game if Opponent leaves mid-match...
             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
