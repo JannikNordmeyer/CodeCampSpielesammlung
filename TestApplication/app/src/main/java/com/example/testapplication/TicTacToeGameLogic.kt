@@ -63,7 +63,11 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         networkBoardToLocalBoard();
 
         //Check board
-        checkField()
+        MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").get().addOnSuccessListener {
+            if (it.value == null) {
+                checkField()
+            }
+        }
     }
 
     // Updates local board by taking in the values from the network board
@@ -105,7 +109,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     fun localBoardToNetworkBoard(){
         Log.d(TAG, "LOCALBOARDTONETWORKBOARD TRIGGERED")
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
-        MyApplication.fieldListenerLock = true
         field_data.child("0").setValue(board[0][0])
         field_data.child("1").setValue(board[0][1])
         field_data.child("2").setValue(board[0][2])
@@ -114,7 +117,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         field_data.child("5").setValue(board[1][2])
         field_data.child("6").setValue(board[2][0])
         field_data.child("7").setValue(board[2][1])
-        MyApplication.fieldListenerLock = false
         field_data.child("8").setValue(board[2][2])
     }
 
@@ -171,6 +173,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
             else{
                 winner = WINNER_DRAW
             }
+            livewinner.value = winner
             if (!MyApplication.onlineMode) {
                 val handler = Handler(Looper.getMainLooper())
                 handler.postDelayed({
@@ -183,9 +186,8 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                     MyApplication.guestID
                 }
                 MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                winner = null   //winner wird innerhalb des gamerholders nicht richtig auf null gesetzt
             }
-
-            livewinner.value = winner
             return true
         }
         return false

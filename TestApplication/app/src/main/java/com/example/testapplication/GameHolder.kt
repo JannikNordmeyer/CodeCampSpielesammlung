@@ -156,7 +156,7 @@ class GameHolder : AppCompatActivity() {
                         build.setPositiveButton("rematch") { dialog, which ->
                             networkSetup(viewmodel)
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
-                            when (viewmodel) {
+                            /*when (viewmodel) {
                                 is TicTacToeViewModel -> {
                                     (viewmodel as TicTacToeViewModel).logic.clear()
                                 }
@@ -170,7 +170,7 @@ class GameHolder : AppCompatActivity() {
                                 }
                                 is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
                                 }
-                            }
+                            }*/
                         }
 
                         build.setNegativeButton("exit") { dialog, which ->
@@ -196,7 +196,6 @@ class GameHolder : AppCompatActivity() {
                         snapshot: DataSnapshot,
                         previousChildName: String?
                     ) {
-                        if (!MyApplication.fieldListenerLock) {
                             Log.d(TAG, "Field update")
                             var data = snapshot.key
                             when (viewmodel) {
@@ -207,7 +206,6 @@ class GameHolder : AppCompatActivity() {
                                 is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
                             }
-                        }
                     }
 
                     //region
@@ -280,7 +278,6 @@ class GameHolder : AppCompatActivity() {
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
-                MyApplication.fieldListenerLock = true
                 data_field.child("0").setValue("")
                 data_field.child("1").setValue("")
                 data_field.child("2").setValue("")
@@ -289,7 +286,6 @@ class GameHolder : AppCompatActivity() {
                 data_field.child("5").setValue("")
                 data_field.child("6").setValue("")
                 data_field.child("7").setValue("")
-                MyApplication.fieldListenerLock = false
                 data_field.child("8").setValue("")
                 if (!MyApplication.isCodeMaker) {
                     (viewmodel as TicTacToeViewModel).logic.player = "O"
