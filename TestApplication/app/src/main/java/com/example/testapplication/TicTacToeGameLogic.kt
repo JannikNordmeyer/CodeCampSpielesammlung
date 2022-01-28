@@ -169,10 +169,20 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
             else{
                 winner = WINNER_DRAW
             }
-            val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({
-                clear()
-            }, 1500)
+            if (!MyApplication.onlineMode) {
+                val handler = Handler(Looper.getMainLooper())
+                handler.postDelayed({
+                    clear()
+                }, 1500)
+            } else {
+                var networkWinner = if (MyApplication.isCodeMaker) {
+                    MyApplication.hostID
+                } else {
+                    MyApplication.guestID
+                }
+                MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+            }
+
             livewinner.value = winner
             return true
         }
