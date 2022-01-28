@@ -118,39 +118,45 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     }
 
     fun checkField(): Boolean {
-
+        Log.d(TAG, "####CHECK FIELD####")
         var win: Boolean = false
 
         for(i in 0..2){
 
             var row = true
             for(j in 0..2){
-
+                Log.d(TAG, board[i][j])
                 row = row && (board[i][j] == player)
             }
             win = win || row
 
         }
-
+        Log.d(TAG, "###ROWCHECK DONE###")
         for(i in 0..2){
             var column = true
             for(j in 0..2){
+                Log.d(TAG, board[i][j])
                 column = column && (board[j][i] == player)
             }
             win = win || column
         }
+        Log.d(TAG, "###COLUMCHECK DONE###")
         var diaR = true
 
         for(i in 0..2){
             diaR = diaR && (board[i][i] == player)
+            Log.d(TAG, board[i][i])
         }
+        Log.d(TAG, "###DIAGONAL RIGHT DONE###")
         win = win || diaR
 
         var diaL = true
 
         for(i in 0..2){
             diaL = diaL && (board[i][2-i] == player)
+            Log.d(TAG, board[i][2-i])
         }
+        Log.d(TAG, "###DIAGONAL LEFT DONE###")
         win = win || diaL
 
         var full = true
@@ -194,6 +200,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     }
 
     fun click(a: Int, b: Int){
+        Log.d(TAG, "####ICH HABE GEKLICKT####")
         if(!MyApplication.onlineMode || MyApplication.myTurn) {
             if (board[a][b] != "" || winner != null) {
                 return
