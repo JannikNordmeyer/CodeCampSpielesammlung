@@ -21,6 +21,7 @@ class MyApplication : Application() {
         var hostID = "null"
         var guestID = "null"
         var networkSetupComplete = false;
+        var fieldListenerLock = false;
 
         lateinit var database: FirebaseDatabase
         lateinit var myRef: DatabaseReference

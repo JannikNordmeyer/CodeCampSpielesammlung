@@ -105,6 +105,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     fun localBoardToNetworkBoard(){
         Log.d(TAG, "LOCALBOARDTONETWORKBOARD TRIGGERED")
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
+        MyApplication.fieldListenerLock = true
         field_data.child("0").setValue(board[0][0])
         field_data.child("1").setValue(board[0][1])
         field_data.child("2").setValue(board[0][2])
@@ -113,6 +114,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         field_data.child("5").setValue(board[1][2])
         field_data.child("6").setValue(board[2][0])
         field_data.child("7").setValue(board[2][1])
+        MyApplication.fieldListenerLock = false
         field_data.child("8").setValue(board[2][2])
     }
 
@@ -211,10 +213,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                 board[i][j]= ""
             }
         }
-        toggle()
-        if(player != CROSS){
-            toggle()
-        }
+
         winner = null
         livewinner.value = winner
         liveboard.value = board     //Update Liveboard, which triggers observer
