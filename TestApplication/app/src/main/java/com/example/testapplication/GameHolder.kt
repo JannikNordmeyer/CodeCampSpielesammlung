@@ -105,15 +105,6 @@ class GameHolder : AppCompatActivity() {
                 MyApplication.guestID = it.value.toString()
             }
 
-
-
-            // TODO: CLEAN UP DATABASE + FIX
-            //Setup ExitPlayer to determine if and who has left a game.
-            //MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(false) //nodes needs a value != null to exist
-
-            //Setup WinnerPlayer to determine if and who has won a game.
-            //MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(false) //nodes needs a value != null to exist
-
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
             networkSetup(viewmodel)
 
@@ -132,6 +123,33 @@ class GameHolder : AppCompatActivity() {
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.d(TAG, "ACTIVE PLAYER CANCELLED LISTENER TRIGGERED")
+                    TODO("Not yet implemented")
+                }
+
+            })
+
+            //NOTE REGARDING THE OLD DATA PROBLEM: Consider REMOVING and entirely recreating the board once we dont need it anymore (on game restart...)
+            //TODO: IMPLEMENT THIS
+            //Listener that calls the fragment's network field update function if the "FieldUpdate" flag has been turned to true.
+            // Also sets the flag back to false once the field has been updated.
+            MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(snapshot.value != null && snapshot.value != false){
+                        Log.d(TAG, "Field update")
+                        var data = snapshot.key
+                        when (viewmodel) {
+                            is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
+                            is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
+                        }
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(false)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
 
@@ -189,6 +207,8 @@ class GameHolder : AppCompatActivity() {
 
             })
 
+            //TODO: CLEAN THIS TERRIBLENESS UP
+            /*
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
             MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
                 .addChildEventListener(object : ChildEventListener {
@@ -227,6 +247,8 @@ class GameHolder : AppCompatActivity() {
                     //endregion
                 })
 
+             */
+
             //setup listener to quit game if Opponent leaves mid-match...
             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
                 .addValueEventListener(object : ValueEventListener {
@@ -241,12 +263,8 @@ class GameHolder : AppCompatActivity() {
                                 finish()
                             }
                             build.show()
-                            //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
-
                         }
-
                     }
-
                     override fun onCancelled(error: DatabaseError) {
                         Log.d(TAG, "EXIT CANCELLED TRIGGERED")
                         TODO("Not yet implemented")
@@ -298,12 +316,6 @@ class GameHolder : AppCompatActivity() {
                         })
                     })
                 })
-
-
-
-
-
-
 
                 if (!MyApplication.isCodeMaker) {
                     (viewmodel as TicTacToeViewModel).logic.player = "O"

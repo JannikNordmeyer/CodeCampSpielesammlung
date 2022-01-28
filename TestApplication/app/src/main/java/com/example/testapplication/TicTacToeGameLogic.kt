@@ -103,18 +103,30 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     }
 
     // Updates network board by translating the values from the local board
+    // Whenever we update the network board, the opponent's listener will be triggered to update the network board aswell.
     fun localBoardToNetworkBoard(){
         Log.d(TAG, "LOCALBOARDTONETWORKBOARD TRIGGERED")
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
-        field_data.child("0").setValue(board[0][0])
-        field_data.child("1").setValue(board[0][1])
-        field_data.child("2").setValue(board[0][2])
-        field_data.child("3").setValue(board[1][0])
-        field_data.child("4").setValue(board[1][1])
-        field_data.child("5").setValue(board[1][2])
-        field_data.child("6").setValue(board[2][0])
-        field_data.child("7").setValue(board[2][1])
-        field_data.child("8").setValue(board[2][2])
+        field_data.child("0").setValue(board[0][0], { error, ref ->
+            field_data.child("1").setValue(board[0][1], { error, ref ->
+                field_data.child("2").setValue(board[0][2], { error, ref ->
+                    field_data.child("3").setValue(board[1][0], { error, ref ->
+                        field_data.child("4").setValue(board[1][1], { error, ref ->
+                            field_data.child("5").setValue(board[1][2], { error, ref ->
+                                field_data.child("6").setValue(board[2][0], { error, ref ->
+                                    field_data.child("7").setValue(board[2][1], { error, ref ->
+                                        field_data.child("8").setValue(board[2][2], { error, ref ->
+                                            //Set server flag regarding field update to true so opponent updates their field to the new standard
+                                            MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
     }
 
     fun checkField(): Boolean {
