@@ -286,7 +286,9 @@ class GameHolder : AppCompatActivity() {
                                     data_field.child("5").setValue("", { error, ref ->
                                         data_field.child("6").setValue("", { error, ref ->
                                             data_field.child("7").setValue("", { error, ref ->
-                                                data_field.child("8").setValue("")
+                                                data_field.child("8").setValue("", { error, ref ->
+                                                    viewmodel.logic.networkBoardToLocalBoard()
+                                                })
                                             })
                                         })
                                     })
