@@ -158,6 +158,7 @@ class GameHolder : AppCompatActivity() {
                         }
 
                         build.setNegativeButton("exit") { dialog, which ->
+                            exitGame()
                             finish()
                         }
 
@@ -211,14 +212,21 @@ class GameHolder : AppCompatActivity() {
                 })
 
             //setup listener to quit game if Opponent leaves mid-match...
-            MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer")
+            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot.value != null){
+                        if (snapshot.value == ""){
                             Log.d(TAG, "EXIT TRIGGERED")
-                            val data = snapshot.key //Who left?
+                            val build = AlertDialog.Builder(this@GameHolder);
+                            build.setCancelable(false)
+                            build.setTitle("Game Over!")
+                            build.setMessage("Opponent has left")
+                            build.setPositiveButton("OK") { dialog, which ->
+                                finish()
+                            }
+                            build.show()
                             //TODO: Probably do something else here than just exiting the process when someone else leaves? Push message then kick back into networkSelect or something?
-                            finish()
+
                         }
 
                     }
@@ -235,21 +243,22 @@ class GameHolder : AppCompatActivity() {
 
         binding.ButtonGiveUp.setOnClickListener() {
             if(MyApplication.onlineMode){
-                //Announce that you are leaving when hitting Give Up.
-                var to_enter = ""
-                if(MyApplication.isCodeMaker) to_enter = MyApplication.hostID
-                else to_enter = MyApplication.guestID
-                MyApplication.myRef.child("data").child(MyApplication.code).child("ExitPlayer").setValue(to_enter)
-                MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
+                exitGame()
             }
             finish()
         }
 
     }
 
+    fun exitGame() {
+        //cleanup
+        MyApplication.myRef.child("Users").child(SplitString(MyApplication.guestID)).setValue("")
+        MyApplication.myRef.child("Users").child(SplitString(MyApplication.hostID)).setValue("")
+        MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
+    }
+
     fun networkSetup(viewmodel : ViewModel) {
         Log.d(TAG, "NETWORK SETUP TRIGGERED")
-        MyApplication.myTurn = MyApplication.isCodeMaker
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
