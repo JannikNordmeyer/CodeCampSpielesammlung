@@ -64,9 +64,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         networkBoardToLocalBoard();
 
         //Check board
-        if (!winnerCheckLock) {
-            checkField()
-        }
+        checkField()
     }
 
     // Updates local board by taking in the values from the network board
@@ -185,7 +183,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                     MyApplication.guestID
                 }
                 MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
-                winner = null   //winner wird innerhalb des gamerholders nicht richtig auf null gesetzt
             }
             return true
         }

@@ -157,7 +157,7 @@ class GameHolder : AppCompatActivity() {
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
                             when (viewmodel) {
                                 is TicTacToeViewModel -> {
-                                    (viewmodel as TicTacToeViewModel).logic.winnerCheckLock = true
+                                    (viewmodel as TicTacToeViewModel).logic.clear()
                                 }
                                 is PlaceholderSpiel1ViewModel -> { //Your winnerLock Code here...
                                 }
@@ -199,7 +199,7 @@ class GameHolder : AppCompatActivity() {
                             Log.d(TAG, "Field update")
                             var data = snapshot.key
                             when (viewmodel) {
-                                is TicTacToeViewModel -> (viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
+                                is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(data)
@@ -290,7 +290,6 @@ class GameHolder : AppCompatActivity() {
                 if (!MyApplication.isCodeMaker) {
                     (viewmodel as TicTacToeViewModel).logic.player = "O"
                 }
-                viewmodel.logic.winnerCheckLock = false
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
             }
