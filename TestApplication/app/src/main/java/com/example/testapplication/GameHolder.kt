@@ -145,7 +145,7 @@ class GameHolder : AppCompatActivity() {
                         val value = snapshot.value
                         val build = AlertDialog.Builder(this@GameHolder);
                         build.setCancelable(false)
-                        if (value == -1) {
+                        if (value == "-1") {
                             build.setTitle("Draw")
                             build.setMessage("Game is a draw")
                         } else {

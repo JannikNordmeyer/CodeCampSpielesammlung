@@ -184,6 +184,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                 } else {
                     MyApplication.guestID
                 }
+                if (full) networkWinner = "-1"
                 MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
                 winner = null
             }
