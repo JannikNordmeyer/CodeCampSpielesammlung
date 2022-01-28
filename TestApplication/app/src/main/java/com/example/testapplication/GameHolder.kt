@@ -144,6 +144,7 @@ class GameHolder : AppCompatActivity() {
                         Log.d(TAG, "WINNER TRIGGERED")
                         val value = snapshot.value
                         val build = AlertDialog.Builder(this@GameHolder);
+                        build.setCancelable(false)
                         if (value == -1) {
                             build.setTitle("Draw")
                             build.setMessage("Game is a draw")
@@ -248,6 +249,7 @@ class GameHolder : AppCompatActivity() {
 
     fun networkSetup(viewmodel : ViewModel) {
         Log.d(TAG, "NETWORK SETUP TRIGGERED")
+        MyApplication.myTurn = MyApplication.isCodeMaker
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
@@ -261,8 +263,9 @@ class GameHolder : AppCompatActivity() {
                 data_field.child("7").setValue("")
                 data_field.child("8").setValue("")
                 if (!MyApplication.isCodeMaker) {
-                    (viewmodel as TicTacToeViewModel).logic.player = "O"
+                    viewmodel.logic.player = "O"
                 }
+                viewmodel.logic.winner = null
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
             }
