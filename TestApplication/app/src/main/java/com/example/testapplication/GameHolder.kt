@@ -154,23 +154,23 @@ class GameHolder : AppCompatActivity() {
                         }
 
                         build.setPositiveButton("rematch") { dialog, which ->
-                            networkSetup(viewmodel)
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
-                            /*when (viewmodel) {
+                            when (viewmodel) {
                                 is TicTacToeViewModel -> {
-                                    (viewmodel as TicTacToeViewModel).logic.clear()
+                                    (viewmodel as TicTacToeViewModel).logic.winnerCheckLock = true
                                 }
-                                is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
+                                is PlaceholderSpiel1ViewModel -> { //Your winnerLock Code here...
                                 }
-                                is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
+                                is PlaceholderSpiel2ViewModel -> { //Your winnerLock Code here...
                                 }
-                                is PlaceholderSpiel3ViewModel -> { //Your Setup Code here...
+                                is PlaceholderSpiel3ViewModel -> { //Your winnerLock Code here...
                                 }
-                                is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
+                                is PlaceholderSpiel4ViewModel -> { //Your winnerLock Code here...
                                 }
-                                is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
+                                is PlaceholderSpiel5ViewModel -> { //Your winnerLock Code here...
                                 }
-                            }*/
+                            }
+                            networkSetup(viewmodel)
                         }
 
                         build.setNegativeButton("exit") { dialog, which ->
@@ -290,6 +290,7 @@ class GameHolder : AppCompatActivity() {
                 if (!MyApplication.isCodeMaker) {
                     (viewmodel as TicTacToeViewModel).logic.player = "O"
                 }
+                viewmodel.logic.winnerCheckLock = false
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
             }

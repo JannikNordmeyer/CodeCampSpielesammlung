@@ -29,6 +29,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var winner:Int? = null
 
     var fieldListenerLock = false
+    var winnerCheckLock = false
 
     fun toggle(){   //Also switches the turn for Network
         Log.d(TAG, MyApplication.hostID)
@@ -63,10 +64,8 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         networkBoardToLocalBoard();
 
         //Check board
-        MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").get().addOnSuccessListener {
-            if (it.value == null) {
-                checkField()
-            }
+        if (!winnerCheckLock) {
+            checkField()
         }
     }
 

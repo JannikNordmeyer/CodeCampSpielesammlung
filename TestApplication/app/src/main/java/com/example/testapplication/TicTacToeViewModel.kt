@@ -27,4 +27,5 @@ class TicTacToeViewModel: ViewModel() {
     var emptyCells = ArrayList<Int>()
     var activeUser = 1
 
+
 }
