@@ -13,10 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameHolderBinding
 import com.example.testapplication.databinding.FragmentTictactoeBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import kotlin.system.exitProcess
 
 class GameHolder : AppCompatActivity() {
@@ -136,6 +133,7 @@ class GameHolder : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null && snapshot.value != false){
                         Log.d(TAG, "Field update")
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(false)
                         var data = snapshot.key
                         when (viewmodel) {
                             is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
@@ -145,7 +143,6 @@ class GameHolder : AppCompatActivity() {
                             is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
                         }
-                        MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(false)
                     }
                 }
 
@@ -173,22 +170,17 @@ class GameHolder : AppCompatActivity() {
 
                         build.setPositiveButton("rematch") { dialog, which ->
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
-                            /*when (viewmodel) {
-                                is TicTacToeViewModel -> {
-                                    (viewmodel as TicTacToeViewModel).logic.clear()
+                            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").get().addOnSuccessListener {
+                                if (it.value == null) {
+                                    //TODO START LOAD
+                                    MyApplication.isLoading = true
+                                    MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(true)
+                                } else if (it.value == true) {
+                                    //TODO REMATCH (RESET BOARD)
+                                    networkSetup(viewmodel)
+                                    MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
                                 }
-                                is PlaceholderSpiel1ViewModel -> { //Your winnerLock Code here...
-                                }
-                                is PlaceholderSpiel2ViewModel -> { //Your winnerLock Code here...
-                                }
-                                is PlaceholderSpiel3ViewModel -> { //Your winnerLock Code here...
-                                }
-                                is PlaceholderSpiel4ViewModel -> { //Your winnerLock Code here...
-                                }
-                                is PlaceholderSpiel5ViewModel -> { //Your winnerLock Code here...
-                                }
-                            }*/
-                            networkSetup(viewmodel)
+                            }
                         }
 
                         build.setNegativeButton("exit") { dialog, which ->
@@ -201,12 +193,30 @@ class GameHolder : AppCompatActivity() {
                     }
                 }
 
+
+
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
 
             })
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.value != null) {
+                        if (snapshot.value == false && MyApplication.isLoading) {
+                            //TODO END LOAD
+                            networkSetup(viewmodel)
+                            MyApplication.isLoading = false
+                            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").removeValue()
+                        }
+                    }
+                }
 
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
             //TODO: CLEAN THIS TERRIBLENESS UP
             /*
             //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
@@ -284,6 +294,7 @@ class GameHolder : AppCompatActivity() {
 
     }
 
+    //TODO FIX LEAVE JANK
     fun exitGame() {
         //cleanup
         MyApplication.myRef.child("Users").child(SplitString(MyApplication.guestID)).setValue("")
@@ -295,18 +306,20 @@ class GameHolder : AppCompatActivity() {
         Log.d(TAG, "NETWORK SETUP TRIGGERED")
         when (viewmodel) {
             is TicTacToeViewModel -> {
-                val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
-                data_field.child("0").setValue("", { error, ref ->
-                    data_field.child("1").setValue("", { error, ref ->
-                        data_field.child("2").setValue("", { error, ref ->
-                            data_field.child("3").setValue("", { error, ref ->
-                                data_field.child("4").setValue("", { error, ref ->
-                                    data_field.child("5").setValue("", { error, ref ->
-                                        data_field.child("6").setValue("", { error, ref ->
-                                            data_field.child("7").setValue("", { error, ref ->
-                                                data_field.child("8").setValue("", { error, ref ->
-                                                    viewmodel.logic.networkBoardToLocalBoard()
-                                                    Log.d(TAG, "NETWORK SETUP BOARD UPDATE")
+                if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
+                    /*val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
+                    data_field.child("0").setValue("", { error, ref ->
+                        data_field.child("1").setValue("", { error, ref ->
+                            data_field.child("2").setValue("", { error, ref ->
+                                data_field.child("3").setValue("", { error, ref ->
+                                    data_field.child("4").setValue("", { error, ref ->
+                                        data_field.child("5").setValue("", { error, ref ->
+                                            data_field.child("6").setValue("", { error, ref ->
+                                                data_field.child("7").setValue("", { error, ref ->
+                                                    data_field.child("8").setValue("", { error, ref ->
+                                                        viewmodel.logic.networkBoardToLocalBoard()
+                                                        Log.d(TAG, "NETWORK SETUP BOARD UPDATE")
+                                                    })
                                                 })
                                             })
                                         })
@@ -314,11 +327,34 @@ class GameHolder : AppCompatActivity() {
                                 })
                             })
                         })
-                    })
-                })
+                    })*/
 
-                if (!MyApplication.isCodeMaker) {
-                    (viewmodel as TicTacToeViewModel).logic.player = "O"
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").runTransaction(object : Transaction.Handler {
+                        override fun doTransaction(currentData: MutableData): Transaction.Result {
+                            currentData.children
+                            for (child in currentData.children) {
+                                child.value = ""
+                            }
+                            return Transaction.success(currentData)
+                        }
+
+                        override fun onComplete(
+                            error: DatabaseError?,
+                            committed: Boolean,
+                            currentData: DataSnapshot?
+                        ) {
+                            TODO("Not yet implemented")
+
+                        }
+
+                    })
+
+                    if (!MyApplication.isCodeMaker) {
+                        (viewmodel as TicTacToeViewModel).logic.player = "O"
+                    }
+                } else if (MyApplication.isLoading) {
+                    viewmodel.logic.networkBoardToLocalBoard()
+                    Log.d(TAG, "NETWORK SETUP BOARD UPDATE LOADING")
                 }
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
