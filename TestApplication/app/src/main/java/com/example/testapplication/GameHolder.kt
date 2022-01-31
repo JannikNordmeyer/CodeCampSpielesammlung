@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.util.Range
 import android.widget.Toast
 import androidx.constraintlayout.widget.Placeholder
 import androidx.fragment.app.Fragment
@@ -329,11 +330,10 @@ class GameHolder : AppCompatActivity() {
                         })
                     })*/
 
-                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").runTransaction(object : Transaction.Handler {
+                    MyApplication.myRef.child("data").child(MyApplication.code).runTransaction(object : Transaction.Handler {
                         override fun doTransaction(currentData: MutableData): Transaction.Result {
-                            currentData.children
-                            for (child in currentData.children) {
-                                child.value = ""
+                            for (i in 0..8) {
+                                currentData.child("Field").child(i.toString()).value = ""
                             }
                             return Transaction.success(currentData)
                         }
@@ -343,8 +343,7 @@ class GameHolder : AppCompatActivity() {
                             committed: Boolean,
                             currentData: DataSnapshot?
                         ) {
-                            TODO("Not yet implemented")
-
+                            Log.d(TAG, "COMPLETED")
                         }
 
                     })
