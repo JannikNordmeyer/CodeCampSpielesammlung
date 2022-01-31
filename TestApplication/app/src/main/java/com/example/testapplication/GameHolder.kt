@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.util.Range
+import android.view.View
 import android.widget.Toast
 import androidx.constraintlayout.widget.Placeholder
 import androidx.fragment.app.Fragment
@@ -173,7 +174,7 @@ class GameHolder : AppCompatActivity() {
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
                             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").get().addOnSuccessListener {
                                 if (it.value == null) {
-                                    //TODO START LOAD
+                                    startLoad()
                                     MyApplication.isLoading = true
                                     MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(true)
                                 } else if (it.value == true) {
@@ -204,7 +205,7 @@ class GameHolder : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
                         if (snapshot.value == false && MyApplication.isLoading) {
-                            //TODO END LOAD
+                            stopLoad()
                             networkSetup(viewmodel)
                             MyApplication.isLoading = false
                             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").removeValue()
@@ -372,5 +373,15 @@ class GameHolder : AppCompatActivity() {
             is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
             }
         }
+    }
+
+    fun startLoad() {
+        binding.FrameLayoutGameHolder.visibility = View.GONE
+        binding.idPB.visibility = View.VISIBLE
+    }
+
+    fun stopLoad() {
+        binding.FrameLayoutGameHolder.visibility = View.VISIBLE
+        binding.idPB.visibility = View.GONE
     }
 }
