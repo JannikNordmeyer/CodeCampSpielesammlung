@@ -179,7 +179,6 @@ class GameHolder : AppCompatActivity() {
                                 } else if (it.value == true) {
                                     //TODO REMATCH (RESET BOARD)
                                     networkSetup(viewmodel)
-                                    MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
                                 }
                             }
                         }
@@ -308,7 +307,7 @@ class GameHolder : AppCompatActivity() {
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
-                    /*val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
+                    val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
                     data_field.child("0").setValue("", { error, ref ->
                         data_field.child("1").setValue("", { error, ref ->
                             data_field.child("2").setValue("", { error, ref ->
@@ -319,6 +318,9 @@ class GameHolder : AppCompatActivity() {
                                                 data_field.child("7").setValue("", { error, ref ->
                                                     data_field.child("8").setValue("", { error, ref ->
                                                         viewmodel.logic.networkBoardToLocalBoard()
+                                                        if (MyApplication.networkSetupComplete) {
+                                                            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
+                                                        }
                                                         Log.d(TAG, "NETWORK SETUP BOARD UPDATE")
                                                     })
                                                 })
@@ -328,9 +330,9 @@ class GameHolder : AppCompatActivity() {
                                 })
                             })
                         })
-                    })*/
+                    })
 
-                    MyApplication.myRef.child("data").child(MyApplication.code).runTransaction(object : Transaction.Handler {
+                    /*MyApplication.myRef.child("data").child(MyApplication.code).runTransaction(object : Transaction.Handler {
                         override fun doTransaction(currentData: MutableData): Transaction.Result {
                             for (i in 0..8) {
                                 currentData.child("Field").child(i.toString()).value = ""
@@ -344,9 +346,10 @@ class GameHolder : AppCompatActivity() {
                             currentData: DataSnapshot?
                         ) {
                             Log.d(TAG, "COMPLETED")
+                            (viewmodel as TicTacToeViewModel).logic.networkBoardToLocalBoard()
                         }
 
-                    })
+                    })*/
 
                     if (!MyApplication.isCodeMaker) {
                         (viewmodel as TicTacToeViewModel).logic.player = "O"
