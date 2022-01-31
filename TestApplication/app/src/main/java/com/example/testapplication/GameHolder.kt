@@ -318,9 +318,11 @@ class GameHolder : AppCompatActivity() {
                                                 data_field.child("7").setValue("", { error, ref ->
                                                     data_field.child("8").setValue("", { error, ref ->
                                                         viewmodel.logic.networkBoardToLocalBoard()
+                                                        Log.d(TAG, MyApplication.networkSetupComplete.toString())
                                                         if (MyApplication.networkSetupComplete) {
                                                             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
                                                         }
+                                                        MyApplication.networkSetupComplete = true
                                                         Log.d(TAG, "NETWORK SETUP BOARD UPDATE")
                                                     })
                                                 })

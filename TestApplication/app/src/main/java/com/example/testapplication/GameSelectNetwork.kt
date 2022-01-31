@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener
 class GameSelectNetwork : AppCompatActivity() {
     private lateinit var binding: ActivityGameSelectNetworkBinding
     var host : Boolean = false
+    private val TAG = GameSelectNetwork::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,7 @@ class GameSelectNetwork : AppCompatActivity() {
         setContentView(binding.root)
 
         fun startGame(){
+            Log.d(TAG, "#### START GAME ####")
             if(MyApplication.onlineMode) {
                 MyApplication.myTurn = MyApplication.isCodeMaker
                 MyApplication.networkSetupComplete = false
@@ -50,8 +52,10 @@ class GameSelectNetwork : AppCompatActivity() {
                 if (error == null) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener (object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            startGame()
-                            stopLoad()
+                            if (snapshot.value != null) {
+                                startGame()
+                                stopLoad()
+                            }
                         }
 
                         override fun onCancelled(error: DatabaseError) {
@@ -74,7 +78,9 @@ class GameSelectNetwork : AppCompatActivity() {
                 if (error == null) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Host").addValueEventListener (object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            startGame()
+                            if (snapshot.value != null) {
+                                startGame()
+                            }
                         }
 
                         override fun onCancelled(error: DatabaseError) {
