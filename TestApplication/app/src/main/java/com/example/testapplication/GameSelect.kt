@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -13,6 +14,7 @@ import com.google.firebase.database.DatabaseReference
 
 class GameSelect : AppCompatActivity() {
 
+    private val TAG = GameSelect::class.java.simpleName
     private lateinit var binding: ActivityGameSelectBinding
 
     fun startGame(){
@@ -38,6 +40,7 @@ class GameSelect : AppCompatActivity() {
 
         binding.ButtonLogout.setOnClickListener(){
             FirebaseAuth.getInstance().signOut()
+            currentuser = null
             binding.TextViewLoginStatus.setText("You are not currently logged in.")
         }
 
@@ -75,6 +78,19 @@ class GameSelect : AppCompatActivity() {
 
             val intent = Intent(this, Login::class.java);
             startActivity(intent)
+        }
+
+        binding.FriendsButton.setOnClickListener(){
+
+            Log.d(TAG, "AAA")
+            if(currentuser != null) {
+                val intent = Intent(this, FriendsList::class.java);
+                startActivity(intent)
+                }
+            else{
+                Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
+
+            }
 
         }
 

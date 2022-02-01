@@ -13,6 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TestApplication">
         <activity
+            android:name=".FriendsListViewModel"
+            android:exported="false" />
+        <activity
+            android:name=".FriendsList"
+            android:exported="false" />
+        <activity
             android:name=".GameHolder"
             android:exported="false" />
         <activity
