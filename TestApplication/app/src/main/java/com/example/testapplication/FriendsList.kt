@@ -3,6 +3,8 @@ package com.example.testapplication
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapplication.databinding.ActivityFriendsBinding
@@ -18,20 +20,23 @@ class FriendsList : AppCompatActivity() {
 
     private lateinit var newRecyclerView : RecyclerView
     private lateinit var newArrayList : ArrayList<Friend>
-    lateinit var names : Array<String>
+    lateinit var viewModel : FriendsListViewModel
+    lateinit var names : ArrayList<String>
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        Log.d(TAG, "AAA")
+        val viewmodel = ViewModelProvider(this).get(FriendsListViewModel::class.java)
+
+        names = arrayListOf()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friends)
 
         binding = ActivityFriendsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        names = arrayOf("A", "B", "C")
 
         newRecyclerView = binding.RecyclerViewFriends
         newRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -39,7 +44,7 @@ class FriendsList : AppCompatActivity() {
         newArrayList = ArrayList<Friend>()
         getUserData()
 
-        newRecyclerView.adapter = ListAdapter(newArrayList)
+        //newRecyclerView.adapter = ListAdapter(newArrayList)
 
 
         binding.IDButton.setOnClickListener{
@@ -50,38 +55,111 @@ class FriendsList : AppCompatActivity() {
             MyApplication.myRef.child("FriendCodes").child(currentUser).get().addOnSuccessListener {
 
                 if(it != null){
-                    
-                    MyApplication.myRef.child("FriendCodes").child(currentUser).setValue(currentUser)
+
+                    MyApplication.myRef.child("FriendCodes").child(currentUser).setValue(FirebaseAuth.getInstance().currentUser!!.email)
                 }
+            }
+            binding.CodeField.setText(currentUser)
+        }
 
-                MyApplication.myRef.child("FriendCodes").child(currentUser).get().addOnSuccessListener {
+        binding.RequestButton.setOnClickListener{
 
-                    if(it != null){
+            val requestID = binding.CodeField.text
 
-                        binding.CodeField.setText(it.value.toString())
-                    }
+            if(requestID.toString() == FirebaseAuth.getInstance().currentUser!!.uid){
 
+                Toast.makeText(this, "You cannot use your own ID.", Toast.LENGTH_SHORT ).show()
+                return@setOnClickListener
+            }
+            if(requestID.toString() == ""){
+                return@setOnClickListener
+            }
+
+            MyApplication.myRef.child("FriendCodes").child(requestID.toString()).get().addOnSuccessListener {
+
+                if(it != null && it.value != null){
+
+                    binding.CodeField.setText(it.value.toString())
+
+                    MyApplication.myRef.child("Friends").child(requestID.toString()).setValue(FirebaseAuth.getInstance().currentUser!!.uid)
+                    binding.CodeField.setText("")
+                    getUserData()
+                    Toast.makeText(this, "Added Friend.", Toast.LENGTH_SHORT ).show()
+                }
+                else{
+
+                    Toast.makeText(this, "Invalid Friend ID.", Toast.LENGTH_SHORT ).show()
 
                 }
-
-
 
             }
 
 
 
-        }
+
+            }
 
     }
 
     private fun getUserData() {
 
-        for(i in names.indices){
+        MyApplication.myRef.child("Friends").get().addOnSuccessListener {
+
+            if (it != null) {
+
+                val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+
+                it.children.forEach(){
+
+                    if(it.value.toString() == currentUser){
+
+                        MyApplication.myRef.child("FriendCodes").child(it.key.toString()).get().addOnSuccessListener {
+
+                            if (it != null) {
+
+                                names.add(it.value.toString())
+                                updateRecyclerView()
+
+                            }
+                        }
+
+                    }
+                    if(it.key.toString() == currentUser){
+
+                        MyApplication.myRef.child("FriendCodes").child(it.value.toString()).get().addOnSuccessListener {
+
+                            if (it != null) {
+
+                                names.add(it.value.toString())
+                                updateRecyclerView()
+
+                            }
+                        }
+
+                    }
+
+                }
+
+                updateRecyclerView()
+
+            }
+
+        }
+
+    }
+
+    private fun updateRecyclerView(){
+
+        newArrayList.clear()
+        var i = 0
+        while(i < names.size){
 
             val friend = Friend(names[i])
             newArrayList.add(friend)
+            i += 1
 
         }
+        newRecyclerView.adapter = ListAdapter(newArrayList)
     }
 
 
