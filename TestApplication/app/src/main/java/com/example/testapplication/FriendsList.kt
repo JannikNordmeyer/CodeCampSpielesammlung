@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapplication.databinding.ActivityFriendsBinding
 import com.example.testapplication.databinding.ActivityLoginBinding
+import com.google.firebase.auth.FirebaseAuth
+import kotlin.random.Random
 
 class FriendsList : AppCompatActivity() {
 
@@ -39,6 +41,37 @@ class FriendsList : AppCompatActivity() {
 
         newRecyclerView.adapter = ListAdapter(newArrayList)
 
+
+        binding.IDButton.setOnClickListener{
+
+
+            val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+
+            MyApplication.myRef.child("FriendCodes").child(currentUser).get().addOnSuccessListener {
+
+                if(it != null){
+                    
+                    MyApplication.myRef.child("FriendCodes").child(currentUser).setValue(currentUser)
+                }
+
+                MyApplication.myRef.child("FriendCodes").child(currentUser).get().addOnSuccessListener {
+
+                    if(it != null){
+
+                        binding.CodeField.setText(it.value.toString())
+                    }
+
+
+                }
+
+
+
+            }
+
+
+
+        }
+
     }
 
     private fun getUserData() {
@@ -50,4 +83,6 @@ class FriendsList : AppCompatActivity() {
 
         }
     }
+
+
 }
