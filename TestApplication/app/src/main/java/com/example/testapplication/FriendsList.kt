@@ -44,8 +44,6 @@ class FriendsList : AppCompatActivity() {
         newArrayList = ArrayList<Friend>()
         getUserData()
 
-        //newRecyclerView.adapter = ListAdapter(newArrayList)
-
 
         binding.IDButton.setOnClickListener{
 
@@ -148,7 +146,7 @@ class FriendsList : AppCompatActivity() {
 
     }
 
-    private fun updateRecyclerView(){
+    fun updateRecyclerView(){
 
         newArrayList.clear()
         var i = 0
