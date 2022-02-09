@@ -121,7 +121,7 @@ class FriendsList : AppCompatActivity() {
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").get().addOnSuccessListener {
 
             if (it != null) {
-
+                names.clear()
                 val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
 
                 it.children.forEach(){
