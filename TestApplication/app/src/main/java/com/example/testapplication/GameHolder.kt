@@ -299,8 +299,8 @@ class GameHolder : AppCompatActivity() {
     //TODO FIX LEAVE JANK
     fun exitGame() {
         //cleanup
-        MyApplication.myRef.child("Users").child(SplitString(MyApplication.guestID)).setValue("")
-        MyApplication.myRef.child("Users").child(SplitString(MyApplication.hostID)).setValue("")
+        MyApplication.myRef.child("Users").child(SplitString(MyApplication.guestID)).child("Request").setValue("")
+        MyApplication.myRef.child("Users").child(SplitString(MyApplication.hostID)).child("Request").setValue("")
         MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
     }
 
