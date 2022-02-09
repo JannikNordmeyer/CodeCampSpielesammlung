@@ -55,11 +55,11 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
 
                             if(it.key == friendID){
 
-                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").child(currentUserID).removeValue().addOnSuccessListener {
+                                MyApplication.myRef.child("Users").child(SplitString(currentUser.toString())).child("Friends").child(friendID).removeValue().addOnSuccessListener {
 
                                     Toast.makeText(parent.context, "BBB", Toast.LENGTH_SHORT).show()
                                 }
-                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").child(currentUserID).removeValue()
+                                MyApplication.myRef.child("Users").child(SplitString(friendName.toString())).child("Friends").child(currentUserID).removeValue()
 
                             }
 
