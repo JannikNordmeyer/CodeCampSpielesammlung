@@ -25,6 +25,7 @@ class FriendsList : AppCompatActivity() {
     private lateinit var newArrayList : ArrayList<Friend>
     lateinit var viewModel : FriendsListViewModel
     lateinit var names : ArrayList<String>
+    lateinit var ids : ArrayList<String>
 
 
 
@@ -33,6 +34,7 @@ class FriendsList : AppCompatActivity() {
         val viewmodel = ViewModelProvider(this).get(FriendsListViewModel::class.java)
 
         names = arrayListOf()
+        ids = arrayListOf()
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friends)
@@ -122,11 +124,13 @@ class FriendsList : AppCompatActivity() {
 
             if (it != null) {
                 names.clear()
+                ids.clear()
                 val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
 
                 it.children.forEach(){
 
                     names.add(it.value.toString())
+                    ids.add(it.key.toString())
 
                 }
 
@@ -144,7 +148,7 @@ class FriendsList : AppCompatActivity() {
         var i = 0
         while(i < names.size){
 
-            val friend = Friend(names[i])
+            val friend = Friend(names[i], ids[i])
             newArrayList.add(friend)
             i += 1
 
