@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.testapplication.databinding.ActivityFriendsBinding
 import com.example.testapplication.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ChildEventListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import kotlin.random.Random
 
 class FriendsList : AppCompatActivity() {
@@ -68,11 +71,12 @@ class FriendsList : AppCompatActivity() {
 
             MyApplication.myRef.child("FriendCodes").child(requestID.toString()).get().addOnSuccessListener {
 
-                if(it != null && it.value != null){
+                if(it != null){
 
                     binding.CodeField.setText(it.value.toString())
 
-                    MyApplication.myRef.child("Friends").child(requestID.toString()).setValue(FirebaseAuth.getInstance().currentUser!!.uid)
+                    MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").child(requestID.toString()).setValue(it.value)
+                    MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Friends").child(FirebaseAuth.getInstance().currentUser!!.uid).setValue(FirebaseAuth.getInstance().currentUser!!.email.toString())
                     binding.CodeField.setText("")
                     getUserData()
                     Toast.makeText(this, "Added Friend.", Toast.LENGTH_SHORT ).show()
@@ -85,16 +89,36 @@ class FriendsList : AppCompatActivity() {
 
             }
 
-
-
-
         }
+
+        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                getUserData()
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                getUserData()
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
 
     }
 
     private fun getUserData() {
 
-        MyApplication.myRef.child("Friends").get().addOnSuccessListener {
+        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").get().addOnSuccessListener {
 
             if (it != null) {
 
@@ -102,32 +126,7 @@ class FriendsList : AppCompatActivity() {
 
                 it.children.forEach(){
 
-                    if(it.value.toString() == currentUser){
-
-                        MyApplication.myRef.child("FriendCodes").child(it.key.toString()).get().addOnSuccessListener {
-
-                            if (it != null) {
-
-                                names.add(it.value.toString())
-                                updateRecyclerView()
-
-                            }
-                        }
-
-                    }
-                    if(it.key.toString() == currentUser){
-
-                        MyApplication.myRef.child("FriendCodes").child(it.value.toString()).get().addOnSuccessListener {
-
-                            if (it != null) {
-
-                                names.add(it.value.toString())
-                                updateRecyclerView()
-
-                            }
-                        }
-
-                    }
+                    names.add(it.value.toString())
 
                 }
 
@@ -151,6 +150,12 @@ class FriendsList : AppCompatActivity() {
 
         }
         newRecyclerView.adapter = ListAdapter(newArrayList)
+    }
+
+    //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
+    fun SplitString(str:String): String{
+        var split=str.split("@")
+        return split[0]
     }
 
 
