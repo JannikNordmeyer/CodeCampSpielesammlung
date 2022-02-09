@@ -112,6 +112,7 @@ class GameHolder : AppCompatActivity() {
             //Setup field, listener and logic for the variable that controls whose turn it is
             MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        //TODO: NULL CHECK(?)
                         Log.d(TAG, "ACTIVE PLAYER LISTENER TRIGGERED")
                         val data_activePlayer = snapshot.value.toString()
                         Log.d(TAG, data_activePlayer)
@@ -308,7 +309,7 @@ class GameHolder : AppCompatActivity() {
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
-                    val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
+                    /*val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
                     data_field.child("0").setValue("", { error, ref ->
                         data_field.child("1").setValue("", { error, ref ->
                             data_field.child("2").setValue("", { error, ref ->
@@ -333,7 +334,17 @@ class GameHolder : AppCompatActivity() {
                                 })
                             })
                         })
-                    })
+                    })*/
+                    val childUpdates = hashMapOf<String, Any>("0" to "", "1" to "", "2" to "", "3" to "", "4" to "", "5" to "", "6" to "", "7" to "", "8" to "")
+
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener {
+                        viewmodel.logic.networkBoardToLocalBoard()
+                        if (MyApplication.networkSetupComplete) {
+                            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
+                        }
+                        MyApplication.networkSetupComplete = true
+                    }
+
 
                     /*MyApplication.myRef.child("data").child(MyApplication.code).runTransaction(object : Transaction.Handler {
                         override fun doTransaction(currentData: MutableData): Transaction.Result {

@@ -71,7 +71,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     fun networkBoardToLocalBoard(){
         Log.d(TAG, "networkBoardToLocalBoard")
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
-        field_data.child("0").get().addOnSuccessListener {
+        /*field_data.child("0").get().addOnSuccessListener {
             board[0][0] = it.value.toString()
             field_data.child("1").get().addOnSuccessListener {
                 board[0][1] = it.value.toString()
@@ -99,6 +99,24 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                     }
                 }
             }
+        }*/
+
+        field_data.get().addOnSuccessListener {
+            for (child in it.children) {
+                when(child.key) {
+                    "0" -> {board[0][0] = child.value as String}
+                    "1" -> {board[0][1] = child.value as String}
+                    "2" -> {board[0][2] = child.value as String}
+                    "3" -> {board[1][0] = child.value as String}
+                    "4" -> {board[1][1] = child.value as String}
+                    "5" -> {board[1][2] = child.value as String}
+                    "6" -> {board[2][0] = child.value as String}
+                    "7" -> {board[2][1] = child.value as String}
+                    "8" -> {board[2][2] = child.value as String}
+                    else -> {board[0][0] = child.value as String}
+                }
+            }
+            liveboard.value = board
         }
     }
 
@@ -106,7 +124,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     // Whenever we update the network board, the opponent's listener will be triggered to update the network board aswell.
     fun localBoardToNetworkBoard(){
         Log.d(TAG, "LOCALBOARDTONETWORKBOARD TRIGGERED")
-        val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
+        /*val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
         field_data.child("0").setValue(board[0][0], { error, ref ->
             field_data.child("1").setValue(board[0][1], { error, ref ->
                 field_data.child("2").setValue(board[0][2], { error, ref ->
@@ -126,7 +144,13 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                     })
                 })
             })
-        })
+        })*/
+
+        val childUpdates = hashMapOf<String, Any>("0" to board[0][0], "1" to board[0][1], "2" to board[0][2], "3" to board[1][0], "4" to board[1][1], "5" to board[1][2], "6" to board[2][0], "7" to board[2][1], "8" to board[2][2])
+
+        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
+        }
     }
 
     fun checkField(): Boolean {
