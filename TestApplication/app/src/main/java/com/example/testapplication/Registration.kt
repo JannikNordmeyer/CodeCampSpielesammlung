@@ -50,6 +50,7 @@ class Registration : AppCompatActivity() {
                         if (task.isSuccessful) {
 
                             val firebaseUser: FirebaseUser = task.result!!.user!!
+                            MyApplication.myRef.child("FriendCodes").child(FirebaseAuth.getInstance().uid.toString()).setValue(FirebaseAuth.getInstance().currentUser!!.email)
                             Toast.makeText(this, "Registration Successful.", Toast.LENGTH_SHORT ).show()
 
 

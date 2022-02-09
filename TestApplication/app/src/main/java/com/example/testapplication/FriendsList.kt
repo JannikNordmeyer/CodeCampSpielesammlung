@@ -50,13 +50,6 @@ class FriendsList : AppCompatActivity() {
 
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
 
-            MyApplication.myRef.child("FriendCodes").child(currentUser).get().addOnSuccessListener {
-
-                if(it != null){
-
-                    MyApplication.myRef.child("FriendCodes").child(currentUser).setValue(FirebaseAuth.getInstance().currentUser!!.email)
-                }
-            }
             binding.CodeField.setText(currentUser)
         }
 
@@ -95,7 +88,7 @@ class FriendsList : AppCompatActivity() {
 
 
 
-            }
+        }
 
     }
 
