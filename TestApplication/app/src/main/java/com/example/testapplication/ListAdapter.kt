@@ -38,7 +38,6 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
                     val currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
                     val friendName = itemView.findViewById<TextView>(R.id.FriendName).text
                     var friendID = ""
-                    Toast.makeText(parent.context, "AAA", Toast.LENGTH_SHORT).show()
 
                     it.children.forEach(){
 
@@ -57,7 +56,6 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
 
                                 MyApplication.myRef.child("Users").child(SplitString(currentUser.toString())).child("Friends").child(friendID).removeValue().addOnSuccessListener {
 
-                                    Toast.makeText(parent.context, "BBB", Toast.LENGTH_SHORT).show()
                                 }
                                 MyApplication.myRef.child("Users").child(SplitString(friendName.toString())).child("Friends").child(currentUserID).removeValue()
 
