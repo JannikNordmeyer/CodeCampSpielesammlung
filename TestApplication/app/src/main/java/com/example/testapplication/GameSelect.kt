@@ -45,8 +45,14 @@ class GameSelect : AppCompatActivity() {
         }
 
         binding.ButtonTicTacToe.setOnClickListener(){
+            if(currentuser != null) {
             MyApplication.globalSelectedGame = GameNames.TICTACTOE
             startGame()
+            }
+            else{
+                Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
+
+            }
         }
 
         binding.ButtonPlaceholderSpiel1.setOnClickListener(){
