@@ -55,8 +55,13 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
 
+<<<<<<< Updated upstream
+=======
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
 
+    implementation 'com.jjoe64:graphview:4.2.2'
+
+>>>>>>> Stashed changes
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

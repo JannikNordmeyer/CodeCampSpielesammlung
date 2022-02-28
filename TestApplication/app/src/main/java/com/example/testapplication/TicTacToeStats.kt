@@ -8,6 +8,11 @@ import android.view.ViewGroup
 import com.example.testapplication.databinding.FragmentTicTacToeStatsBinding
 import com.example.testapplication.databinding.FragmentTictactoeBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
+
+
+
 
 
 class TicTacToeStats : Fragment() {
@@ -36,21 +41,34 @@ class TicTacToeStats : Fragment() {
 
                 var winCount = 0.0
                 var winPer = 0.0
+
+                var data = arrayOf<DataPoint>()
+
                 it.children.forEach(){
 
                     if(it.value.toString().toInt() > 0){
 
                         winCount += 1
                         winPer = winCount / it.value.toString().toFloat()
+                        data = data.plus(DataPoint(winCount, winPer))
                     }
 
-
                 }
-
                 binding.winPercentageText.setText(winPer.toString())
+                val series: LineGraphSeries<DataPoint> = LineGraphSeries(data)
+
+                binding.winGraph.getViewport().setScalable(true);
+                binding.winGraph.getViewport().setScrollable(true);
+                binding.winGraph.getViewport().setScalableY(true);
+                binding.winGraph.getViewport().setScrollableY(true);
+                binding.winGraph.getViewport().setXAxisBoundsManual(true);
+                binding.winGraph.getViewport().setMinX(1.0);
+                binding.winGraph.getViewport().setMaxX(winCount);
 
 
-
+                binding.winGraph.addSeries(series)
+                binding.winGraph.title = "Win Percentage:"
+                binding.winGraph.graphContentHeight
             }
         }
 
