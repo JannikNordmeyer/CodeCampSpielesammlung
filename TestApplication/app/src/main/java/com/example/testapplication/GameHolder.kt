@@ -28,6 +28,9 @@ class GameHolder : AppCompatActivity() {
     lateinit var fragToLoad: Fragment
     lateinit var viewmodel: ViewModel
 
+    lateinit var rematchAlert: AlertDialog
+    lateinit var exitAlert: AlertDialog
+
     //TODO: Needing this function every single time is pretty stupid, find a better solution!
     //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
     fun SplitString(str: String): String {
@@ -40,6 +43,16 @@ class GameHolder : AppCompatActivity() {
         val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
         if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID)
         else networkActivePlayer.setValue(MyApplication.hostID)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(this::rematchAlert.isInitialized){
+            rematchAlert.dismiss()
+        }
+        if(this::exitAlert.isInitialized){
+            exitAlert.dismiss()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -203,7 +216,7 @@ class GameHolder : AppCompatActivity() {
                         }
 
                         if(!isFinishing()) {
-                            build.show()
+                            rematchAlert = build.show()
                         }
                         //MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
                     }
@@ -291,7 +304,7 @@ class GameHolder : AppCompatActivity() {
                                 finish()
                             }
                             if(!isFinishing()) {
-                                build.show()
+                                exitAlert = build.show()
                             }
                         }
                     }
