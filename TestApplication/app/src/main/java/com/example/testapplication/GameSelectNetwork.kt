@@ -45,6 +45,7 @@ class GameSelectNetwork : AppCompatActivity() {
         }
 
         fun networkHostGame(opponent : String){
+            Log.d(TAG, "NETWORK HOST GAME CALLED")
             //Generiere Raum Code
             MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
             MyApplication.isCodeMaker = true
@@ -52,9 +53,10 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.myRef.child("Quickplay").setValue(null)
             MyApplication.onlineMode = true;
             //Markiere mich als Host im Raum
-            Log.d(TAG, "HOSTING GAME")
+            Log.d(TAG, "ADDING LISTENER FOR HOST ENTRY IN ROOM ???")
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
+                    Log.d(TAG, "ADDING LISTENER FOR GUEST ENTRY IN LOBBY")
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener (object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
@@ -75,16 +77,21 @@ class GameSelectNetwork : AppCompatActivity() {
         }
 
         fun networkJoinGame(opponent : String){
+            Log.d(TAG, "####### NETWORK JOIN GAME CALLED #######")
             MyApplication.onlineMode = true;
             //Merke Raum Code
             MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(opponent)/*Host Email*/
             MyApplication.isCodeMaker = false
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child("Quickplay").setValue(null)
-            Log.d(TAG, "JOINING NETWORK GAME")
             //Markiere mich als Guest im Raum
+            Log.d(TAG, "ADDING LISTENER FOR GUEST ENTRY IN ROOM")
+
+            //TODO: Bruder was ist das überhaupt für ein code? Was machen wir hier? Ist das ein crackhead on success listener??
+
             MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
+                    Log.d(TAG, "ADDING LISTENER FOR HOST ENTRY IN ROOM")
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Host").addValueEventListener (object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
@@ -108,7 +115,7 @@ class GameSelectNetwork : AppCompatActivity() {
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null && snapshot.value != "" && host) {
-                    Log.d(TAG, "SOMEONE FOUND MY LOBBY IN QUICKPLAY")
+                    Log.d(TAG, "##### SOMEONE FOUND MY LOBBY: "+snapshot.value.toString()+"######")
                     networkHostGame(snapshot.value as String)
                     //MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(this)
                 }
@@ -120,16 +127,10 @@ class GameSelectNetwork : AppCompatActivity() {
 
         })
 
-        //region TODO: Was ist das? Ist das nicht einfach nur Quickplay?
+        //TODO: Was ist das? Ist das nicht einfach nur Quickplay?
         binding.BtnOnline.setOnClickListener {
 
-            //Old Code v v
-            //val intent = Intent(this, OnlineCodeGeneratorActivity::class.java);
-            //startActivity(intent)
-
-            //startGameOnline()
         }
-        //endregion
 
         binding.BtnOffline.setOnClickListener {
             MyApplication.onlineMode = false
@@ -141,34 +142,34 @@ class GameSelectNetwork : AppCompatActivity() {
             finish()
         }
 
-        //region TODO: Was ist überhaupt dein TicTacToeWithFriend Ding? Deprecated?
         binding.BtnFriend.setOnClickListener {
-
-            //Old Code v v
-            //val intent = Intent(this, TicTacToeWithFriend::class.java);
-            //startActivity(intent)
-
-            //startGameOnline()
+            //TODO: IMPLEMENT
         }
-        //endregion
 
         binding.BtnQuickplay.setOnClickListener {
             startLoad()
+            Log.d(TAG, "####### QUICKPLAY BUTTON PRESSED ########")
+            Log.d(TAG, "ADDING ON SUCCESS LISTENER FOR GETTING QUICKPLAY LOBBY")
             //Hole die Liste von Spielern in der Quickplay Lobby
             MyApplication.myRef.child("Quickplay").get().addOnSuccessListener(this) {
+                Log.d(TAG, "NSIDE ON SUCCESS LISTENER FOR QUICKPLAY LOBBY")
                 if(it.value != null){  //Falls es Spieler gibt...
+                    Log.d(TAG, "FOUND OTHER PLAYER IN QUICKPLAY LOBBY")
                     //Heirate
                     MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
                     MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
                     //Join game
+                    Log.d(TAG, "CALLING NETWORK JOIN GAME FROM QUICKPLAY LISTENER")
                     networkJoinGame(it.value.toString())
                     stopLoad()
                 } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
+                    Log.d(TAG, "NO PLAYERS IN QUICKPLAY LOBBY - BECOME HOST")
                     host = true
                     MyApplication.myRef.child("Quickplay").setValue(FirebaseAuth.getInstance().currentUser!!.email)
                 }
-
+                Log.d(TAG, "QUICKPLAY LOBBY LISTENER END")
             }
+            Log.d(TAG, "####### QUICKPLAY BUTTON CODE END #######")
         }
 
         //Verlasse Quickplay Lobby wenn man als Host Wartet
