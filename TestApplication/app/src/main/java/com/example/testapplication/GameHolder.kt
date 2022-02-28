@@ -272,6 +272,7 @@ class GameHolder : AppCompatActivity() {
                             build.setTitle("Game Over!")
                             build.setMessage("Opponent has left")
                             build.setPositiveButton("OK") { dialog, which ->
+                                exitGame()
                                 finish()
                             }
                             build.show()
