@@ -50,6 +50,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.myRef.child("Quickplay").setValue(null)
             MyApplication.onlineMode = true;
             //Markiere mich als Host im Raum
+            Log.d(TAG, "HOSTING GAME")
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener (object : ValueEventListener {
@@ -57,7 +58,7 @@ class GameSelectNetwork : AppCompatActivity() {
                             if (snapshot.value != null) {
                                 startGame()
                                 stopLoad()
-                                updateStatistics()
+                                //updateStatistics()
                             }
                         }
 
@@ -76,6 +77,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.isCodeMaker = false
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child("Quickplay").setValue(null)
+            Log.d(TAG, "JOINING NETWORK GAME")
             //Markiere mich als Guest im Raum
             MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
@@ -83,7 +85,7 @@ class GameSelectNetwork : AppCompatActivity() {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
                                 startGame()
-                                updateStatistics()
+                                //updateStatistics()
                             }
                         }
 
@@ -100,6 +102,7 @@ class GameSelectNetwork : AppCompatActivity() {
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null && snapshot.value != "" && host)
+                    Log.d(TAG, "SOMEONE FOUND MY LOBBY IN QUICKPLAY")
                     networkHostGame(snapshot.value as String)
             }
 
@@ -170,15 +173,11 @@ class GameSelectNetwork : AppCompatActivity() {
 
     private fun updateStatistics() {
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener {
-
             if(it != null){
-
                 var wins = it.value.toString().toInt()
                 wins += 1
                 MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(wins)
-
             }
-
         }
     }
 
