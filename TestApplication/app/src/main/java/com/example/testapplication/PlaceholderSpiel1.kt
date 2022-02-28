@@ -14,7 +14,16 @@ import com.esri.arcgisruntime.mapping.BasemapStyle
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.esri.arcgisruntime.mapping.view.MapView
 
+import android.content.Context
+import java.io.IOException
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.InputStream
+
 class PlaceholderSpiel1 : Fragment() {
+    private val TAG = PlaceholderSpiel1::class.java.simpleName
+
     private val fragmentPlaceholderspiel1Binding by lazy {
         FragmentPlaceholderspiel1Binding.inflate(layoutInflater)
     }
@@ -38,6 +47,9 @@ class PlaceholderSpiel1 : Fragment() {
         setApiKeyForApp()
 
         setupMap()
+
+        Log.d(TAG, resources.openRawResource(R.raw.kassel).toString())
+
 
         return view
     }
@@ -77,6 +89,18 @@ class PlaceholderSpiel1 : Fragment() {
 
         // set the viewpoint, Viewpoint(latitude, longitude, scale)
         mapView.setViewpoint(Viewpoint(34.0270, -118.8050, 72000.0))
+    }
+
+    fun readJSONFromAsset(): String? {
+        var json: String? = null
+        try {
+            val  inputStream:InputStream = resources.openRawResource(R.raw.kassel)
+            json = inputStream.bufferedReader().use{it.readText()}
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            return null
+        }
+        return json
     }
 
 
