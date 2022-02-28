@@ -193,4 +193,13 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.9" />
 
+    <Button
+        android:id="@+id/statsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Statistik"
+        app:layout_constraintBottom_toTopOf="@+id/TextViewLoginStatus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

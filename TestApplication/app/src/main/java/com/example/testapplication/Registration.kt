@@ -51,8 +51,17 @@ class Registration : AppCompatActivity() {
 
                             val firebaseUser: FirebaseUser = task.result!!.user!!
                             MyApplication.myRef.child("FriendCodes").child(FirebaseAuth.getInstance().uid.toString()).setValue(FirebaseAuth.getInstance().currentUser!!.email)
-                            Toast.makeText(this, "Registration Successful.", Toast.LENGTH_SHORT ).show()
 
+                            //Anlegen der Zähler für die Statistiken
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(0)
+
+                            val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").push().getKey()
+                            val map: MutableMap<String, Any> = HashMap()
+                            map[key!!] = 0
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").updateChildren(map)
+
+
+                            Toast.makeText(this, "Registration Successful.", Toast.LENGTH_SHORT ).show()
 
                         }
                         else{
@@ -72,5 +81,10 @@ class Registration : AppCompatActivity() {
             }
 
 
+    }
+
+    fun SplitString(str:String): String{
+        var split=str.split("@")
+        return split[0]
     }
 }

@@ -44,6 +44,18 @@ class GameSelect : AppCompatActivity() {
             binding.TextViewLoginStatus.setText("You are not currently logged in.")
         }
 
+        binding.statsButton.setOnClickListener(){
+
+            if(currentuser != null) {
+                val intent = Intent(this, Statistics::class.java);
+                startActivity(intent)
+            }
+            else{
+                Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
+
+            }
+        }
+
         binding.ButtonTicTacToe.setOnClickListener(){
             if(currentuser != null) {
             MyApplication.globalSelectedGame = GameNames.TICTACTOE
@@ -88,7 +100,6 @@ class GameSelect : AppCompatActivity() {
 
         binding.FriendsButton.setOnClickListener(){
 
-            Log.d(TAG, "AAA")
             if(currentuser != null) {
                 val intent = Intent(this, FriendsList::class.java);
                 startActivity(intent)

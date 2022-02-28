@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.example.testapplication.databinding.ActivityGameSelectNetworkBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -56,6 +57,7 @@ class GameSelectNetwork : AppCompatActivity() {
                             if (snapshot.value != null) {
                                 startGame()
                                 stopLoad()
+                                updateStatistics()
                             }
                         }
 
@@ -81,6 +83,7 @@ class GameSelectNetwork : AppCompatActivity() {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
                                 startGame()
+                                updateStatistics()
                             }
                         }
 
@@ -159,6 +162,20 @@ class GameSelectNetwork : AppCompatActivity() {
             stopLoad()
         }
 
+    }
+
+    private fun updateStatistics() {
+        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener {
+
+            if(it != null){
+
+                var wins = it.value.toString().toInt()
+                wins += 1
+                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(wins)
+
+            }
+
+        }
     }
 
     //cant save @ as key in the database so this function returns only the first part of the email that is used as the key instead

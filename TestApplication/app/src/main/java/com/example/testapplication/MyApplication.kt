@@ -26,6 +26,11 @@ class MyApplication : Application() {
 
         lateinit var database: FirebaseDatabase
         lateinit var myRef: DatabaseReference
+
+        fun SplitString(str:String): String{
+            var split=str.split("@")
+            return split[0]
+        }
     }
 
 
