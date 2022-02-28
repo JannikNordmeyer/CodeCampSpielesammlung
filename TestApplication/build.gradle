@@ -16,6 +16,18 @@ buildscript {
     }
 }
 
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+
+        maven {
+            url 'https://esri.jfrog.io/artifactory/arcgis'
+        }
+
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
