@@ -59,6 +59,7 @@ class GameSelectNetwork : AppCompatActivity() {
                                 Log.d(TAG,"START GAME FROM HOSTING GAME FUNCTION")
                                 startGame()
                                 stopLoad()
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").removeEventListener(this)
                                 //updateStatistics()
                             }
                         }
@@ -87,6 +88,7 @@ class GameSelectNetwork : AppCompatActivity() {
                             if (snapshot.value != null) {
                                 Log.d(TAG,"START GAME FROM JOINING GAME")
                                 startGame()
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Host").removeEventListener(this)
                                 //updateStatistics()
                             }
                         }
