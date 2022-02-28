@@ -46,6 +46,7 @@ class GameHolder : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        Log.d(TAG, "##################### GAME HOLDER "+android.os.Process.myTid().toString()+" FUCKING DIED ####################")
         super.onDestroy()
         if(this::rematchAlert.isInitialized){
             rematchAlert.dismiss()
@@ -173,7 +174,7 @@ class GameHolder : AppCompatActivity() {
             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
-                        Log.d(TAG, "WINNER TRIGGERED")
+                        Log.d(TAG, +android.os.Process.myTid().toString()+": WINNER TRIGGERED")
                         val value = snapshot.value
                         val build = AlertDialog.Builder(this@GameHolder);
                         build.setCancelable(false)
