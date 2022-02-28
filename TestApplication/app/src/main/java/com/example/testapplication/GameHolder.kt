@@ -122,14 +122,14 @@ class GameHolder : AppCompatActivity() {
         if (MyApplication.onlineMode && !MyApplication.networkSetupComplete) {
             //Network setup work independent of game
             //Get and save ID of host and guest as a global control var
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Host").get().addOnSuccessListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Host").get().addOnSuccessListener(this) {
                 MyApplication.hostID = it.value.toString()
                 Log.d(TAG, MyApplication.hostID)
                 //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
                 if (MyApplication.isCodeMaker)
                     MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
             }
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").get().addOnSuccessListener {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").get().addOnSuccessListener(this) {
                 MyApplication.guestID = it.value.toString()
             }
 
@@ -384,7 +384,7 @@ class GameHolder : AppCompatActivity() {
                     })*/
                     val childUpdates = hashMapOf<String, Any>("0" to "", "1" to "", "2" to "", "3" to "", "4" to "", "5" to "", "6" to "", "7" to "", "8" to "")
 
-                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener(this) {
                         viewmodel.logic.networkBoardToLocalBoard()
                         if (MyApplication.networkSetupComplete) {
                             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)

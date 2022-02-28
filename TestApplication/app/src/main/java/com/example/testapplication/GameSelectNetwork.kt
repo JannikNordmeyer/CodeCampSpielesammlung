@@ -1,5 +1,6 @@
 package com.example.testapplication
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.example.testapplication.databinding.ActivityGameSelectNetworkBinding
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -153,7 +155,7 @@ class GameSelectNetwork : AppCompatActivity() {
         binding.BtnQuickplay.setOnClickListener {
             startLoad()
             //Hole die Liste von Spielern in der Quickplay Lobby
-            MyApplication.myRef.child("Quickplay").get().addOnSuccessListener {
+            MyApplication.myRef.child("Quickplay").get().addOnSuccessListener(this) {
                 if(it.value != null){  //Falls es Spieler gibt...
                     //Heirate
                     MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
@@ -179,7 +181,7 @@ class GameSelectNetwork : AppCompatActivity() {
     }
 
     private fun updateStatistics() {
-        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener {
+        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener(this) {
             if(it != null){
                 var wins = it.value.toString().toInt()
                 wins += 1
