@@ -39,4 +39,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/winGraph"
+        android:layout_width="match_parent"
+        android:layout_height="200dip"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:seriesType="line"
+        app:seriesColor="#ee0000"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
