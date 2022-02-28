@@ -125,6 +125,10 @@ class GameSelectNetwork : AppCompatActivity() {
             startGame()
         }
 
+        binding.buttonreturn.setOnClickListener{
+            finish()
+        }
+
         //region TODO: Was ist überhaupt dein TicTacToeWithFriend Ding? Deprecated?
         binding.BtnFriend.setOnClickListener {
 
@@ -189,6 +193,7 @@ class GameSelectNetwork : AppCompatActivity() {
         binding.BtnFriend.visibility    = View.GONE
         binding.BtnOffline.visibility   = View.GONE
         binding.BtnQuickplay.visibility = View.GONE
+        binding.buttonreturn.visibility = View.GONE
         //binding.TVHead.visibility       = View.GONE
         binding.PBLoading.visibility    = View.VISIBLE
         binding.BtnCancel.visibility    = View.VISIBLE
@@ -199,6 +204,7 @@ class GameSelectNetwork : AppCompatActivity() {
         binding.BtnFriend.visibility    = View.VISIBLE
         binding.BtnOffline.visibility   = View.VISIBLE
         binding.BtnQuickplay.visibility = View.VISIBLE
+        binding.buttonreturn.visibility = View.VISIBLE
         //binding.TVHead.visibility       = View.VISIBLE
         binding.PBLoading.visibility    = View.GONE
         binding.BtnCancel.visibility    = View.GONE

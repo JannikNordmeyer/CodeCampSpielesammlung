@@ -51,11 +51,12 @@ class FriendsList : AppCompatActivity() {
 
 
         binding.IDButton.setOnClickListener{
-
-
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-
             binding.CodeField.setText(currentUser)
+        }
+
+        binding.buttonreturn.setOnClickListener{
+            finish()
         }
 
         binding.RequestButton.setOnClickListener{

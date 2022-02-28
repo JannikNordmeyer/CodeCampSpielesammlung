@@ -23,6 +23,7 @@ class MyApplication : Application() {
         var networkSetupComplete = false;
         var isLoading = false
         var Ileft = false;
+        var gameActive = true
 
         lateinit var database: FirebaseDatabase
         lateinit var myRef: DatabaseReference

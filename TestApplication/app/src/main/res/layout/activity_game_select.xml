@@ -10,7 +10,6 @@
         android:id="@+id/ButtonLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         android:text="LOGIN"
@@ -26,7 +25,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
         android:text="LOGOUT"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -40,14 +38,16 @@
         android:id="@+id/TextViewLoginStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:text="You are currently not logged in."
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toTopOf="@+id/guideline7"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline6"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.202" />
 
     <Button
         android:id="@+id/ButtonTicTacToe"
@@ -153,7 +153,7 @@
         android:text="Friends"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ButtonLogin"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.455"
         app:layout_constraintStart_toEndOf="@+id/ButtonLogout"
         app:layout_constraintTop_toTopOf="@+id/guideline7"
         app:layout_constraintVertical_bias="1.0" />
@@ -198,8 +198,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Statistik"
-        app:layout_constraintBottom_toTopOf="@+id/TextViewLoginStatus"
+        app:layout_constraintBottom_toTopOf="@+id/FriendsButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TextViewLoginStatus" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
