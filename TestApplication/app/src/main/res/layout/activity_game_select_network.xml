@@ -20,14 +20,13 @@
         android:textSize="25sp" />
 
     <Button
+        android:id="@+id/BtnOnline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Online (Code)"
-        android:id="@+id/BtnOnline"
         android:layout_below="@id/TVHead"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        />
+        android:text="Online (Code)" />
 
     <Button
         android:id="@+id/BtnFriend"

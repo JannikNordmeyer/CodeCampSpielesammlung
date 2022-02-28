@@ -26,4 +26,6 @@ class MyApplication : Application() {
         lateinit var database: FirebaseDatabase
         lateinit var myRef: DatabaseReference
     }
+
+
 }
