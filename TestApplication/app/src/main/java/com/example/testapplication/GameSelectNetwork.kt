@@ -56,6 +56,7 @@ class GameSelectNetwork : AppCompatActivity() {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener (object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
+                                Log.d(TAG,"START GAME FROM HOSTING GAME FUNCTION")
                                 startGame()
                                 stopLoad()
                                 //updateStatistics()
@@ -84,6 +85,7 @@ class GameSelectNetwork : AppCompatActivity() {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Host").addValueEventListener (object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
+                                Log.d(TAG,"START GAME FROM JOINING GAME")
                                 startGame()
                                 //updateStatistics()
                             }
@@ -101,9 +103,10 @@ class GameSelectNetwork : AppCompatActivity() {
         //Wenn jemand während des wartens in der Quickplay Lobby deine Request animmt, hoste spiel.
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.value != null && snapshot.value != "" && host)
+                if (snapshot.value != null && snapshot.value != "" && host) {
                     Log.d(TAG, "SOMEONE FOUND MY LOBBY IN QUICKPLAY")
                     networkHostGame(snapshot.value as String)
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -125,6 +128,7 @@ class GameSelectNetwork : AppCompatActivity() {
 
         binding.BtnOffline.setOnClickListener {
             MyApplication.onlineMode = false
+            Log.d(TAG,"START GAME FROM OFFLINE GAME")
             startGame()
         }
 
