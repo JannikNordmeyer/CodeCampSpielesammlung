@@ -265,7 +265,7 @@ class GameHolder : AppCompatActivity() {
             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot.value == ""){
+                        if (snapshot.value == "" && !MyApplication.Ileft){
                             Log.d(TAG, "EXIT TRIGGERED")
                             val build = AlertDialog.Builder(this@GameHolder);
                             build.setCancelable(false)
@@ -289,6 +289,7 @@ class GameHolder : AppCompatActivity() {
 
         binding.ButtonGiveUp.setOnClickListener() {
             if(MyApplication.onlineMode){
+                MyApplication.Ileft = true;
                 exitGame()
             }
             finish()

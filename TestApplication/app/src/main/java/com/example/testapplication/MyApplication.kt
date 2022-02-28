@@ -22,6 +22,7 @@ class MyApplication : Application() {
         var guestID = "null"
         var networkSetupComplete = false;
         var isLoading = false
+        var Ileft = false;
 
         lateinit var database: FirebaseDatabase
         lateinit var myRef: DatabaseReference

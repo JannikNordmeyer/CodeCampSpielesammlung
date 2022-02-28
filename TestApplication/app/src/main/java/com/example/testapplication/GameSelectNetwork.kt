@@ -35,6 +35,7 @@ class GameSelectNetwork : AppCompatActivity() {
             if(MyApplication.onlineMode) {
                 MyApplication.myTurn = MyApplication.isCodeMaker
                 MyApplication.networkSetupComplete = false
+                MyApplication.Ileft = false;
             }
             val intent = Intent(this, GameHolder::class.java)
             startActivity(intent)
