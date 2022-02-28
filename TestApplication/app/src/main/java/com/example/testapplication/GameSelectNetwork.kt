@@ -108,6 +108,7 @@ class GameSelectNetwork : AppCompatActivity() {
                 if (snapshot.value != null && snapshot.value != "" && host) {
                     Log.d(TAG, "SOMEONE FOUND MY LOBBY IN QUICKPLAY")
                     networkHostGame(snapshot.value as String)
+                    MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(this)
                 }
             }
 
