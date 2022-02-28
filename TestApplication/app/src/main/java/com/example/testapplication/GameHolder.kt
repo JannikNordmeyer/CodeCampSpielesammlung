@@ -31,6 +31,12 @@ class GameHolder : AppCompatActivity() {
     lateinit var rematchAlert: AlertDialog
     lateinit var exitAlert: AlertDialog
 
+    lateinit var activePlayerListener: ValueEventListener
+    lateinit var fieldUpdateListener: ValueEventListener
+    lateinit var winnerPlayerListener: ValueEventListener
+    lateinit var remachtListener: ValueEventListener
+    lateinit var exitPlayerListener: ValueEventListener
+
     //TODO: Needing this function every single time is pretty stupid, find a better solution!
     //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
     fun SplitString(str: String): String {
@@ -48,12 +54,20 @@ class GameHolder : AppCompatActivity() {
     override fun onDestroy() {
         Log.d(TAG, "##################### GAME HOLDER "+android.os.Process.myTid().toString()+" FUCKING DIED ####################")
         super.onDestroy()
-        if(this::rematchAlert.isInitialized){
-            rematchAlert.dismiss()
+        if (MyApplication.onlineMode) {
+            if(this::rematchAlert.isInitialized){
+                rematchAlert.dismiss()
+            }
+            if(this::exitAlert.isInitialized){
+                exitAlert.dismiss()
+            }
+            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").removeEventListener(activePlayerListener)
+            MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").removeEventListener(fieldUpdateListener)
+            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").removeEventListener(winnerPlayerListener)
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").removeEventListener(remachtListener)
+            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(exitPlayerListener)
         }
-        if(this::exitAlert.isInitialized){
-            exitAlert.dismiss()
-        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,7 +139,7 @@ class GameHolder : AppCompatActivity() {
             Log.d(TAG, MyApplication.code)
 
             //Setup field, listener and logic for the variable that controls whose turn it is
-            MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addValueEventListener(object : ValueEventListener {
+            activePlayerListener = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         //TODO: NULL CHECK(?)
                         Log.d(TAG, "ACTIVE PLAYER LISTENER TRIGGERED")
@@ -147,7 +161,7 @@ class GameHolder : AppCompatActivity() {
             //TODO: IMPLEMENT THIS
             //Listener that calls the fragment's network field update function if the "FieldUpdate" flag has been turned to true.
             // Also sets the flag back to false once the field has been updated.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
+            fieldUpdateListener = MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null && snapshot.value != false){
                         Log.d(TAG, "Field update")
@@ -171,10 +185,10 @@ class GameHolder : AppCompatActivity() {
             })
 
             //Setup field, listener and logic for the variable that controls who won
-            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
+            winnerPlayerListener = MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
-                        Log.d(TAG, +android.os.Process.myTid().toString()+": WINNER TRIGGERED")
+                        Log.d(TAG, android.os.Process.myTid().toString()+": WINNER TRIGGERED")
                         val value = snapshot.value
                         val build = AlertDialog.Builder(this@GameHolder);
                         build.setCancelable(false)
@@ -230,7 +244,7 @@ class GameHolder : AppCompatActivity() {
                 }
 
             })
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").addValueEventListener(object : ValueEventListener {
+            remachtListener = MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
                         if (snapshot.value == false && MyApplication.isLoading) {
@@ -290,7 +304,7 @@ class GameHolder : AppCompatActivity() {
              */
 
             //setup listener to quit game if Opponent leaves mid-match...
-            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
+            exitPlayerListener = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.value == "" && !MyApplication.Ileft){
