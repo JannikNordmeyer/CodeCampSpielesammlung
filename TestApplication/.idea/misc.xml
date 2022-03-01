@@ -5,10 +5,9 @@
       <map>
         <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_friends.xml" value="0.36666666666666664" />
         <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_friends_list_view_model.xml" value="0.36666666666666664" />
-        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_holder.xml" value="0.33" />
-        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_select_network.xml" value="0.36666666666666664" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_holder.xml" value="0.21197916666666666" />
         <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_online_code_generator.xml" value="0.15625" />
-        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_placeholderspiel1.xml" value="0.20520833333333333" />
+        <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_placeholderspiel1.xml" value="0.33" />
         <entry key="..\:/Dokumente/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_tictactoe.xml" value="0.21197916666666666" />
         <entry key="..\:/Users/Fluury/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_select_network.xml" value="0.3776041666666667" />
         <entry key="..\:/Users/Fluury/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_main_tic_tac_toe_with_friend.xml" value="0.276268115942029" />
@@ -35,10 +34,16 @@
         <entry key="..\:/Users/Jannik/Documents/Uni/CodeCamp/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/friend_card.xml" value="0.2786458333333333" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2703125" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2703125" />
+        <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_friends.xml" value="0.264" />
+        <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_friends_list_view_model.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_holder.xml" value="0.20742753623188406" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_select.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_game_select_network.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_login.xml" value="0.264" />
+        <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_online_code_generator.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_registration.xml" value="0.264" />
+        <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_statistics.xml" value="0.23854166666666668" />
+        <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/activity_test.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_placeholderspiel2.xml" value="0.23854166666666668" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_placeholderspiel3.xml" value="0.23854166666666668" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_placeholderspiel4.xml" value="0.23854166666666668" />
@@ -47,6 +52,7 @@
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_test1.xml" value="0.23854166666666668" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_test2.xml" value="0.23854166666666668" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/fragment_tictactoe.xml" value="0.23854166666666668" />
+        <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/friend_card.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/micha/OneDrive/Desktop/CODE CAMP/CodeCampSpielesammlung/TestApplication/app/src/main/res/layout/tictactoe.xml" value="0.25416666666666665" />
       </map>
     </option>
