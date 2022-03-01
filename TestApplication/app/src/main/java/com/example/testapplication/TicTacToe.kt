@@ -32,6 +32,10 @@ class TicTacToe : Fragment() {
         binding = FragmentTictactoeBinding.inflate(inflater,container,false)
         val view = binding.root
 
+        Log.d(TAG, "#####################################################################")
+        Log.d(TAG, "########## TIC TAC TOE FRAGMENT ONCREATEVIEW EXECUTED ###############")
+        Log.d(TAG, "#####################################################################")
+
         val viewmodel = ViewModelProvider(requireActivity()).get(TicTacToeViewModel::class.java) //Shared Viewmodel w/ GameHolder
         fun updatePrompt(){
             if(viewmodel.logic.winner == null){

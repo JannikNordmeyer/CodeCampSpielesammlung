@@ -57,7 +57,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
                     Log.d(TAG, "ADDING LISTENER FOR GUEST ENTRY IN LOBBY")
-                    MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener (object : ValueEventListener {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener ( object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
                                 Log.d(TAG,"START GAME FROM HOSTING GAME FUNCTION")
