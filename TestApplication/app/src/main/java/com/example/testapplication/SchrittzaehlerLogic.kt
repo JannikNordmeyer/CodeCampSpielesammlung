@@ -3,7 +3,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 
-class PlaceholderSpiel3Logic (){
+class SchrittzaehlerLogic (){
 
     fun networkOnFieldUpdate(data : String?){
         //TODO: Update Field with data received...

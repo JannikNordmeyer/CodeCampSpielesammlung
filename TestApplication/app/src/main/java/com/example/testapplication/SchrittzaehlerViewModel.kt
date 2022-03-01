@@ -2,9 +2,9 @@ package com.example.testapplication
 
 import androidx.lifecycle.ViewModel
 
-class PlaceholderSpiel3ViewModel: ViewModel() {
+class SchrittzaehlerViewModel: ViewModel() {
 
-    var logic = PlaceholderSpiel3Logic()
+    var logic = SchrittzaehlerLogic()
 
     //WEITERER CODE HIER
 

@@ -1,23 +1,18 @@
 package com.example.testapplication
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.os.Build
+import android.content.Context
+import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.util.Range
 import android.view.View
-import android.widget.Toast
-import androidx.constraintlayout.widget.Placeholder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameHolderBinding
-import com.example.testapplication.databinding.FragmentTictactoeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlin.system.exitProcess
 
 class GameHolder : AppCompatActivity() {
 
@@ -106,8 +101,8 @@ class GameHolder : AppCompatActivity() {
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL2")
             }
             GameNames.PLACEHOLDERSPIEL3 -> {
-                fragToLoad = PlaceholderSpiel3()
-                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel3ViewModel::class.java)
+                fragToLoad = Schrittzaehler()
+                viewmodel = ViewModelProvider(this).get(SchrittzaehlerViewModel::class.java)
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL3")
             }
             GameNames.PLACEHOLDERSPIEL4 -> {
@@ -187,7 +182,7 @@ class GameHolder : AppCompatActivity() {
                             is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(data)
+                            is SchrittzaehlerViewModel -> (viewmodel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
                         }
@@ -293,7 +288,7 @@ class GameHolder : AppCompatActivity() {
                                 is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
-                                is PlaceholderSpiel3ViewModel -> (viewmodel as PlaceholderSpiel3ViewModel).logic.networkOnFieldUpdate(data)
+                                is SchrittzaehlerViewModel -> (viewmodel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
                                 is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
                             }
@@ -441,7 +436,7 @@ class GameHolder : AppCompatActivity() {
             }
             is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
             }
-            is PlaceholderSpiel3ViewModel -> { //Your Setup Code here...
+            is SchrittzaehlerViewModel -> { //Your Setup Code here...
             }
             is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
             }
