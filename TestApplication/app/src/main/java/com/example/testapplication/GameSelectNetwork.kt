@@ -26,9 +26,23 @@ class GameSelectNetwork : AppCompatActivity() {
     var host : Boolean = false
     private val TAG = GameSelectNetwork::class.java.simpleName
 
+    private lateinit var quickplayListener: ValueEventListener
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(MyApplication.onlineMode) {
+            Log.d(TAG, "##### GAME SELECT NETWORK DESTROY CALLED #######")
+            if (this::quickplayListener.isInitialized) {
+                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(quickplayListener)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_select_network)
+
+        Log.d(TAG, "##### GAME SELECT NETWORK ON CREATE CALLED #######")
 
         binding = ActivityGameSelectNetworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -112,12 +126,11 @@ class GameSelectNetwork : AppCompatActivity() {
 
         //TODO: App sollte nicht explodieren wenn man nicht eingeloggt ist und offline spielen will
         //Wenn jemand während des wartens in der Quickplay Lobby deine Request animmt, hoste spiel.
-        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
+        quickplayListener = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null && snapshot.value != "" && host) {
                     Log.d(TAG, "##### SOMEONE FOUND MY LOBBY: "+snapshot.value.toString()+"######")
                     networkHostGame(snapshot.value as String)
-                    //MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(this)
                 }
             }
 
