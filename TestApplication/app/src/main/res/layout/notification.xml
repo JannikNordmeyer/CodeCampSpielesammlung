@@ -4,8 +4,37 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
+        android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/applogo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="1dp"
+            android:src="@drawable/pushnotificationslogo" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TITLE"
+            android:textSize="20sp"
+            android:layout_toRightOf="@+id/applogo"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="11dp"/>
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TITLE"
+            android:textSize="15sp"
+            android:layout_toRightOf="@+id/title"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"/>
+
+
+
     </RelativeLayout>
 
 </RelativeLayout>
