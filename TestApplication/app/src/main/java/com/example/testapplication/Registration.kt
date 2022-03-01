@@ -54,12 +54,22 @@ class Registration : AppCompatActivity() {
 
                             //Anlegen der Zähler für die Statistiken
                             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(0)
-
                             val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").push().getKey()
                             val map: MutableMap<String, Any> = HashMap()
                             map[key!!] = 0
                             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").updateChildren(map)
 
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").setValue(0)
+                            val key2: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("Win%").push().getKey()
+                            val map2: MutableMap<String, Any> = HashMap()
+                            map2[key2!!] = 0
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("Win%").updateChildren(map)
+
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").setValue(0)
+                            val key3: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("Win%").push().getKey()
+                            val map3: MutableMap<String, Any> = HashMap()
+                            map3[key3!!] = 0
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("HighScore").updateChildren(map)
 
                             Toast.makeText(this, "Registration Successful.", Toast.LENGTH_SHORT ).show()
 

@@ -1,8 +1,6 @@
 package com.example.testapplication
 
 import android.app.AlertDialog
-import android.content.Context
-import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -95,9 +93,9 @@ class GameHolder : AppCompatActivity() {
                 viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel::class.java)
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
             }
-            GameNames.PLACEHOLDERSPIEL2 -> {
-                fragToLoad = PlaceholderSpiel2()
-                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel2ViewModel::class.java)
+            GameNames.ARITHMETICS -> {
+                fragToLoad = Arithmetics()
+                viewmodel = ViewModelProvider(this).get(ArithmeticsViewModel::class.java)
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL2")
             }
             GameNames.PLACEHOLDERSPIEL3 -> {
@@ -181,8 +179,8 @@ class GameHolder : AppCompatActivity() {
                         when (viewmodel) {
                             is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
                             is SchrittzaehlerViewModel -> (viewmodel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
+                            is ArithmeticsViewModel -> (viewmodel as ArithmeticsViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
                         }
@@ -434,7 +432,7 @@ class GameHolder : AppCompatActivity() {
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
             }
-            is PlaceholderSpiel2ViewModel -> { //Your Setup Code here...
+            is ArithmeticsViewModel -> { //Your Setup Code here...
             }
             is SchrittzaehlerViewModel -> { //Your Setup Code here...
             }
