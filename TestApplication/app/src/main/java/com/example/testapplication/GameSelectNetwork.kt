@@ -50,6 +50,7 @@ class GameSelectNetwork : AppCompatActivity() {
         fun startGame(){
             Log.d(TAG, "#### START GAME ####")
             if(MyApplication.onlineMode) {
+                host = false
                 MyApplication.myTurn = MyApplication.isCodeMaker
                 MyApplication.networkSetupComplete = false
                 MyApplication.Ileft = false;
