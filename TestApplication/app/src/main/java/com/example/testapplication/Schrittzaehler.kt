@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,7 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     private lateinit var binding: FragmentSchrittzaehlerBinding
 
     var running = false
-    var sensorManager:SensorManager? = null
+    lateinit var sensorManager: SensorManager
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
@@ -41,8 +42,10 @@ class Schrittzaehler : Fragment(), SensorEventListener {
 
         if (stepsSensor == null) {
             Toast.makeText(activity, "No Step Counter Sensor !", Toast.LENGTH_SHORT).show()
+            Log.d("StepSensor:","Der Shit läuft nicht")
         } else {
             sensorManager?.registerListener(this, stepsSensor, SensorManager.SENSOR_DELAY_UI)
+            Log.d("StepSensor:","Der Shit läuft")
         }
     }
 
@@ -55,10 +58,13 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
     }
 
+    //Called when sensor detects steps
     override fun onSensorChanged(event: SensorEvent) {
         if (running) {
             binding.viewSchritteCounter.setText("" + event.values[0])
+            Log.d("Schrittzaehler:","Step detected")
         }
+        else Log.d("Schrittzaehler:","Ich spüre, running aber false")
     }
 
 }
