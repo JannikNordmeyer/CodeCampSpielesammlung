@@ -79,7 +79,6 @@ class GameSelectNetwork : AppCompatActivity() {
                                 startGame()
                                 stopLoad()
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").removeEventListener(this)
-                                //updateStatistics()
                             }
                         }
 
@@ -113,7 +112,6 @@ class GameSelectNetwork : AppCompatActivity() {
                                 Log.d(TAG,"START GAME FROM JOINING GAME")
                                 startGame()
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("Host").removeEventListener(this)
-                                //updateStatistics()
                             }
                         }
 
@@ -193,16 +191,6 @@ class GameSelectNetwork : AppCompatActivity() {
             stopLoad()
         }
 
-    }
-
-    private fun updateStatistics() {
-        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener(this) {
-            if(it != null){
-                var wins = it.value.toString().toInt()
-                wins += 1
-                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(wins)
-            }
-        }
     }
 
     //cant save @ as key in the database so this function returns only the first part of the email that is used as the key instead

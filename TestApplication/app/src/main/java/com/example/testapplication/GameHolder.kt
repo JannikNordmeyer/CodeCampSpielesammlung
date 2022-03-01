@@ -37,11 +37,24 @@ class GameHolder : AppCompatActivity() {
     lateinit var remachtListener: ValueEventListener
     lateinit var exitPlayerListener: ValueEventListener
 
+    //Session stat variables
+    var gamesPlayed = 1
+
     //TODO: Needing this function every single time is pretty stupid, find a better solution!
     //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
     fun SplitString(str: String): String {
         var split = str.split("@")
         return split[0]
+    }
+
+    private fun updateStatistics() {
+        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener(this) {
+            if(it != null){
+                var _gamesPlayed = it.value.toString().toInt()
+                _gamesPlayed += gamesPlayed
+                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(_gamesPlayed)
+            }
+        }
     }
 
     //Call this function within games to switch network Turn! //TODO: Actually figure out how to do that instead of copy and pasting it in there
@@ -55,6 +68,9 @@ class GameHolder : AppCompatActivity() {
         Log.d(TAG, "##################### GAME HOLDER "+android.os.Process.myTid().toString()+" FUCKING DIED ####################")
         super.onDestroy()
         if (MyApplication.onlineMode) {
+            //Update stats
+            updateStatistics()
+
             if(this::rematchAlert.isInitialized){
                 rematchAlert.dismiss()
             }
@@ -214,6 +230,7 @@ class GameHolder : AppCompatActivity() {
                         build.setPositiveButton("rematch") { dialog, which ->
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
                             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").get().addOnSuccessListener {
+                                gamesPlayed++
                                 if (it.value == null) {
                                     startLoad()
                                     MyApplication.isLoading = true
