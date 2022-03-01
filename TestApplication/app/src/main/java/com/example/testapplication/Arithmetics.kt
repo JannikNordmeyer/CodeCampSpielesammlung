@@ -22,17 +22,21 @@ class Arithmetics : Fragment() {
         val viewmodel = ViewModelProvider(requireActivity()).get(ArithmeticsViewModel::class.java)
 
 
-        viewmodel.logic.cycle()
+        viewmodel.logic.start()
+
         viewmodel.logic.liveExpr.observe(viewLifecycleOwner, ){
             binding.operand1.setText(it.first.toString())
             binding.operand2.setText(it.second.toString())
             binding.operator.setText(it.third.toString())
         }
         viewmodel.logic.liveScore.observe(viewLifecycleOwner, ){
-            viewmodel.score += 1
+
+            viewmodel.score = it
         }
 
         binding.button.setOnClickListener(){
+            viewmodel.enter(binding.resultField.text.toString().toIntOrNull())
+            binding.resultField.setText("")
             binding.button.isEnabled = false
             val timer = object: CountDownTimer(800, 1000) {
                 override fun onTick(millisUntilFinished: Long) {}
@@ -41,8 +45,6 @@ class Arithmetics : Fragment() {
                 }
             }
             timer.start()
-            viewmodel.enter(binding.resultField.text.toString().toIntOrNull())
-            binding.resultField.setText("")
         }
 
         val timer = object: CountDownTimer(30000, 1000) {

@@ -58,6 +58,7 @@ dependencies {
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
 
     implementation 'com.jjoe64:graphview:4.2.2'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.0'
 
 
     testImplementation 'junit:junit:4.+'
