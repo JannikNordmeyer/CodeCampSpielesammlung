@@ -53,22 +53,22 @@ class ArithmeticsGameLogic (){
         operator = operators[(0..3).random()]
 
         if(operator == '+'){
-            operand1 = (0..1000).random()
-            operand2 = (0..1000).random()
+            operand1 = (0..150).random()
+            operand2 = (0..150).random()
             liveExpr.value = Triple(operand1, operand2, operator)
             return
         }
         if(operator == '-'){
-            var a = (0..1000).random()
-            var b = (0..1000).random()
+            var a = (0..150).random()
+            var b = (0..150).random()
             operand1 = maxOf(a, b)
             operand2 = minOf(a, b)
             liveExpr.value = Triple(operand1, operand2, operator)
             return
         }
         if(operator == '×'){
-            operand1 = (0..25).random()
-            operand2 = (0..25).random()
+            operand1 = (0..20).random()
+            operand2 = (0..20).random()
             liveExpr.value = Triple(operand1, operand2, operator)
             return
         }

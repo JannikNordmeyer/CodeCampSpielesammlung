@@ -49,7 +49,7 @@ class GameHolder : AppCompatActivity() {
                 viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel::class.java)
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
             }
-            GameNames.PLACEHOLDERSPIEL2 -> {
+            GameNames.ARITHMETICS -> {
                 fragToLoad = Arithmetics()
                 viewmodel = ViewModelProvider(this).get(ArithmeticsViewModel::class.java)
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL2")

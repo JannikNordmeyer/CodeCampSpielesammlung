@@ -33,9 +33,18 @@ class Arithmetics : Fragment() {
         }
 
         binding.button.setOnClickListener(){
+            binding.button.isEnabled = false
+            val timer = object: CountDownTimer(800, 1000) {
+                override fun onTick(millisUntilFinished: Long) {}
+                override fun onFinish() {
+                    binding.button.isEnabled = true
+                }
+            }
+            timer.start()
             viewmodel.enter(binding.resultField.text.toString().toIntOrNull())
             binding.resultField.setText("")
         }
+
         val timer = object: CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 binding.timer.setText((millisUntilFinished/1000).toString())

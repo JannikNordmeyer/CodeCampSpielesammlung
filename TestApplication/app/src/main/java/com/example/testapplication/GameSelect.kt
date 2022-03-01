@@ -3,13 +3,10 @@ package com.example.testapplication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.DatabaseReference
 
 
 class GameSelect : AppCompatActivity() {
@@ -73,7 +70,7 @@ class GameSelect : AppCompatActivity() {
         }
 
         binding.ButtonPlaceholderSpiel2.setOnClickListener(){
-            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL2
+            MyApplication.globalSelectedGame = GameNames.ARITHMETICS
             startGame()
         }
 
