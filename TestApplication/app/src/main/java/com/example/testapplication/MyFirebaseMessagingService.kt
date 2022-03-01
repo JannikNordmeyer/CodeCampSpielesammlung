@@ -32,7 +32,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val pendingIntent =PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
 
         var builder: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, channelID)
-            .setSmallIcon(R.drawable.pushnotificationslogo)
+            .setSmallIcon(R.mipmap.ic_notification)
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
             .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
