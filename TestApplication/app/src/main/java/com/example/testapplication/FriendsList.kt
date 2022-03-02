@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.testapplication.MyApplication.Companion.sendNotification
 import com.example.testapplication.databinding.ActivityFriendsBinding
 import com.example.testapplication.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -83,6 +84,17 @@ class FriendsList : AppCompatActivity() {
                     binding.CodeField.setText("")
                     getUserData()
                     Toast.makeText(this, "Added Friend.", Toast.LENGTH_SHORT ).show()
+
+                    MyApplication.myRef.child("MessagingTokens").child(requestID.toString()).get().addOnSuccessListener {
+                        if(it != null){
+                            val id = it.value.toString()
+                            val title = "New Friend"
+                            val message = SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + "has added you to their friend list."
+                            PushNotification(NotificationData(title, message), id).also { sendNotification(it) }
+                        }
+
+                    }
+
                 }
                 else{
 

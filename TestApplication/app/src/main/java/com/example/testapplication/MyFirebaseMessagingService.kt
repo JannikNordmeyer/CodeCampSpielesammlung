@@ -2,65 +2,64 @@ package com.example.testapplication
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_ONE_SHOT
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.widget.RemoteViews
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlin.random.Random
 
 const val channelID = "NotificationChannel"
-const val channelName = "Spielesammlung"
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+    override fun onMessageReceived(message: RemoteMessage) {
 
-        if(remoteMessage.getNotification() != null){
-            notify(remoteMessage.notification!!.title!!, remoteMessage.notification!!.body!!)
-        }
-    }
-
-    fun notify(title : String, message : String){
+        super.onMessageReceived(message)
 
         val intent = Intent(this, GameSelect::class.java)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationID = Random.nextInt()
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+
+            createNotificationChannel(notificationManager)
+        }
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-
-        val pendingIntent =PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-
-        var builder: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, channelID)
+        val pendingIntent = PendingIntent.getActivity(this,0,intent, FLAG_ONE_SHOT)
+        val notification = NotificationCompat.Builder(this, channelID)
+            .setContentTitle(message.data["title"])
+            .setContentText(message.data["message"])
             .setSmallIcon(R.drawable.ic_stat_appicon)
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
             .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
             .setContentIntent(pendingIntent)
+            .build()
 
-        builder = builder.setContent(getRemoteView(title, message))
+        notificationManager.notify(notificationID, notification)
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-
-            val notificationChannel = NotificationChannel(channelID, channelName, NotificationManager.IMPORTANCE_HIGH)
-            notificationManager.createNotificationChannel(notificationChannel)
-
-        }
-
-        notificationManager.notify(0, builder.build())
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel(notificationManager : NotificationManager){
 
-    private fun getRemoteView(title: String, message: String): RemoteViews {
+        val channelName = "Spielesammlung"
+        val channel = NotificationChannel(channelID, channelName, IMPORTANCE_HIGH).apply {
 
-        val remoteView = RemoteViews("com.example.testapplication", R.layout.notification)
-
-        remoteView.setTextViewText(R.id.title, title)
-        remoteView.setTextViewText(R.id.description, message)
-        remoteView.setImageViewResource(R.id.applogo, R.drawable.pushnotificationslogo)
-
-        return remoteView
+            description = "description"
+            enableLights(true)
+            lightColor = Color.MAGENTA
+        }
+        notificationManager.createNotificationChannel(channel)
 
     }
 }
