@@ -52,7 +52,7 @@ class GameSelectNetwork : AppCompatActivity() {
 
         //Select Quickplay Filter
         when (MyApplication.globalSelectedGame) {
-            GameNames.PLACEHOLDERSPIEL1 -> {
+            GameNames.COMPASS -> {
                 quickplayFilter = "PLACEHOLDERSPIEL1"
             }
             GameNames.ARITHMETICS -> {

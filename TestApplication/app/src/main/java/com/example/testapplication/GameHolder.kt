@@ -356,18 +356,15 @@ class GameHolder : AppCompatActivity() {
             }
             is ArithmeticsViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
-                    val childUpdates = hashMapOf<String, Any>("HostScore" to "-1", "GuestScore" to "-1")
-
-                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener(this) {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue().addOnSuccessListener(this) {
                         if (MyApplication.networkSetupComplete) {
                             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
                         }
-                        MyApplication.networkSetupComplete = true
                     }
-
                 }
                 if(MyApplication.networkSetupComplete) viewmodel.gameTimer.start()
                 viewmodel.logic.reset()
+                MyApplication.networkSetupComplete = true
             }
             is SchrittzaehlerViewModel -> { //Your Setup Code here...
             }
