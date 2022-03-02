@@ -113,11 +113,11 @@ class Arithmetics : Fragment() {
                                 if(snapshot.value != null){
                                     //Determine who is the winner...
                                         var networkWinner = ""
-                                    if(viewmodel.score > snapshot.value as Int){
+                                    if(viewmodel.score > snapshot.value.toString().toInt()){
                                         //Host won
                                         networkWinner = MyApplication.hostID
                                     }
-                                    else if(viewmodel.score < snapshot.value as Int){
+                                    else if(viewmodel.score < snapshot.value.toString().toInt()){
                                         //Guest won
                                         networkWinner = MyApplication.guestID
                                     }

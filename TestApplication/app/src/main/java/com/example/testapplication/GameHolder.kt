@@ -217,14 +217,14 @@ class GameHolder : AppCompatActivity() {
                         } else {
                             build.setTitle("Game Over!")
                             build.setMessage("$value has won the game!")
-                            //Win Percentage updaten
+                            //Win Percentage updaten - alle Spiele?
                             if(value == FirebaseAuth.getInstance().currentUser!!.email){
-                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener {
+                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGame.toString()).child("GamesPlayed").get().addOnSuccessListener {
                                     if (it != null){
-                                        val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").push().getKey()
+                                        val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGame.toString()).child("Win%").push().getKey()
                                         val map: MutableMap<String, Any> = HashMap()
                                         map[key!!] = it.value.toString()
-                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").updateChildren(map)
+                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGame.toString()).child("Win%").updateChildren(map)
                                     }
                                 }
                             }
@@ -366,7 +366,7 @@ class GameHolder : AppCompatActivity() {
                     }
 
                 }
-                if(!MyApplication.networkSetupComplete) viewmodel.gameTimer.start()
+                if(MyApplication.networkSetupComplete) viewmodel.gameTimer.start()
             }
             is SchrittzaehlerViewModel -> { //Your Setup Code here...
             }
