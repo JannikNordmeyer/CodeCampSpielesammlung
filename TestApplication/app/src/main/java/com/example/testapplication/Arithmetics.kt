@@ -111,31 +111,39 @@ class Arithmetics : Fragment() {
                         MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
                         //Prüfe ob Raum noch existiert...
                         MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
-                            //Warte darauf das Guest seinen Score einträgt...
-                            MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    if(snapshot.value != null ){
-                                        //Determine who is the winner...
-                                            var networkWinner = ""
-                                        if(viewmodel.score > snapshot.value.toString().toInt()){
-                                            //Host won
-                                            networkWinner = MyApplication.hostID
+                            if(it.value != null) {
+                                //Warte darauf das Guest seinen Score einträgt...
+                                MyApplication.myRef.child("data").child(MyApplication.code)
+                                    .child("Field").child("GuestScore")
+                                    .addValueEventListener(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            if (snapshot.value != null) {
+                                                //Determine who is the winner...
+                                                var networkWinner = ""
+                                                if (viewmodel.score > snapshot.value.toString()
+                                                        .toInt()
+                                                ) {
+                                                    //Host won
+                                                    networkWinner = MyApplication.hostID
+                                                } else if (viewmodel.score < snapshot.value.toString()
+                                                        .toInt()
+                                                ) {
+                                                    //Guest won
+                                                    networkWinner = MyApplication.guestID
+                                                } else networkWinner = "-1"  //Draw
+                                                //Enter Winner
+                                                MyApplication.myRef.child("data")
+                                                    .child(MyApplication.code).child("WinnerPlayer")
+                                                    .setValue(networkWinner)
+                                            }
                                         }
-                                        else if(viewmodel.score < snapshot.value.toString().toInt()){
-                                            //Guest won
-                                            networkWinner = MyApplication.guestID
+
+                                        override fun onCancelled(error: DatabaseError) {
+                                            TODO("Not yet implemented")
                                         }
-                                        else networkWinner = "-1"  //Draw
-                                        //Enter Winner
-                                        MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
-                                    }
-                                }
 
-                                override fun onCancelled(error: DatabaseError) {
-                                    TODO("Not yet implemented")
-                                }
-
-                            })
+                                    })
+                            }
                         }
                     }
                     else {
