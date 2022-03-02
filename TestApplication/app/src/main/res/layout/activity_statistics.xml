@@ -25,19 +25,19 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rechnen"
+            android:text="Arith\nmetics"
             android:textSize="12sp"/>
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kompass"
+            android:text="Compass"
             android:textSize="12sp"/>
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Battle"
+            android:text="Sports\nTrial"
             android:textSize="12sp"/>
     </com.google.android.material.tabs.TabLayout>
 

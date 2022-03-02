@@ -61,16 +61,16 @@ class Arithmetics : Fragment() {
                 Log.d("aaa", input)
                 viewmodel.enter(input)
                 binding.resultField.getText().clear()
-                //binding.button.isEnabled = false
-                //binding.resultField.isEnabled = false
-                //val timer = object: CountDownTimer(800, 1000) {
-                //    override fun onTick(millisUntilFinished: Long) {}
-                //    override fun onFinish() {
-                //        binding.button.isEnabled = true
-                //        binding.resultField.isEnabled = true
-                //    }
-                //}
-                //timer.start()
+                binding.button.isEnabled = false
+                binding.resultField.isEnabled = false
+                val timer = object: CountDownTimer(800, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {}
+                    override fun onFinish() {
+                        binding.button.isEnabled = true
+                        binding.resultField.isEnabled = true
+                    }
+                }
+                timer.start()
             }
         }
 
