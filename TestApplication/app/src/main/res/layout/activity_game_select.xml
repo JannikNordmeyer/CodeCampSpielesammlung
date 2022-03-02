@@ -61,7 +61,7 @@
         android:background="@drawable/roundcorner"
         android:padding="20dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/cc_tictactoe"
+        android:src="@drawable/tictactoe"
         android:text="TicTacToe"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
@@ -69,9 +69,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        tools:src="@drawable/cc_tictactoe" />
+        tools:src="@drawable/tictactoe" />
 
-    <Button
+    <ImageButton
         android:id="@+id/ButtonPlaceholderSpiel3"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -79,6 +79,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/roundcorner"
+        android:padding="20dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/challenge"
         android:text="Placeholder3"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +92,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline5"
         app:layout_constraintVertical_bias="0.65" />
 
-    <Button
+    <ImageButton
         android:id="@+id/ButtonPlaceholderSpiel2"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -95,24 +100,34 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="arithmetics"
+        android:adjustViewBounds="true"
+        android:background="@drawable/roundcorner"
+        android:padding="20dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/arithmetic"
+        android:text="Arithmetic"
         app:layout_constraintBottom_toTopOf="@+id/guideline6"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline5"
-        app:layout_constraintVertical_bias="0.65" />
+        app:layout_constraintVertical_bias="0.65"
+        tools:src="@drawable/arithmetic" />/>
 
-    <Button
+    <ImageButton
         android:id="@+id/ButtonPlaceholderSpiel1"
         android:layout_width="0dp"
         android:layout_height="0dp"
-
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Placeholder1"
+        android:adjustViewBounds="true"
+        android:background="@drawable/roundcorner"
+        android:padding="20dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/compass"
+        android:text="Compass"
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"
