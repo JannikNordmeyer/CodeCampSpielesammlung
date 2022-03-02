@@ -2,6 +2,7 @@ package com.example.testapplication
 
 
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
@@ -20,29 +21,43 @@ import com.esri.arcgisruntime.mapping.Viewpoint
 import com.esri.arcgisruntime.mapping.view.MapView*/
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.media.MediaPlayer
 import java.io.IOException
 import android.util.Log
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 //import com.esri.arcgisruntime.toolkit.compass.Compass
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.json.JSONObject
 import java.io.InputStream
+import java.lang.Exception
 import kotlin.random.Random
+import android.widget.Toast
+import kotlin.math.PI
+import kotlin.math.acos
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
-class PlaceholderSpiel1 : Fragment(), SensorEventListener {
+class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     private val TAG = PlaceholderSpiel1::class.java.simpleName
 
     //private val fragmentPlaceholderspiel1Binding by lazy {        FragmentPlaceholderspiel1Binding.inflate(layoutInflater)    }
@@ -55,12 +70,17 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener {
     lateinit var sensorManager: SensorManager
     lateinit var sensorAccelerometer: Sensor
     lateinit var sensorMagneticField: Sensor
+    lateinit var mLocationManager: LocationManager
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
     private var floatGravity = FloatArray(3)
     private var floatGeoMagnetic = FloatArray(3)
     private var azimuth = 0f
     private var currentAzimuth = 0f
+    private var targetDirectionDegree: Double = 0.0
     lateinit var compass: ImageView
+    lateinit var lastLocation: Location
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -76,15 +96,37 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener {
         sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-
-
+        mLocationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
         apiCall()
 
         binding.idBtnGenerate.setOnClickListener {
             apiCall()
+            if(ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                val location = fusedLocationClient.lastLocation.addOnCompleteListener {
+                    val longitude = it.result.longitude
+                    val latitude = it.result.latitude
+                    val long = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
+                    val lat = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)
+                    val dir = FloatArray(2)
+                    dir[0] = longitude.toFloat() - long.toFloat()
+                    dir[1] = latitude.toFloat() - lat.toFloat()
+                    targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
+                    Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
+                    Log.d("Compass", targetDirectionDegree.toString())
+                }
+
+            } else {
+                ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
+                Log.d("Compass", "No Access")
+            }
         }
 
         return view
+    }
+
+    private fun getLocation() {
+
     }
 
     private fun apiCall() {
@@ -152,6 +194,12 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener {
                 ani.fillAfter = true
 
                 compass.startAnimation(ani)
+                //Log.d("Compass", currentAzimuth.toString())
+
+                //check for right direction
+                if (targetDirectionDegree - 1 <= azimuth && azimuth < targetDirectionDegree + 1) {
+                    Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+                }
             }
         }
     }
@@ -168,6 +216,10 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener {
         super.onResume()
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME)
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME)
+    }
+
+    override fun onLocationChanged(location: Location) {
+        Log.d("Compass", location.toString())
     }
 
 

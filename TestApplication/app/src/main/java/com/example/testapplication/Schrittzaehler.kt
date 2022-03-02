@@ -22,6 +22,7 @@ class Schrittzaehler : Fragment(), SensorEventListener {
 
     var running = false
     lateinit var sensorManager: SensorManager
+    lateinit var stepsSensor: Sensor
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
@@ -31,14 +32,13 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         val viewmodel = ViewModelProvider(requireActivity()).get(SchrittzaehlerViewModel::class.java) //Shared Viewmodel w/ GameHolder
 
         sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-
+        stepsSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
         return view
     }
 
     override fun onResume() {
         super.onResume()
         running = true
-        var stepsSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
         if (stepsSensor == null) {
             Toast.makeText(activity, "No Step Counter Sensor !", Toast.LENGTH_SHORT).show()
