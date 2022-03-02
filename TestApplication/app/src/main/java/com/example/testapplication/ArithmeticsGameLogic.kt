@@ -2,12 +2,13 @@ package com.example.testapplication
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
-class ArithmeticsGameLogic (){
+class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
 
     var liveExpr = MutableLiveData<Triple<Int, Int, Char>>()
     var liveScore = MutableLiveData<Int>().apply { value = 0 }
@@ -18,8 +19,12 @@ class ArithmeticsGameLogic (){
     var operand2 = 0
     var operator = '+'
 
+    private val TAG = ArithmeticsGameLogic::class.java.simpleName
+
     var expressions = arrayListOf<Triple<Int, Int, Char>>()
     var exprCounter = 0
+
+    var viewmodel = viewmodel
 
     fun networkOnFieldUpdate(data : String?){}
 
@@ -67,36 +72,56 @@ class ArithmeticsGameLogic (){
 
         cycle()
     }
-    fun enter(result: Int?) {
 
-        if(result == null){
+    fun reset(){
+        viewmodel.score = 0
+        liveScore.value = viewmodel.score
+    }
+
+    fun enter(result: String?) {
+        Log.d(TAG,"##################### ENTER ###########################")
+        Log.d(TAG,"INPUT STRING: "+result)
+        var true_result = result?.toIntOrNull()
+        Log.d(TAG,"POST CONVERSION STRING: "+true_result)
+
+        if(true_result == null){
+            Log.d(TAG,"empty bitch")
+            viewmodel.score -= 1
+            liveScore.value = viewmodel.score
             cycle()
             return
         }
+        var mult = 0
         if(operator == '+'){
-            if(result == operand1 + operand2){
-                liveScore.value = liveScore.value!!.plus(1)
+            if(true_result == operand1 + operand2){
+                mult = 1
             }
+            else mult = -1
         }
         if(operator == '-'){
-            if(result == operand1 - operand2){
-                liveScore.value = liveScore.value!!.plus(1)
+            if(true_result == operand1 - operand2){
+                mult = 1
             }
+            else mult = -1
         }
         if(operator == '×'){
-            if(result == operand1 * operand2){
-                liveScore.value = liveScore.value!!.plus(1)
+            if(true_result == operand1 * operand2){
+                mult = 1
             }
+            else mult = -1
         }
         if(operator == '÷'){
-            if(result == operand1 / operand2){
-                liveScore.value = liveScore.value!!.plus(1)
+            if(true_result == operand1 / operand2){
+                mult = 1
             }
+            else mult = -1
         }
-
+        Log.d(TAG,"#####################################################################################################")
+        Log.d(TAG,mult.toString())
+        viewmodel.score += 1*mult
+        Log.d(TAG, viewmodel.score.toString())
+        liveScore.value = viewmodel.score
         cycle()
-
-
     }
 
     fun cycle(){

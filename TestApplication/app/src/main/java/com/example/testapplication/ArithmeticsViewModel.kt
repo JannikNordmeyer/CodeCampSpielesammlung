@@ -6,13 +6,16 @@ import kotlin.coroutines.coroutineContext
 
 class ArithmeticsViewModel: ViewModel() {
 
-    var logic = ArithmeticsGameLogic()
+    var logic = ArithmeticsGameLogic(this)
 
     var score = 0
 
-    fun enter(result: Int?) {
+    fun enter(result: String?) {
 
         logic.enter(result)
     }
 
+    fun reset(){
+        score = 0
+    }
 }
