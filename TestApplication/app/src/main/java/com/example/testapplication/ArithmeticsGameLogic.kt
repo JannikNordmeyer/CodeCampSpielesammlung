@@ -26,7 +26,8 @@ class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
 
     var viewmodel = viewmodel
 
-    fun networkOnFieldUpdate(data : String?){}
+    fun networkOnFieldUpdate(data : String?) {
+    }
 
     fun start() {
 

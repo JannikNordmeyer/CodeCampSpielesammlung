@@ -189,6 +189,7 @@ class GameHolder : AppCompatActivity() {
                             is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
                             is SchrittzaehlerViewModel -> (viewmodel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
+                            //FieldUpdate -> Partner has added their score to DB
                             is ArithmeticsViewModel -> (viewmodel as ArithmeticsViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
@@ -238,7 +239,6 @@ class GameHolder : AppCompatActivity() {
                                     MyApplication.isLoading = true
                                     MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(true)
                                 } else if (it.value == true) {
-                                    //TODO REMATCH (RESET BOARD)
                                     networkSetup(viewmodel)
                                 }
                             }
@@ -280,47 +280,6 @@ class GameHolder : AppCompatActivity() {
                 }
 
             })
-            //TODO: CLEAN THIS TERRIBLENESS UP
-            /*
-            //setup listener to call fragment's logic networkOnFieldUpdate function to update field contents whenever they update.
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
-                .addChildEventListener(object : ChildEventListener {
-                    override fun onChildChanged(
-                        snapshot: DataSnapshot,
-                        previousChildName: String?
-                    ) {
-                            Log.d(TAG, "Field update")
-                            var data = snapshot.key
-                            when (viewmodel) {
-                                is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
-                                is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
-                                is PlaceholderSpiel2ViewModel -> (viewmodel as PlaceholderSpiel2ViewModel).logic.networkOnFieldUpdate(data)
-                                is SchrittzaehlerViewModel -> (viewmodel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
-                                is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
-                                is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
-                            }
-                    }
-
-                    //region
-                    override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    }
-
-                    override fun onChildRemoved(snapshot: DataSnapshot) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.d(TAG, "FIELD CANCELLED TRIGGERED")
-                        TODO("Not yet implemented")
-                    }
-                    //endregion
-                })
-
-             */
 
             //setup listener to quit game if Opponent leaves mid-match...
             exitPlayerListener = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
@@ -362,7 +321,6 @@ class GameHolder : AppCompatActivity() {
 
     }
 
-    //TODO FIX LEAVE JANK
     fun exitGame() {
         //cleanup
         MyApplication.myRef.child("Users").child(SplitString(MyApplication.guestID)).child("Request").setValue("")
@@ -370,37 +328,12 @@ class GameHolder : AppCompatActivity() {
         MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
     }
 
+    //TODO: GENERALIZE STUFF
     fun networkSetup(viewmodel : ViewModel) {
         Log.d(TAG, "NETWORK SETUP TRIGGERED")
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
-                    /*val data_field = MyApplication.myRef.child("data").child(MyApplication.code).child("Field")
-                    data_field.child("0").setValue("", { error, ref ->
-                        data_field.child("1").setValue("", { error, ref ->
-                            data_field.child("2").setValue("", { error, ref ->
-                                data_field.child("3").setValue("", { error, ref ->
-                                    data_field.child("4").setValue("", { error, ref ->
-                                        data_field.child("5").setValue("", { error, ref ->
-                                            data_field.child("6").setValue("", { error, ref ->
-                                                data_field.child("7").setValue("", { error, ref ->
-                                                    data_field.child("8").setValue("", { error, ref ->
-                                                        viewmodel.logic.networkBoardToLocalBoard()
-                                                        Log.d(TAG, MyApplication.networkSetupComplete.toString())
-                                                        if (MyApplication.networkSetupComplete) {
-                                                            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
-                                                        }
-                                                        MyApplication.networkSetupComplete = true
-                                                        Log.d(TAG, "NETWORK SETUP BOARD UPDATE")
-                                                    })
-                                                })
-                                            })
-                                        })
-                                    })
-                                })
-                            })
-                        })
-                    })*/
                     val childUpdates = hashMapOf<String, Any>("0" to "", "1" to "", "2" to "", "3" to "", "4" to "", "5" to "", "6" to "", "7" to "", "8" to "")
 
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener(this) {
@@ -410,26 +343,6 @@ class GameHolder : AppCompatActivity() {
                         }
                         MyApplication.networkSetupComplete = true
                     }
-
-
-                    /*MyApplication.myRef.child("data").child(MyApplication.code).runTransaction(object : Transaction.Handler {
-                        override fun doTransaction(currentData: MutableData): Transaction.Result {
-                            for (i in 0..8) {
-                                currentData.child("Field").child(i.toString()).value = ""
-                            }
-                            return Transaction.success(currentData)
-                        }
-
-                        override fun onComplete(
-                            error: DatabaseError?,
-                            committed: Boolean,
-                            currentData: DataSnapshot?
-                        ) {
-                            Log.d(TAG, "COMPLETED")
-                            (viewmodel as TicTacToeViewModel).logic.networkBoardToLocalBoard()
-                        }
-
-                    })*/
 
                     if (!MyApplication.isCodeMaker) {
                         (viewmodel as TicTacToeViewModel).logic.player = "O"
@@ -441,7 +354,19 @@ class GameHolder : AppCompatActivity() {
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
             }
-            is ArithmeticsViewModel -> { //Your Setup Code here...
+            is ArithmeticsViewModel -> {
+                if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
+                    val childUpdates = hashMapOf<String, Any>("HostScore" to "-1", "GuestScore" to "-1")
+
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener(this) {
+                        if (MyApplication.networkSetupComplete) {
+                            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
+                        }
+                        MyApplication.networkSetupComplete = true
+                    }
+
+                }
+                if(!MyApplication.networkSetupComplete) viewmodel.gameTimer.start()
             }
             is SchrittzaehlerViewModel -> { //Your Setup Code here...
             }

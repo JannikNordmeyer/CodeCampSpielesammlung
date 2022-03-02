@@ -26,6 +26,9 @@ import android.widget.EditText
 
 import android.R.string.no
 import android.text.method.KeyListener
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 
 class Arithmetics : Fragment() {
@@ -75,7 +78,7 @@ class Arithmetics : Fragment() {
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
                         KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
-                            binding.button.performClick()
+                            if(binding.button.isEnabled) binding.button.performClick()
                             return true
                         }
                         else -> {}
@@ -92,16 +95,54 @@ class Arithmetics : Fragment() {
             }
             override fun onFinish() {
                 binding.button.isEnabled = false
-                Toast.makeText(context, "You have reached a score of " + (viewmodel.score).toString() + ".", Toast.LENGTH_SHORT ).show()
-                val handler = Handler(Looper.getMainLooper())
-                handler.postDelayed({
-                    this.start()
-                    binding.button.isEnabled = true
-                    viewmodel.logic.reset()
-                }, 6000)
+                if(!MyApplication.onlineMode) {
+                    Toast.makeText(context, "You have reached a score of " + (viewmodel.score).toString() + ".", Toast.LENGTH_SHORT).show()
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.postDelayed({
+                        this.start()
+                        binding.button.isEnabled = true
+                        viewmodel.logic.reset()
+                    }, 6000)
+                }else{
+                    if(MyApplication.isCodeMaker) {
+                        //Schreib deinen score in die DB...
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
+                        //Warte darauf das Guest seinen Score einträgt...
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if(snapshot.value != null){
+                                    //Determine who is the winner...
+                                        var networkWinner = ""
+                                    if(viewmodel.score > snapshot.value as Int){
+                                        //Host won
+                                        networkWinner = MyApplication.hostID
+                                    }
+                                    else if(viewmodel.score < snapshot.value as Int){
+                                        //Guest won
+                                        networkWinner = MyApplication.guestID
+                                    }
+                                    else networkWinner = "-1"  //Draw
+                                    //Enter Winner
+                                    MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                TODO("Not yet implemented")
+                            }
+
+                        })
+                    }
+                    else {
+                        //Schreib deinen score in die DB...
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
+                        //Warte darauf das Host entscheidet wer gewonnen hat
+                    }
+                }
             }
         }
         timer.start()
+        viewmodel.gameTimer = timer
 
         return view
     }
