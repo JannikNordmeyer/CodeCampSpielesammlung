@@ -42,7 +42,7 @@ import java.io.InputStream
 import kotlin.random.Random
 
 
-class PlaceholderSpiel1 : Fragment() {
+class PlaceholderSpiel1 : Fragment(), SensorEventListener {
     private val TAG = PlaceholderSpiel1::class.java.simpleName
 
     //private val fragmentPlaceholderspiel1Binding by lazy {        FragmentPlaceholderspiel1Binding.inflate(layoutInflater)    }
@@ -58,8 +58,6 @@ class PlaceholderSpiel1 : Fragment() {
 
     private var floatGravity = FloatArray(3)
     private var floatGeoMagnetic = FloatArray(3)
-    private var floatOrientation = FloatArray(3)
-    private var floatRotationMatrix = FloatArray(9)
     private var azimuth = 0f
     private var currentAzimuth = 0f
     lateinit var compass: ImageView
@@ -79,85 +77,12 @@ class PlaceholderSpiel1 : Fragment() {
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
 
-        val sensorEventListenerAccelerometer: SensorEventListener = object: SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent?) {
-                floatGravity = event!!.values
-                val alpha = 0.97
-                floatGravity[0] = (alpha*floatGravity[0]+(1-alpha)*event!!.values[0]).toFloat()
-                floatGravity[1] = (alpha*floatGravity[1]+(1-alpha)*event!!.values[1]).toFloat()
-                floatGravity[2] = (alpha*floatGravity[2]+(1-alpha)*event!!.values[2]).toFloat()
-                val success = SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic)
-                if (success) {
-                    SensorManager.getOrientation(floatRotationMatrix, floatOrientation)
-                    azimuth = Math.toDegrees(floatOrientation[0].toDouble()).toFloat()
-                    azimuth = (azimuth+360)%360
-
-                    var ani: RotateAnimation = RotateAnimation(-currentAzimuth, -azimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
-                    currentAzimuth = azimuth
-
-                    ani.duration = 500
-                    ani.repeatCount = 0
-                    ani.fillAfter = true
-
-                    compass.startAnimation(ani)
-                }
-
-                /*SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic)
-                SensorManager.getOrientation(floatRotationMatrix, floatOrientation)
-
-                compass.rotation = (-floatOrientation[0]*180/3.14159).toFloat()*/
-            }
-
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-            }
-
-        }
-
-        val sensorEventListenerMagneticField: SensorEventListener = object: SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent?) {
-                floatGeoMagnetic = event!!.values
-                val alpha = 0.97
-                floatGeoMagnetic[0] = (alpha*floatGeoMagnetic[0]+(1-alpha)*event!!.values[0]).toFloat()
-                floatGeoMagnetic[1] = (alpha*floatGeoMagnetic[1]+(1-alpha)*event!!.values[1]).toFloat()
-                floatGeoMagnetic[2] = (alpha*floatGeoMagnetic[2]+(1-alpha)*event!!.values[2]).toFloat()
-                val success = SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic)
-                if (success) {
-                    SensorManager.getOrientation(floatRotationMatrix, floatOrientation)
-                    azimuth = Math.toDegrees(floatOrientation[0].toDouble()).toFloat()
-                    azimuth = (azimuth+360)%360
-
-                    var ani: RotateAnimation = RotateAnimation(-currentAzimuth, -azimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
-                    currentAzimuth = azimuth
-
-                    ani.duration = 500
-                    ani.repeatCount = 0
-                    ani.fillAfter = true
-
-                    compass.startAnimation(ani)
-                }
-
-                /*SensorManager.getRotationMatrix(floatRotationMatrix, null, floatGravity, floatGeoMagnetic)
-                SensorManager.getOrientation(floatRotationMatrix, floatOrientation)
-
-                compass.rotation = (-floatOrientation[0]*180/3.14159).toFloat()*/
-            }
-
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-            }
-
-        }
-
-        sensorManager.registerListener(sensorEventListenerAccelerometer, sensorAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
-        sensorManager.registerListener(sensorEventListenerMagneticField, sensorMagneticField, SensorManager.SENSOR_DELAY_NORMAL)
 
         apiCall()
 
         binding.idBtnGenerate.setOnClickListener {
             apiCall()
         }
-        //setApiKeyForApp()
-
-        //setupMap()
 
         return view
     }
@@ -195,20 +120,55 @@ class PlaceholderSpiel1 : Fragment() {
 
     }
 
-    // set up your map here. You will call this method from onCreate()
-    /*private fun setupMap() {
+    override fun onSensorChanged(event: SensorEvent?) {
+        val alpha = 0.97f
+        synchronized(this) {
+            if(event!!.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                floatGravity[0] = (alpha*floatGravity[0]+(1-alpha)*event!!.values[0])
+                floatGravity[1] = (alpha*floatGravity[1]+(1-alpha)*event!!.values[1])
+                floatGravity[2] = (alpha*floatGravity[2]+(1-alpha)*event!!.values[2])
+            }
 
-        // create a map with the BasemapStyle streets
-        val map = ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC)
+            if(event!!.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                floatGeoMagnetic[0] = (alpha*floatGeoMagnetic[0]+(1-alpha)*event!!.values[0])
+                floatGeoMagnetic[1] = (alpha*floatGeoMagnetic[1]+(1-alpha)*event!!.values[1])
+                floatGeoMagnetic[2] = (alpha*floatGeoMagnetic[2]+(1-alpha)*event!!.values[2])
+            }
 
-        // set the map to be displayed in the layout's MapView
-        mapView.map = map
+            var R = FloatArray(9)
+            var I = FloatArray(9)
+            var success = SensorManager.getRotationMatrix(R, I, floatGravity, floatGeoMagnetic)
+            if(success) {
+                var orientation = FloatArray(3)
+                SensorManager.getOrientation(R, orientation)
+                azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
+                azimuth = (azimuth+360)%360
 
-        // set the viewpoint, Viewpoint(latitude, longitude, scale)
-        mapView.setViewpoint(Viewpoint(34.0270, -118.8050, 72000.0))
-    }*/
+                var ani: RotateAnimation = RotateAnimation(-currentAzimuth, -azimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+                currentAzimuth = azimuth
 
+                ani.duration = 500
+                ani.repeatCount = 0
+                ani.fillAfter = true
 
+                compass.startAnimation(ani)
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME)
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME)
+    }
 
 
 }
