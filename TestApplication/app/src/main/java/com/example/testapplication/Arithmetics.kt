@@ -106,50 +106,34 @@ class Arithmetics : Fragment() {
                         viewmodel.logic.reset()
                     }, 6000)
                 }else{
-                    if(MyApplication.isCodeMaker) {
-                        //Schreib deinen score in die DB...
-                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
-                        //Prüfe ob Raum noch existiert...
-                        MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
-                            if(it.value != null) {
-                                //Warte darauf das Guest seinen Score einträgt...
-                                MyApplication.myRef.child("data").child(MyApplication.code)
-                                    .child("Field").child("GuestScore")
-                                    .addValueEventListener(object : ValueEventListener {
+                    //Prüfe ob Raum existiert...
+                    MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
+                        if(it.value != null) {
+                            if(MyApplication.isCodeMaker) {
+                                //Schreib deinen score in die DB...
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
+                                    //Warte darauf das Guest seinen Score einträgt...
+                                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
-                                            if (snapshot.value != null) {
-                                                //Determine who is the winner...
-                                                var networkWinner = ""
-                                                if (viewmodel.score > snapshot.value.toString()
-                                                        .toInt()
-                                                ) {
-                                                    //Host won
-                                                    networkWinner = MyApplication.hostID
-                                                } else if (viewmodel.score < snapshot.value.toString()
-                                                        .toInt()
-                                                ) {
-                                                    //Guest won
-                                                    networkWinner = MyApplication.guestID
-                                                } else networkWinner = "-1"  //Draw
-                                                //Enter Winner
-                                                MyApplication.myRef.child("data")
-                                                    .child(MyApplication.code).child("WinnerPlayer")
-                                                    .setValue(networkWinner)
-                                            }
-                                        }
+                                                if (snapshot.value != null) {
+                                                    var networkWinner = ""
+                                                    if (viewmodel.score > snapshot.value.toString().toInt()) {
+                                                        networkWinner = MyApplication.hostID
+                                                        } else if (viewmodel.score < snapshot.value.toString().toInt()) {
+                                                            networkWinner = MyApplication.guestID
+                                                        } else networkWinner = "-1"  //Draw
+                                                        //Enter Winner
+                                                        MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                                                    }
+                                                }
 
-                                        override fun onCancelled(error: DatabaseError) {
-                                            TODO("Not yet implemented")
-                                        }
+                                                override fun onCancelled(error: DatabaseError) {
+                                                    TODO("Not yet implemented")
+                                                }
 
-                                    })
+                                            })
+                                    }
                             }
-                        }
-                    }
-                    else {
-                        //Schreib deinen score in die DB...
-                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
-                        //Warte darauf das Host entscheidet wer gewonnen hat
                     }
                 }
             }
