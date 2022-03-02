@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.example.testapplication.databinding.ActivityGameSelectNetworkBinding
 import com.google.android.gms.tasks.OnSuccessListener
@@ -27,6 +28,8 @@ class GameSelectNetwork : AppCompatActivity() {
     private val TAG = GameSelectNetwork::class.java.simpleName
 
     private lateinit var quickplayListener: ValueEventListener
+
+    var quickplayFilter = ""
 
     override fun onDestroy() {
         super.onDestroy()
@@ -47,6 +50,29 @@ class GameSelectNetwork : AppCompatActivity() {
         binding = ActivityGameSelectNetworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //Select Quickplay Filter
+        when (MyApplication.globalSelectedGame) {
+            GameNames.PLACEHOLDERSPIEL1 -> {
+                quickplayFilter = "PLACEHOLDERSPIEL1"
+            }
+            GameNames.ARITHMETICS -> {
+                quickplayFilter = "ARITHMETICS"
+            }
+            GameNames.SCHRITTZAEHLER -> {
+                quickplayFilter = "SCHRITTZAEHLER"
+            }
+            GameNames.PLACEHOLDERSPIEL4 -> {
+                quickplayFilter = "PLACEHOlDERSPIEL4"
+            }
+            GameNames.PLACEHOLDERSPIEL5 -> {
+                quickplayFilter = "PLACEHOLDERSPIEL5"
+            }
+            GameNames.TICTACTOE -> {
+                quickplayFilter = "TICTACTOE"
+            }
+            else -> Log.d(TAG, " ERROR: FAILED TO LOAD QUICKPLAY FILTER")
+        }
+
         fun startGame(){
             Log.d(TAG, "#### START GAME ####")
             if(MyApplication.onlineMode) {
@@ -65,7 +91,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
             MyApplication.isCodeMaker = true
             //Verlasse Quickplay Lobby
-            MyApplication.myRef.child("Quickplay").setValue(null)
+            MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(null)
             MyApplication.onlineMode = true;
             //Markiere mich als Host im Raum
             Log.d(TAG, "ADDING LISTENER FOR HOST ENTRY IN ROOM ???")
@@ -97,7 +123,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(opponent)/*Host Email*/
             MyApplication.isCodeMaker = false
             //Verlasse Quickplay Lobby
-            MyApplication.myRef.child("Quickplay").setValue(null)
+            MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(null)
             //Markiere mich als Guest im Raum
             Log.d(TAG, "ADDING LISTENER FOR GUEST ENTRY IN ROOM")
 
@@ -163,7 +189,7 @@ class GameSelectNetwork : AppCompatActivity() {
             Log.d(TAG, "####### QUICKPLAY BUTTON PRESSED ########")
             Log.d(TAG, "ADDING ON SUCCESS LISTENER FOR GETTING QUICKPLAY LOBBY")
             //Hole die Liste von Spielern in der Quickplay Lobby
-            MyApplication.myRef.child("Quickplay").get().addOnSuccessListener(this) {
+            MyApplication.myRef.child("Quickplay").child(quickplayFilter).get().addOnSuccessListener(this) {
                 Log.d(TAG, "NSIDE ON SUCCESS LISTENER FOR QUICKPLAY LOBBY")
                 if(it.value != null){  //Falls es Spieler gibt...
                     Log.d(TAG, "FOUND OTHER PLAYER IN QUICKPLAY LOBBY")
@@ -177,7 +203,7 @@ class GameSelectNetwork : AppCompatActivity() {
                 } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
                     Log.d(TAG, "NO PLAYERS IN QUICKPLAY LOBBY - BECOME HOST")
                     host = true
-                    MyApplication.myRef.child("Quickplay").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+                    MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(FirebaseAuth.getInstance().currentUser!!.email)
                 }
                 Log.d(TAG, "QUICKPLAY LOBBY LISTENER END")
             }
@@ -186,7 +212,7 @@ class GameSelectNetwork : AppCompatActivity() {
 
         //Verlasse Quickplay Lobby wenn man als Host Wartet
         binding.BtnCancel.setOnClickListener {
-            MyApplication.myRef.child("Quickplay").setValue(null)
+            MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(null)
             host = false
             stopLoad()
         }

@@ -33,6 +33,8 @@ class GameHolder : AppCompatActivity() {
     //Session stat variables
     var gamesPlayed = 1
 
+    var quickplayFilter = ""
+
     //TODO: Needing this function every single time is pretty stupid, find a better solution!
     //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
     fun SplitString(str: String): String {
@@ -91,31 +93,37 @@ class GameHolder : AppCompatActivity() {
             GameNames.PLACEHOLDERSPIEL1 -> {
                 fragToLoad = PlaceholderSpiel1()
                 viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel::class.java)
+                quickplayFilter = "PLACEHOLDERSPIEL1"
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
             }
             GameNames.ARITHMETICS -> {
                 fragToLoad = Arithmetics()
                 viewmodel = ViewModelProvider(this).get(ArithmeticsViewModel::class.java)
+                quickplayFilter = "ARITHMETICS"
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL2")
             }
             GameNames.SCHRITTZAEHLER -> {
                 fragToLoad = Schrittzaehler()
                 viewmodel = ViewModelProvider(this).get(SchrittzaehlerViewModel::class.java)
+                quickplayFilter = "SCHRITTZAEHLER"
                 Log.d(TAG, "LOADED SCHRITTZAEHLER")
             }
             GameNames.PLACEHOLDERSPIEL4 -> {
                 fragToLoad = PlaceholderSpiel4()
                 viewmodel = ViewModelProvider(this).get(PlaceholderSpiel4ViewModel::class.java)
+                quickplayFilter = "PLACEHOlDERSPIEL4"
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL4")
             }
             GameNames.PLACEHOLDERSPIEL5 -> {
                 fragToLoad = PlaceholderSpiel5()
                 viewmodel = ViewModelProvider(this).get(PlaceholderSpiel5ViewModel::class.java)
+                quickplayFilter = "PLACEHOLDERSPIEL5"
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL5")
             }
             GameNames.TICTACTOE -> {
                 fragToLoad = TicTacToe()
                 viewmodel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
+                quickplayFilter = "TICTACTOE"
                 Log.d(TAG, "LOADED TICTACTOE")
             }
             else -> Log.d(TAG, " ERROR: FAILED TO LOAD GAME")
@@ -149,8 +157,8 @@ class GameHolder : AppCompatActivity() {
 
             //Setup field, listener and logic for the variable that controls whose turn it is
             activePlayerListener = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        //TODO: NULL CHECK(?)
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(snapshot.value != null) {
                         Log.d(TAG, "ACTIVE PLAYER LISTENER TRIGGERED")
                         val data_activePlayer = snapshot.value.toString()
                         Log.d(TAG, data_activePlayer)
@@ -158,6 +166,7 @@ class GameHolder : AppCompatActivity() {
                         else MyApplication.myTurn = (data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker
                         Log.d(TAG, MyApplication.myTurn.toString())
                     }
+                }
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.d(TAG, "ACTIVE PLAYER CANCELLED LISTENER TRIGGERED")
