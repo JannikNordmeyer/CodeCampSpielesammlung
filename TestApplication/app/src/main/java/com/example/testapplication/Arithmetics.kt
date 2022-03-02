@@ -132,6 +132,10 @@ class Arithmetics : Fragment() {
                                                 }
 
                                             })
+                                    } else {
+                                        //Schreib deinen score in die DB...
+                                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
+                                        //Warte darauf das Host entscheidet wer gewonnen hat
                                     }
                             }
                     }
