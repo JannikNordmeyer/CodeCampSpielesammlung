@@ -42,10 +42,10 @@ class Schrittzaehler : Fragment(), SensorEventListener {
 
         if (stepsSensor == null) {
             Toast.makeText(activity, "No Step Counter Sensor !", Toast.LENGTH_SHORT).show()
-            Log.d("StepSensor:","Der Shit läuft nicht")
+            Log.d("StepSensor:","####################### KEIN SENSOR GEFUNDEN ##################")
         } else {
             sensorManager?.registerListener(this, stepsSensor, SensorManager.SENSOR_DELAY_UI)
-            Log.d("StepSensor:","Der Shit läuft")
+            Log.d("StepSensor:"," ################# SENSOR LÄUFT ###################")
         }
     }
 
@@ -62,9 +62,9 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent) {
         if (running) {
             binding.viewSchritteCounter.setText("" + event.values[0])
-            Log.d("Schrittzaehler:","Step detected")
+            Log.d("Schrittzaehler:"," ############### Step detected ################")
         }
-        else Log.d("Schrittzaehler:","Ich spüre, running aber false")
+        else Log.d("Schrittzaehler:"," ################### Ich spüre, running aber false ###################")
     }
 
 }

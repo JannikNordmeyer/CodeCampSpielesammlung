@@ -75,7 +75,7 @@ class GameSelect : AppCompatActivity() {
         }
 
         binding.ButtonPlaceholderSpiel3.setOnClickListener(){
-            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL3
+            MyApplication.globalSelectedGame = GameNames.SCHRITTZAEHLER
             startGame()
         }
 

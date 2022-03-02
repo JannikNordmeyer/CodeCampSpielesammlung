@@ -98,10 +98,10 @@ class GameHolder : AppCompatActivity() {
                 viewmodel = ViewModelProvider(this).get(ArithmeticsViewModel::class.java)
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL2")
             }
-            GameNames.PLACEHOLDERSPIEL3 -> {
+            GameNames.SCHRITTZAEHLER -> {
                 fragToLoad = Schrittzaehler()
                 viewmodel = ViewModelProvider(this).get(SchrittzaehlerViewModel::class.java)
-                Log.d(TAG, "LOADED PLACEHOLDERSPIEL3")
+                Log.d(TAG, "LOADED SCHRITTZAEHLER")
             }
             GameNames.PLACEHOLDERSPIEL4 -> {
                 fragToLoad = PlaceholderSpiel4()
