@@ -83,6 +83,10 @@ class FriendsList : AppCompatActivity() {
                     binding.CodeField.setText("")
                     getUserData()
                     Toast.makeText(this, "Added Friend.", Toast.LENGTH_SHORT ).show()
+
+                    val title = "New Friend!"
+                    val message = "AAA has added you to their friend list."
+                    PushNotification(NotificationData(title, message), MyApplication.FRIENDS_TOPIC).also { MyApplication.sendNotification(it) }
                 }
                 else{
 

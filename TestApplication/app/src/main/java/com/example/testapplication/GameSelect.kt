@@ -102,10 +102,6 @@ class GameSelect : AppCompatActivity() {
 
         binding.FriendsButton.setOnClickListener(){
 
-            val title = "Test"
-            val message = "Dies ist ein Test."
-            PushNotification(NotificationData(title, message), FRIENDS_TOPIC).also { sendNotification(it) }
-
             if(currentuser != null) {
                 val intent = Intent(this, FriendsList::class.java);
                 startActivity(intent)
