@@ -55,21 +55,23 @@ class Arithmetics : Fragment() {
 
         //Submit
         binding.button.setOnClickListener(){
-            Log.d("aaa","#########################################")
-            val input = binding.resultField.getText().toString()
-            Log.d("aaa",input)
-            viewmodel.enter(input)
-            binding.resultField.getText().clear()
-            binding.button.isEnabled = false
-            binding.resultField.isEnabled = false
-            val timer = object: CountDownTimer(800, 1000) {
-                override fun onTick(millisUntilFinished: Long) {}
-                override fun onFinish() {
-                    binding.button.isEnabled = true
-                    binding.resultField.isEnabled = true
-                }
+            if(binding.timer.getText().toString().toInt() > 0) {
+                Log.d("aaa", "#########################################")
+                val input = binding.resultField.getText().toString()
+                Log.d("aaa", input)
+                viewmodel.enter(input)
+                binding.resultField.getText().clear()
+                //binding.button.isEnabled = false
+                //binding.resultField.isEnabled = false
+                //val timer = object: CountDownTimer(800, 1000) {
+                //    override fun onTick(millisUntilFinished: Long) {}
+                //    override fun onFinish() {
+                //        binding.button.isEnabled = true
+                //        binding.resultField.isEnabled = true
+                //    }
+                //}
+                //timer.start()
             }
-            timer.start()
         }
 
         //On enter...
@@ -78,7 +80,7 @@ class Arithmetics : Fragment() {
                 if (event.action == KeyEvent.ACTION_DOWN) {
                     when (keyCode) {
                         KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
-                            if(binding.button.isEnabled) binding.button.performClick()
+                            binding.button.performClick()
                             return true
                         }
                         else -> {}
@@ -94,44 +96,47 @@ class Arithmetics : Fragment() {
                 binding.timer.setText((millisUntilFinished/1000).toString())
             }
             override fun onFinish() {
-                binding.button.isEnabled = false
+                //binding.button.isEnabled = false
                 if(!MyApplication.onlineMode) {
                     Toast.makeText(context, "You have reached a score of " + (viewmodel.score).toString() + ".", Toast.LENGTH_SHORT).show()
                     val handler = Handler(Looper.getMainLooper())
                     handler.postDelayed({
                         this.start()
-                        binding.button.isEnabled = true
+                        //binding.button.isEnabled = true
                         viewmodel.logic.reset()
                     }, 6000)
                 }else{
                     if(MyApplication.isCodeMaker) {
                         //Schreib deinen score in die DB...
                         MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
-                        //Warte darauf das Guest seinen Score einträgt...
-                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                if(snapshot.value != null){
-                                    //Determine who is the winner...
-                                        var networkWinner = ""
-                                    if(viewmodel.score > snapshot.value.toString().toInt()){
-                                        //Host won
-                                        networkWinner = MyApplication.hostID
+                        //Prüfe ob Raum noch existiert...
+                        MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
+                            //Warte darauf das Guest seinen Score einträgt...
+                            MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if(snapshot.value != null ){
+                                        //Determine who is the winner...
+                                            var networkWinner = ""
+                                        if(viewmodel.score > snapshot.value.toString().toInt()){
+                                            //Host won
+                                            networkWinner = MyApplication.hostID
+                                        }
+                                        else if(viewmodel.score < snapshot.value.toString().toInt()){
+                                            //Guest won
+                                            networkWinner = MyApplication.guestID
+                                        }
+                                        else networkWinner = "-1"  //Draw
+                                        //Enter Winner
+                                        MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
                                     }
-                                    else if(viewmodel.score < snapshot.value.toString().toInt()){
-                                        //Guest won
-                                        networkWinner = MyApplication.guestID
-                                    }
-                                    else networkWinner = "-1"  //Draw
-                                    //Enter Winner
-                                    MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
                                 }
-                            }
 
-                            override fun onCancelled(error: DatabaseError) {
-                                TODO("Not yet implemented")
-                            }
+                                override fun onCancelled(error: DatabaseError) {
+                                    TODO("Not yet implemented")
+                                }
 
-                        })
+                            })
+                        }
                     }
                     else {
                         //Schreib deinen score in die DB...
