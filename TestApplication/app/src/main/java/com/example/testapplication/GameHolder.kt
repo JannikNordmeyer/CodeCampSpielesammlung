@@ -88,10 +88,10 @@ class GameHolder : AppCompatActivity() {
 
         //Select Fragment and load it's Viewmodel
         when (MyApplication.globalSelectedGame) {
-            GameNames.PLACEHOLDERSPIEL1 -> {
+            GameNames.COMPASS -> {
                 fragToLoad = PlaceholderSpiel1()
                 viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel::class.java)
-                Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
+                Log.d(TAG, "LOADED COMPASS")
             }
             GameNames.ARITHMETICS -> {
                 fragToLoad = Arithmetics()

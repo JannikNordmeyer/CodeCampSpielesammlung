@@ -70,7 +70,7 @@ class GameSelect : AppCompatActivity() {
         }
 
         binding.ButtonPlaceholderSpiel1.setOnClickListener(){
-            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL1
+            MyApplication.globalSelectedGame = GameNames.COMPASS
             startGame()
         }
 

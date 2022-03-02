@@ -9,6 +9,8 @@ import com.example.testapplication.databinding.ActivityLoginBinding
 import com.example.testapplication.databinding.ActivityRegistrationBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.messaging.FirebaseMessaging
 
 class Registration : AppCompatActivity() {
 
@@ -51,6 +53,12 @@ class Registration : AppCompatActivity() {
 
                             val firebaseUser: FirebaseUser = task.result!!.user!!
                             MyApplication.myRef.child("FriendCodes").child(FirebaseAuth.getInstance().uid.toString()).setValue(FirebaseAuth.getInstance().currentUser!!.email)
+                            FirebaseMessaging.getInstance().token.addOnSuccessListener {
+
+                                if(it != null){
+                                MyApplication.myRef.child("MessagingTokens").child(FirebaseAuth.getInstance().uid.toString()).setValue(it)}
+                            }
+
 
                             //Anlegen der Zähler für die Statistiken
                             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(0)
@@ -70,6 +78,26 @@ class Registration : AppCompatActivity() {
                             val map3: MutableMap<String, Any> = HashMap()
                             map3[key3!!] = 0
                             MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("HighScore").updateChildren(map)
+
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").setValue(0)
+                            val key4: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").push().getKey()
+                            val map4: MutableMap<String, Any> = HashMap()
+                            map4[key4!!] = 0
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").updateChildren(map)
+
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").setValue(0)
+                            val key5: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").push().getKey()
+                            val map5: MutableMap<String, Any> = HashMap()
+                            map5[key5!!] = 0
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("HighScore").updateChildren(map)
+
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("GamesPlayed").setValue(0)
+                            val key6: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("Win%").push().getKey()
+                            val map6: MutableMap<String, Any> = HashMap()
+                            map6[key6!!] = 0
+                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("Win%").updateChildren(map)
+
+
 
                             Toast.makeText(this, "Registration Successful.", Toast.LENGTH_SHORT ).show()
 
