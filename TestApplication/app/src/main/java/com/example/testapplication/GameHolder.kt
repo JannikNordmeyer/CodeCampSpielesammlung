@@ -236,6 +236,7 @@ class GameHolder : AppCompatActivity() {
                                 gamesPlayed++
                                 if (it.value == null) {
                                     startLoad()
+                                    Log.d(TAG, "########################### STARTING LOAD #################################")
                                     MyApplication.isLoading = true
                                     MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(true)
                                 } else if (it.value == true) {
@@ -356,10 +357,9 @@ class GameHolder : AppCompatActivity() {
             }
             is ArithmeticsViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
-                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue().addOnSuccessListener(this) {
-                        if (MyApplication.networkSetupComplete) {
-                            MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
-                        }
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
+                    if (MyApplication.networkSetupComplete) {
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
                     }
                 }
                 if(MyApplication.networkSetupComplete) viewmodel.gameTimer.start()
