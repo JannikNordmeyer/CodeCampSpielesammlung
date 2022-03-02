@@ -4,9 +4,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.example.testapplication.MyApplication.Companion.FRIENDS_TOPIC
+import com.example.testapplication.MyApplication.Companion.sendNotification
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 class GameSelect : AppCompatActivity() {
@@ -29,6 +32,8 @@ class GameSelect : AppCompatActivity() {
         //Get reference to database once on game launch
         MyApplication.database = FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
         MyApplication.myRef = MyApplication.database.reference;
+
+        FirebaseMessaging.getInstance().subscribeToTopic(FRIENDS_TOPIC)
 
         var currentuser = FirebaseAuth.getInstance().currentUser
         if(currentuser != null) {
@@ -96,6 +101,10 @@ class GameSelect : AppCompatActivity() {
         }
 
         binding.FriendsButton.setOnClickListener(){
+
+            val title = "Test"
+            val message = "Dies ist ein Test."
+            PushNotification(NotificationData(title, message), FRIENDS_TOPIC).also { sendNotification(it) }
 
             if(currentuser != null) {
                 val intent = Intent(this, FriendsList::class.java);
