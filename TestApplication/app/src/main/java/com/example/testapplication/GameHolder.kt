@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +31,7 @@ class GameHolder : AppCompatActivity() {
     lateinit var remachtListener: ValueEventListener
     lateinit var exitPlayerListener: ValueEventListener
 
-    //Session stat variables
+    //Session stat variables TODO: Probably make a proper GameHolder viewmodel to save these in
     var gamesPlayed = 1
 
     var quickplayFilter = ""
@@ -217,7 +218,7 @@ class GameHolder : AppCompatActivity() {
                         } else {
                             build.setTitle("Game Over!")
                             build.setMessage("$value has won the game!")
-                            //Win Percentage updaten - alle Spiele?
+                            //Win Percentage updaten
                             if(value == FirebaseAuth.getInstance().currentUser!!.email){
                                 MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener {
                                     if (it != null){
@@ -227,6 +228,22 @@ class GameHolder : AppCompatActivity() {
                                         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").updateChildren(map)
                                     }
                                 }
+                            }
+                            //High Score loggen
+                            if(MyApplication.globalSelectedGame == GameNames.ARITHMETICS || MyApplication.globalSelectedGame == GameNames.SCHRITTZAEHLER){
+                                //Get Local Score
+                                var score = 0
+                                if(MyApplication.globalSelectedGame == GameNames.ARITHMETICS){ score = (viewmodel as ArithmeticsViewModel).score }
+                                else{ score = (viewmodel as SchrittzaehlerViewModel).score }
+                                //Get network score
+                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScores").get().addOnSuccessListener {
+                                    // New High Score
+                                    if(score > it.value.toString().toInt()){
+                                        //TODO: Toast. Was aber als Context? Keine Ahnung bruder
+                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScores").setValue(score)
+                                    }
+                                }
+
                             }
                         }
 

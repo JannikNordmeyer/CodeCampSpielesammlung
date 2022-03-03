@@ -6,6 +6,6 @@ class SchrittzaehlerViewModel: ViewModel() {
 
     var logic = SchrittzaehlerLogic()
 
-    //WEITERER CODE HIER
+    var score = 0
 
 }
