@@ -88,6 +88,8 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     private var gps_enabled = false
     private var network_enabled = false
     lateinit var timer: CountDownTimer
+    lateinit var completionTimer: CountDownTimer
+    var completionTime : Float = 0.0f
     var timerStarted = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -113,6 +115,17 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
 
             override fun onFinish() {
                 Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+            }
+        }
+
+        completionTimer = object : CountDownTimer(60000, 100) {
+            override fun onTick(millisUntilFinished: Long) {
+                completionTime = 60000 - millisUntilFinished.toFloat()
+                binding.idTimer.text = (completionTime/1000).toString()
+            }
+
+            override fun onFinish() {
+                Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
             }
 
         }
@@ -171,6 +184,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
             if(ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 val location = fusedLocationClient.lastLocation.addOnSuccessListener {
                     if (it != null) {
+                        completionTimer.start()
                         val longitude = it.longitude
                         val latitude = it.latitude
                         val long = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
@@ -193,18 +207,6 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         return view
     }
 
-    private fun buildAlertMessageNoGps() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
-            .setCancelable(false)
-            .setPositiveButton("Yes",
-                DialogInterface.OnClickListener { dialog, id -> startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) })
-            .setNegativeButton("No",
-                DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
-        val alert: AlertDialog = builder.create()
-        alert.show()
-    }
-
     private fun apiCall() {
         val url = "https://geoportal.kassel.de/arcgis/rest/services/Service_Daten/Freizeit_Kultur/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&" +
                 "geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationPar" +
@@ -220,6 +222,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
             Response.Listener {
                 val rand = Random.nextInt(0,132)
                 targetLocation = it.getJSONArray("features").getJSONObject(rand)
+                binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
                 Log.d("MainActivity", "test: " + targetLocation.toString())
             }, Response.ErrorListener {
                 Log.d("MainActivity", "Api call failed")
