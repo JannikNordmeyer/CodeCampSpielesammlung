@@ -223,7 +223,7 @@ class GameHolder : AppCompatActivity() {
                                     if (it != null){
                                         val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").push().getKey()
                                         val map: MutableMap<String, Any> = HashMap()
-                                        map[key!!] = (it.value as Int + gamesPlayed).toString()
+                                        map[key!!] = (it.value.toString().toInt() + gamesPlayed).toString()
                                         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").updateChildren(map)
                                     }
                                 }
