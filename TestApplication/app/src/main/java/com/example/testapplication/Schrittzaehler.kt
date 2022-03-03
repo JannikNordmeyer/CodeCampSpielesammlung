@@ -24,6 +24,13 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     lateinit var sensorManager: SensorManager
     lateinit var stepsSensor: Sensor
 
+    lateinit var myContext: Context
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        myContext = context
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
 
@@ -31,8 +38,8 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         val view = binding.root
         val viewmodel = ViewModelProvider(requireActivity()).get(SchrittzaehlerViewModel::class.java) //Shared Viewmodel w/ GameHolder
 
-        sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        stepsSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        sensorManager = myContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        stepsSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         return view
     }
 

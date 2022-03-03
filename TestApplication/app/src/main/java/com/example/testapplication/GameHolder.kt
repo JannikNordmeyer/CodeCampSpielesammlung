@@ -1,6 +1,9 @@
 package com.example.testapplication
 
 import android.app.AlertDialog
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log

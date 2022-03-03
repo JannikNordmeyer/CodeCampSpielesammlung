@@ -30,6 +30,7 @@ class GameSelectNetwork : AppCompatActivity() {
     private lateinit var quickplayListener: ValueEventListener
 
     var quickplayFilter = ""
+    var lobbyName = ""
 
     override fun onDestroy() {
         super.onDestroy()
@@ -97,7 +98,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
             MyApplication.isCodeMaker = true
             //Verlasse Quickplay Lobby
-            MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(null)
+            MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
             MyApplication.onlineMode = true;
             //Markiere mich als Host im Raum
             Log.d(TAG, "ADDING LISTENER FOR HOST ENTRY IN ROOM ???")
@@ -129,7 +130,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(opponent)/*Host Email*/
             MyApplication.isCodeMaker = false
             //Verlasse Quickplay Lobby
-            MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(null)
+            MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
             //Markiere mich als Guest im Raum
             Log.d(TAG, "ADDING LISTENER FOR GUEST ENTRY IN ROOM")
 
@@ -171,31 +172,11 @@ class GameSelectNetwork : AppCompatActivity() {
 
         })
 
-        //TODO: Was ist das? Ist das nicht einfach nur Quickplay?
-        binding.BtnOnline.setOnClickListener {
-
-        }
-
-        binding.BtnOffline.setOnClickListener {
-            MyApplication.onlineMode = false
-            Log.d(TAG,"START GAME FROM OFFLINE GAME")
-            startGame()
-        }
-
-        binding.buttonreturn.setOnClickListener{
-            finish()
-        }
-
-        binding.BtnFriend.setOnClickListener {
-            //TODO: IMPLEMENT
-        }
-
-        binding.BtnQuickplay.setOnClickListener {
+        fun createLobby(LobbyName: String){
             startLoad()
-            Log.d(TAG, "####### QUICKPLAY BUTTON PRESSED ########")
             Log.d(TAG, "ADDING ON SUCCESS LISTENER FOR GETTING QUICKPLAY LOBBY")
             //Hole die Liste von Spielern in der Quickplay Lobby
-            MyApplication.myRef.child("Quickplay").child(quickplayFilter).get().addOnSuccessListener(this) {
+            MyApplication.myRef.child(LobbyName).child(quickplayFilter).get().addOnSuccessListener(this) {
                 Log.d(TAG, "NSIDE ON SUCCESS LISTENER FOR QUICKPLAY LOBBY")
                 if(it.value != null){  //Falls es Spieler gibt...
                     Log.d(TAG, "FOUND OTHER PLAYER IN QUICKPLAY LOBBY")
@@ -209,16 +190,38 @@ class GameSelectNetwork : AppCompatActivity() {
                 } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
                     Log.d(TAG, "NO PLAYERS IN QUICKPLAY LOBBY - BECOME HOST")
                     host = true
-                    MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(FirebaseAuth.getInstance().currentUser!!.email)
+                    MyApplication.myRef.child(LobbyName).child(quickplayFilter).setValue(FirebaseAuth.getInstance().currentUser!!.email)
                 }
                 Log.d(TAG, "QUICKPLAY LOBBY LISTENER END")
             }
-            Log.d(TAG, "####### QUICKPLAY BUTTON CODE END #######")
+        }
+
+        // Lobby w/Name
+        binding.BtnOnlineRoomCode.setOnClickListener {
+            lobbyName = binding.InviteLobbyName.text.toString()
+
+            createLobby(lobbyName)
+        }
+
+
+        binding.BtnOffline.setOnClickListener {
+            MyApplication.onlineMode = false
+            Log.d(TAG,"START GAME FROM OFFLINE GAME")
+            startGame()
+        }
+
+        binding.buttonreturn.setOnClickListener{
+            finish()
+        }
+
+        binding.BtnQuickplay.setOnClickListener {
+            lobbyName = "Quickplay"
+            createLobby(lobbyName)
         }
 
         //Verlasse Quickplay Lobby wenn man als Host Wartet
         binding.BtnCancel.setOnClickListener {
-            MyApplication.myRef.child("Quickplay").child(quickplayFilter).setValue(null)
+            MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
             host = false
             stopLoad()
         }
@@ -232,23 +235,21 @@ class GameSelectNetwork : AppCompatActivity() {
     }
 
     fun startLoad() {
-        binding.BtnOnline.visibility    = View.GONE
-        binding.BtnFriend.visibility    = View.GONE
+        binding.BtnOnlineRoomCode.visibility    = View.GONE
+        binding.InviteLobbyName.visibility    = View.GONE
         binding.BtnOffline.visibility   = View.GONE
         binding.BtnQuickplay.visibility = View.GONE
         binding.buttonreturn.visibility = View.GONE
-        //binding.TVHead.visibility       = View.GONE
         binding.PBLoading.visibility    = View.VISIBLE
         binding.BtnCancel.visibility    = View.VISIBLE
     }
 
     fun stopLoad() {
-        binding.BtnOnline.visibility    = View.VISIBLE
-        binding.BtnFriend.visibility    = View.VISIBLE
+        binding.BtnOnlineRoomCode.visibility    = View.VISIBLE
+        binding.InviteLobbyName.visibility    = View.VISIBLE
         binding.BtnOffline.visibility   = View.VISIBLE
         binding.BtnQuickplay.visibility = View.VISIBLE
         binding.buttonreturn.visibility = View.VISIBLE
-        //binding.TVHead.visibility       = View.VISIBLE
         binding.PBLoading.visibility    = View.GONE
         binding.BtnCancel.visibility    = View.GONE
     }
