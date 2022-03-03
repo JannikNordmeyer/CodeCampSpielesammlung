@@ -1,6 +1,7 @@
 package com.example.testapplication
 
 import android.os.CountDownTimer
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import java.util.*
@@ -18,9 +19,11 @@ class ArithmeticsViewModel: ViewModel() {
         logic.enter(result)
     }
 
-    fun reset(){
+    fun resetGame(){
         score = 0
         opponent_score = 0
+        logic.start()
+        Log.d("VIEWMODEL RESET CALLED","VIEWMODEL RESET CALLED")
     }
 
     lateinit var gameTimer: CountDownTimer

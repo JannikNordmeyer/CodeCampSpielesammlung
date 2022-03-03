@@ -101,7 +101,7 @@ class Arithmetics : Fragment() {
                     val handler = Handler(Looper.getMainLooper())
                     handler.postDelayed({
                         this.start()
-                        viewmodel.logic.reset()
+                        viewmodel.resetGame()
                     }, 6000)
                 }else{
                     //Prüfe ob Raum existiert...

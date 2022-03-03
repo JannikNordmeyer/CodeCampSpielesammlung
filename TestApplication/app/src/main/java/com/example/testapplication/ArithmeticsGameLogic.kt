@@ -31,7 +31,11 @@ class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
 
     fun start() {
 
+        Log.d("fug","##################### START AUFGERUFEN #####################")
+
         var i = 0
+        expressions.clear()
+        exprCounter = 0
         while(i < 38){
 
             operator = operators[(0..3).random()]
@@ -128,6 +132,7 @@ class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
     fun cycle(){
 
         liveExpr.value = expressions[exprCounter]
+        liveScore.value = viewmodel.score
         operand1 = expressions[exprCounter].first
         operand2 = expressions[exprCounter].second
         operator = expressions[exprCounter].third
