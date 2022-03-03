@@ -14,6 +14,7 @@ import java.lang.Exception
 class MyApplication : Application() {
     companion object {
         var globalSelectedGame = GameNames.NONE         //The selected game
+        var globalSelectedGameStatLocation = ""
 
         //TODO: Rename isCodeMaker to isHost, but only do that after deleting the old files
 

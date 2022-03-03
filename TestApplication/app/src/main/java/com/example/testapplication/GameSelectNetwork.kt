@@ -54,21 +54,27 @@ class GameSelectNetwork : AppCompatActivity() {
         when (MyApplication.globalSelectedGame) {
             GameNames.COMPASS -> {
                 quickplayFilter = "PLACEHOLDERSPIEL1"
+                MyApplication.globalSelectedGameStatLocation = "COMPASS"
             }
             GameNames.ARITHMETICS -> {
                 quickplayFilter = "ARITHMETICS"
+                MyApplication.globalSelectedGameStatLocation = "ARITHMETICS"
             }
             GameNames.SCHRITTZAEHLER -> {
                 quickplayFilter = "SCHRITTZAEHLER"
+                MyApplication.globalSelectedGameStatLocation = "SCHRITTZAEHLER"
             }
             GameNames.PLACEHOLDERSPIEL4 -> {
                 quickplayFilter = "PLACEHOlDERSPIEL4"
+                MyApplication.globalSelectedGameStatLocation = "PLACEHOLDERSPIEL4"
             }
             GameNames.PLACEHOLDERSPIEL5 -> {
                 quickplayFilter = "PLACEHOLDERSPIEL5"
+                MyApplication.globalSelectedGameStatLocation = "PLACEHOLDERSPIEL5"
             }
             GameNames.TICTACTOE -> {
                 quickplayFilter = "TICTACTOE"
+                MyApplication.globalSelectedGameStatLocation = "TICTACTOE"
             }
             else -> Log.d(TAG, " ERROR: FAILED TO LOAD QUICKPLAY FILTER")
         }

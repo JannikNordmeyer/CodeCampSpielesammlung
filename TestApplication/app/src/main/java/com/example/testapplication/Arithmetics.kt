@@ -96,13 +96,11 @@ class Arithmetics : Fragment() {
                 binding.timer.setText((millisUntilFinished/1000).toString())
             }
             override fun onFinish() {
-                //binding.button.isEnabled = false
                 if(!MyApplication.onlineMode) {
                     Toast.makeText(context, "You have reached a score of " + (viewmodel.score).toString() + ".", Toast.LENGTH_SHORT).show()
                     val handler = Handler(Looper.getMainLooper())
                     handler.postDelayed({
                         this.start()
-                        //binding.button.isEnabled = true
                         viewmodel.logic.reset()
                     }, 6000)
                 }else{

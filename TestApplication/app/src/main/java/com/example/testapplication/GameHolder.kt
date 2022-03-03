@@ -43,11 +43,11 @@ class GameHolder : AppCompatActivity() {
     }
 
     private fun updateStatistics() {
-        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener(this) {
+        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener(this) {
             if(it != null){
                 var _gamesPlayed = it.value.toString().toInt()
                 _gamesPlayed += gamesPlayed
-                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(_gamesPlayed)
+                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").setValue(_gamesPlayed)
             }
         }
     }
@@ -219,12 +219,12 @@ class GameHolder : AppCompatActivity() {
                             build.setMessage("$value has won the game!")
                             //Win Percentage updaten - alle Spiele?
                             if(value == FirebaseAuth.getInstance().currentUser!!.email){
-                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGame.toString()).child("GamesPlayed").get().addOnSuccessListener {
+                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener {
                                     if (it != null){
-                                        val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGame.toString()).child("Win%").push().getKey()
+                                        val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").push().getKey()
                                         val map: MutableMap<String, Any> = HashMap()
-                                        map[key!!] = it.value.toString()
-                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGame.toString()).child("Win%").updateChildren(map)
+                                        map[key!!] = (it.value as Int + gamesPlayed).toString()
+                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").updateChildren(map)
                                     }
                                 }
                             }
