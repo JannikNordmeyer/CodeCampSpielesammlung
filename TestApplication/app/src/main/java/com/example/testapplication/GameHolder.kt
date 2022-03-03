@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.ActivityGameHolderBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.lang.Integer.max
 
 class GameHolder : AppCompatActivity() {
 
@@ -235,12 +236,12 @@ class GameHolder : AppCompatActivity() {
                                 var score = 0
                                 if(MyApplication.globalSelectedGame == GameNames.ARITHMETICS){ score = (viewmodel as ArithmeticsViewModel).score }
                                 else{ score = (viewmodel as SchrittzaehlerViewModel).score }
-                                //Get network score
-                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScores").get().addOnSuccessListener {
-                                    // New High Score
-                                    if(score > it.value.toString().toInt()){
-                                        //TODO: Toast. Was aber als Context? Keine Ahnung bruder
-                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScores").setValue(score)
+                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").get().addOnSuccessListener {
+                                    if (it != null){
+                                        val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").push().getKey()
+                                        val map: MutableMap<String, Any> = HashMap()
+                                        map[key!!] = max(it.children.last().value.toString().toInt(),score)
+                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").updateChildren(map)
                                     }
                                 }
 
