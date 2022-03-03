@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".GameHolder">
 
-    <Button
+    <ImageButton
         android:id="@+id/midright"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -15,13 +15,16 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline21"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline19"
         app:layout_constraintTop_toTopOf="@+id/guideline20" />
 
-    <Button
+    <ImageButton
         android:id="@+id/midmid"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -30,6 +33,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline21"
         app:layout_constraintEnd_toStartOf="@+id/guideline19"
@@ -37,7 +43,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline18"
         app:layout_constraintTop_toTopOf="@+id/guideline20" />
 
-    <Button
+    <ImageButton
         android:id="@+id/botmid"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -46,6 +52,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline15"
         app:layout_constraintEnd_toStartOf="@+id/guideline19"
@@ -53,7 +62,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline18"
         app:layout_constraintTop_toTopOf="@+id/guideline21" />
 
-    <Button
+    <ImageButton
         android:id="@+id/topright"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -62,6 +71,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,7 +81,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline19"
         app:layout_constraintTop_toTopOf="@+id/guideline11" />
 
-    <Button
+    <ImageButton
         android:id="@+id/topmid"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -78,6 +90,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintEnd_toStartOf="@+id/guideline19"
@@ -85,7 +100,7 @@
         app:layout_constraintStart_toStartOf="@+id/guideline18"
         app:layout_constraintTop_toTopOf="@+id/guideline11" />
 
-    <Button
+    <ImageButton
         android:id="@+id/midleft"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -94,13 +109,16 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline21"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline20" />
 
-    <Button
+    <ImageButton
         android:id="@+id/botright"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -109,6 +127,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline15"
         app:layout_constraintEnd_toEndOf="parent"
@@ -116,7 +137,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline21"
         app:layout_constraintVertical_bias="0.0" />
 
-    <Button
+    <ImageButton
         android:id="@+id/topleft"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -125,13 +146,17 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:src="@null"
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline20"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline11" />
 
-    <Button
+    <ImageButton
         android:id="@+id/botleft"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -140,6 +165,9 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:text="  "
+        android:scaleType="fitCenter"
+        android:padding="15dp"
+        android:background="@drawable/roundcorner"
         android:textSize="64sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline15"
         app:layout_constraintEnd_toStartOf="@+id/guideline18"
