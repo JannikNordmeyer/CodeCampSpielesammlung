@@ -196,10 +196,26 @@ class GameSelectNetwork : AppCompatActivity() {
             }
         }
 
+        fun inviteFriend(lobbyName: String){
+            //Send my friend a push notification with a random lobby code for our lobby :)
+            MyApplication.myRef.child("MessagingTokens").child(MyApplication.inviteFriendID.toString()).get().addOnSuccessListener {
+                if(it != null){
+                    val id = it.value.toString()
+                    val title = SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + " has invited you to a game of " + quickplayFilter
+                    val message = "Lobby Name: " + lobbyName
+                    PushNotification(NotificationData(title, message), id).also { MyApplication.sendNotification(it) }
+                }
+            }
+        }
+
         // Lobby w/Name
         binding.BtnOnlineRoomCode.setOnClickListener {
             lobbyName = binding.InviteLobbyName.text.toString()
-
+            if(MyApplication.inviteFriendID != ""){
+                inviteFriend(lobbyName)
+                MyApplication.inviteFriendID = ""
+                Toast.makeText(this,"Invited Friend!",Toast.LENGTH_SHORT).show()
+            }
             createLobby(lobbyName)
         }
 

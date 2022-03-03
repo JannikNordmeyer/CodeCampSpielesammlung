@@ -57,7 +57,6 @@ class GameSelect : AppCompatActivity() {
 
             }
         }
-
         binding.ButtonTicTacToe.setOnClickListener(){
             if(currentuser != null) {
             MyApplication.globalSelectedGame = GameNames.TICTACTOE

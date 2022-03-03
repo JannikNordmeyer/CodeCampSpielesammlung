@@ -1,5 +1,6 @@
 package com.example.testapplication
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,10 +19,24 @@ class TicTacToe : Fragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
 
+
     //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
     fun SplitString(str:String): String{
         var split=str.split("@")
         return split[0]
+    }
+
+    fun getIcon(str : String) : Int{
+
+        if(str == "X"){
+            return R.drawable.x
+        }
+        if(str == "O"){
+            return return R.drawable.o
+        }
+
+        return return android.R.color.transparent
+
     }
 
     private val TAG = TicTacToeGameLogic::class.java.simpleName
@@ -55,23 +70,24 @@ class TicTacToe : Fragment() {
             }
         }
 
-        viewmodel.logic.livewinner.observe(viewLifecycleOwner, ){
+        viewmodel.logic.livewinner.observe(viewLifecycleOwner){
             updatePrompt()
         }
 
         viewmodel.logic.liveboard.observe(viewLifecycleOwner, {
             Log.d(TAG, "Liveboard update")
-            binding.topleft.setText(viewmodel.logic.board[0][0])
-            binding.topmid.setText(viewmodel.logic.board[0][1])
-            binding.topright.setText(viewmodel.logic.board[0][2])
 
-            binding.midleft.setText(viewmodel.logic.board[1][0])
-            binding.midmid.setText(viewmodel.logic.board[1][1])
-            binding.midright.setText(viewmodel.logic.board[1][2])
+            binding.topleft.setImageResource(getIcon(viewmodel.logic.board[0][0]))
+            binding.topmid.setImageResource(getIcon(viewmodel.logic.board[0][1]))
+            binding.topright.setImageResource(getIcon(viewmodel.logic.board[0][2]))
 
-            binding.botleft.setText(viewmodel.logic.board[2][0])
-            binding.botmid.setText(viewmodel.logic.board[2][1])
-            binding.botright.setText(viewmodel.logic.board[2][2])
+            binding.midleft.setImageResource(getIcon(viewmodel.logic.board[1][0]))
+            binding.midmid.setImageResource(getIcon(viewmodel.logic.board[1][1]))
+            binding.midright.setImageResource(getIcon(viewmodel.logic.board[1][2]))
+
+            binding.botleft.setImageResource(getIcon(viewmodel.logic.board[2][0]))
+            binding.botmid.setImageResource(getIcon(viewmodel.logic.board[2][1]))
+            binding.botright.setImageResource(getIcon(viewmodel.logic.board[2][2]))
             updatePrompt()
         })
 

@@ -32,6 +32,8 @@ class MyApplication : Application() {
         var Ileft = false;
         var gameActive = true
 
+        var inviteFriendID = ""
+
         lateinit var database: FirebaseDatabase
         lateinit var myRef: DatabaseReference
 
