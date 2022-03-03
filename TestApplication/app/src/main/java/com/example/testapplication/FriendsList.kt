@@ -63,9 +63,7 @@ class FriendsList : AppCompatActivity() {
         binding.RequestButton.setOnClickListener{
 
             val requestID = binding.CodeField.text
-
             if(requestID.toString() == FirebaseAuth.getInstance().currentUser!!.uid){
-
                 Toast.makeText(this, "You cannot use your own ID.", Toast.LENGTH_SHORT ).show()
                 return@setOnClickListener
             }
@@ -74,9 +72,7 @@ class FriendsList : AppCompatActivity() {
             }
 
             MyApplication.myRef.child("FriendCodes").child(requestID.toString()).get().addOnSuccessListener {
-
                 if(it != null){
-
                     binding.CodeField.setText(it.value.toString())
 
                     MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").child(requestID.toString()).setValue(it.value)
@@ -89,21 +85,15 @@ class FriendsList : AppCompatActivity() {
                         if(it != null){
                             val id = it.value.toString()
                             val title = "New Friend"
-                            val message = SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + "has added you to their friend list."
+                            val message = SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + " has added you to their friend list."
                             PushNotification(NotificationData(title, message), id).also { sendNotification(it) }
                         }
-
                     }
-
                 }
                 else{
-
                     Toast.makeText(this, "Invalid Friend ID.", Toast.LENGTH_SHORT ).show()
-
                 }
-
             }
-
         }
 
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").addChildEventListener(object : ChildEventListener {
@@ -132,39 +122,27 @@ class FriendsList : AppCompatActivity() {
     }
 
     private fun getUserData() {
-
         MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").get().addOnSuccessListener {
-
             if (it != null) {
                 names.clear()
                 ids.clear()
                 val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
-
                 it.children.forEach(){
-
                     names.add(it.value.toString())
                     ids.add(it.key.toString())
-
                 }
-
                 updateRecyclerView()
-
             }
-
         }
-
     }
 
     fun updateRecyclerView(){
-
         newArrayList.clear()
         var i = 0
         while(i < names.size){
-
             val friend = Friend(names[i], ids[i])
             newArrayList.add(friend)
             i += 1
-
         }
         newRecyclerView.adapter = ListAdapter(newArrayList)
     }

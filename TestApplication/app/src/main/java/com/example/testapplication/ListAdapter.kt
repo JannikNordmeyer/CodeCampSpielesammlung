@@ -1,5 +1,6 @@
 package com.example.testapplication
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,63 +27,73 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
         binding = FriendCardBinding.inflate(layoutInflater)
         //setContentView(binding.root)
 
-        itemView.findViewById<Button>(R.id.deleteButton).setOnClickListener(){
-
-
+        //Invite Button technology
+        itemView.findViewById<Button>(R.id.BtnInvite).setOnClickListener(){
 
             MyApplication.myRef.child("FriendCodes").get().addOnSuccessListener {
 
                 if (it != null && it.value != null) {
-
                     val currentUser = FirebaseAuth.getInstance().currentUser!!.email
                     val currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
                     val friendName = itemView.findViewById<TextView>(R.id.FriendName).text
                     var friendID = ""
-
                     it.children.forEach(){
-
                         if(it.value == friendName){
-
                             friendID = it.key.toString()
+                            Log.d("FREUNDES SHIT", friendID)
+                        }
+                    }
 
+                    //Send my friend a push notification with a random lobby code for our lobby :)
+                    MyApplication.myRef.child("MessagingTokens").child(friendID.toString()).get().addOnSuccessListener {
+                        if(it != null){
+                            val id = it.value.toString()
+                            val title = "Bald nimmt Schicksal seinen Lauf"
+                            val message = SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + " will dir die Zähne ausschlagen"
+                            PushNotification(NotificationData(title, message), id).also { MyApplication.sendNotification(it) }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Delete button technology
+        itemView.findViewById<Button>(R.id.deleteButton).setOnClickListener(){
+
+            MyApplication.myRef.child("FriendCodes").get().addOnSuccessListener {
+
+                if (it != null && it.value != null) {
+                    val currentUser = FirebaseAuth.getInstance().currentUser!!.email
+                    val currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
+                    val friendName = itemView.findViewById<TextView>(R.id.FriendName).text
+                    var friendID = ""
+                    it.children.forEach(){
+                        if(it.value == friendName){
+                            friendID = it.key.toString()
                         }
                     }
 
                     MyApplication.myRef.child("Users").child(SplitString(currentUser.toString())).child("Friends").get().addOnSuccessListener {
-
                         it.children.forEach(){
-
                             if(it.key == friendID){
-
                                 MyApplication.myRef.child("Users").child(SplitString(currentUser.toString())).child("Friends").child(friendID).removeValue().addOnSuccessListener {
-
                                 }
                                 MyApplication.myRef.child("Users").child(SplitString(friendName.toString())).child("Friends").child(currentUserID).removeValue()
-
                             }
-
                         }
-
                     }
-
                 }
-
             }
-
         }
-
         return ListViewHolder(itemView)
-
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-
         val currentItem = FriendsList[position]
         holder.FriendName.setText(currentItem.Name)
     }
 
     override fun getItemCount(): Int {
-
         return FriendsList.size
     }
 
@@ -93,9 +104,6 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
     }
 
     class ListViewHolder(itemView : View) :RecyclerView.ViewHolder(itemView){
-
-
-
         val FriendName : TextView = itemView.findViewById(R.id.FriendName)
     }
 }
