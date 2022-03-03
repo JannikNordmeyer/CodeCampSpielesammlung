@@ -20,7 +20,6 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -51,7 +50,7 @@ import android.content.Intent
 
 import android.content.DialogInterface
 import android.location.LocationRequest
-import android.os.CountDownTimer
+import android.os.*
 import android.provider.Settings
 import android.widget.Toast
 import com.google.android.gms.location.LocationResult
@@ -64,6 +63,14 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import org.json.JSONArray
 import kotlin.collections.ArrayList
+
+import androidx.core.content.ContextCompat
+
+import androidx.core.content.ContextCompat.getSystemService
+
+
+
+
 
 
 class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
@@ -97,6 +104,8 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     private var network_enabled = false
     lateinit var timer: CountDownTimer
     lateinit var completionTimer: CountDownTimer
+    lateinit var vibrateTimer: CountDownTimer
+    var vibTimerRunning = false
     var completionTime : Float = 0.0f
     var timerStarted = false
 
@@ -126,7 +135,6 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
 
             override fun onFinish() {
                 apiCall(indexList[listindex++])
-
                 getTargetDirection()
                 Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
             }
@@ -142,6 +150,21 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                 apiCall(indexList[listindex++])
                 getTargetDirection()
                 Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        vibrateTimer = object : CountDownTimer(1000, 100) {
+            override fun onTick(millisUntilFinished: Long) {
+            }
+
+            override fun onFinish() {
+                val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                if (vibrator.hasVibrator()) { // Vibrator availability checking
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)) // New vibrate method for API Level 26 or higher
+                    }
+                }
+                vibrateTimer.start()
             }
 
         }
@@ -187,26 +210,24 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                 //MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").push().setValue(rand)
                 indexList.add(rand)
             }
-            val childUpdates = hashMapOf<String, Int>("1" to indexList[0], "2" to indexList[1], "3" to indexList[2], "4" to indexList[3], "5" to indexList[4])
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").setValue(childUpdates,
-                { error, ref ->
-                    if (error == null) {
-                        MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
-                            Log.d("Compass", "LOOK HERE: " + it)
-                        }
-                        MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
-                    }
-                })
+            Log.d("Compass", "lookatme"+indexList.toString())
+            val childUpdates = hashMapOf<String, Any>("1" to indexList[0], "2" to indexList[1], "3" to indexList[2], "4" to indexList[3], "5" to indexList[4])
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").setValue(childUpdates).addOnSuccessListener {
+                MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
+            }
+
         }
 
         MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.value != false) {
+                if(snapshot.value == true) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
+                        Log.d("Compass", "lookatme"+it.toString())
+
                         for (data in it.children){
                             indexList.add(data.value.toString().toInt())
                         }
-                        Log.d("Compass", "lookatme"+it.toString())
+                        Log.d("Compass", "lookatme"+indexList.toString())
                         apiCall(indexList[listindex++])
                     }
 
@@ -232,7 +253,12 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
 
 
         binding.idBtnGenerate.setOnClickListener {
-            getTargetDirection()
+            val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (vibrator.hasVibrator()) { // Vibrator availability checking
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)) // New vibrate method for API Level 26 or higher
+                }
+            }
         }
 
         return view
@@ -305,7 +331,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                 targetLocation = it.getJSONArray("features").getJSONObject(key)
                 targetList.put(targetLocation)
                 getTargetDirection()
-                //binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
+                binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
                 Log.d("MainActivity", "test: " + targetLocation.toString())
             }, Response.ErrorListener {
                 Log.d("MainActivity", "Api call failed")
@@ -366,10 +392,30 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                         timer.start()
                         timerStarted = true
                     }
+
                 } else {
                     //stop
                     timer.cancel()
                     timerStarted = false
+                }
+
+                if ((targetDirectionDegree - 90)%360 <= azimuth && azimuth <= (targetDirectionDegree + 90)%360) {
+                    //Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+                    //start
+                    if (!vibTimerRunning) {
+                        //vibrateTimer.start()
+                        val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                        if (vibrator.hasVibrator()) { // Vibrator availability checking
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)) // New vibrate method for API Level 26 or higher
+                            }
+                        }
+                        vibTimerRunning = true
+                    }
+                } else {
+                    //stop
+                    //vibrateTimer.cancel()
+                    vibTimerRunning = false
                 }
             }
         }
