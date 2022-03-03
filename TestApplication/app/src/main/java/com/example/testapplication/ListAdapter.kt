@@ -2,16 +2,15 @@ package com.example.testapplication
 
 import android.app.PendingIntent.getActivity
 import android.content.Context
+import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.testapplication.databinding.ActivityFriendsBinding
-import com.example.testapplication.databinding.ActivityLoginBinding
 import com.example.testapplication.databinding.FriendCardBinding
 import com.google.firebase.auth.FirebaseAuth
 
@@ -58,7 +57,7 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
         }
 
         //Delete button technology
-        itemView.findViewById<Button>(R.id.deleteButton).setOnClickListener(){
+        itemView.findViewById<ImageButton>(R.id.deleteButton).setOnClickListener(){
 
             MyApplication.myRef.child("FriendCodes").get().addOnSuccessListener {
 
