@@ -59,6 +59,11 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import org.json.JSONArray
+import kotlin.collections.ArrayList
 
 
 class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
@@ -71,6 +76,9 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     private lateinit var binding: FragmentPlaceholderspiel1Binding
 
     lateinit var targetLocation: JSONObject
+    lateinit var targetList: JSONArray
+    lateinit var indexList: ArrayList<Int>
+    var listindex = 0
     lateinit var sensorManager: SensorManager
     lateinit var sensorAccelerometer: Sensor
     lateinit var sensorMagneticField: Sensor
@@ -108,12 +116,18 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         mLocationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
+        targetList = JSONArray()
+        indexList = ArrayList()
+        targetLocation = JSONObject()
         timer = object : CountDownTimer(2000, 10) {
             override fun onTick(millisUntilFinished: Long) {
                 Log.d("Compass", millisUntilFinished.toString())
             }
 
             override fun onFinish() {
+                apiCall(indexList[listindex++])
+
+                getTargetDirection()
                 Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
             }
         }
@@ -125,6 +139,8 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
             }
 
             override fun onFinish() {
+                apiCall(indexList[listindex++])
+                getTargetDirection()
                 Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
             }
 
@@ -164,7 +180,45 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         }
         LocationServices.getFusedLocationProviderClient(context)
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
-        apiCall()
+
+        if (MyApplication.isCodeMaker) {
+            for (i in 0..4) {
+                val rand = Random.nextInt(0,132)
+                //MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").push().setValue(rand)
+                indexList.add(rand)
+            }
+            val childUpdates = hashMapOf<String, Int>("1" to indexList[0], "2" to indexList[1], "3" to indexList[2], "4" to indexList[3], "5" to indexList[4])
+            MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").setValue(childUpdates,
+                { error, ref ->
+                    if (error == null) {
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
+                            Log.d("Compass", "LOOK HERE: " + it)
+                        }
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
+                    }
+                })
+        }
+
+        MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.value != false) {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
+                        for (data in it.children){
+                            indexList.add(data.value.toString().toInt())
+                        }
+                        Log.d("Compass", "lookatme"+it.toString())
+                        apiCall(indexList[listindex++])
+                    }
+
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
+
+
+
 
         try {
             gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -176,35 +230,37 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         } catch (ex: Exception) {
         }
 
-        Log.d("Compass", gps_enabled.toString())
-        Log.d("Compass", network_enabled.toString())
 
         binding.idBtnGenerate.setOnClickListener {
-            apiCall()
-            if(ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                val location = fusedLocationClient.lastLocation.addOnSuccessListener {
-                    if (it != null) {
-                        completionTimer.start()
-                        val longitude = it.longitude
-                        val latitude = it.latitude
-                        val long = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
-                        val lat = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)
-                        val dir = FloatArray(2)
-                        dir[0] = longitude.toFloat() - long.toFloat()
-                        dir[1] = latitude.toFloat() - lat.toFloat()
-                        targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
-                        Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
-                        Log.d("Compass", targetDirectionDegree.toString())
-                    }
-                }
-
-            } else {
-                ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
-                Log.d("Compass", "No Access")
-            }
+            getTargetDirection()
         }
 
         return view
+    }
+
+    private fun getTargetDirection() {
+        //apiCall()
+        if(ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            val location = fusedLocationClient.lastLocation.addOnSuccessListener {
+                if (it != null) {
+                    completionTimer.start()
+                    val longitude = it.longitude
+                    val latitude = it.latitude
+                    val long = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
+                    val lat = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)
+                    val dir = FloatArray(2)
+                    dir[0] = longitude.toFloat() - long.toFloat()
+                    dir[1] = latitude.toFloat() - lat.toFloat()
+                    targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
+                    Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
+                    Log.d("Compass", targetDirectionDegree.toString())
+                }
+            }
+
+        } else {
+            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
+            Log.d("Compass", "No Access")
+        }
     }
 
     private fun apiCall() {
@@ -222,7 +278,34 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
             Response.Listener {
                 val rand = Random.nextInt(0,132)
                 targetLocation = it.getJSONArray("features").getJSONObject(rand)
-                binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
+                targetList.put(targetLocation)
+                //binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
+                targetLocation = targetList.getJSONObject(listindex)
+                Log.d("MainActivity", "test: " + targetLocation.toString())
+            }, Response.ErrorListener {
+                Log.d("MainActivity", "Api call failed")
+            }
+        )
+        queue.add(jsonObjectRequest)
+    }
+
+    private fun apiCall(key: Int) {
+        val url = "https://geoportal.kassel.de/arcgis/rest/services/Service_Daten/Freizeit_Kultur/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&" +
+                "geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationPar" +
+                "am=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&retu" +
+                "rnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVers" +
+                "ion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&par" +
+                "ameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+        val queue = Volley.newRequestQueue(activity)
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.GET,
+            url,
+            null,
+            Response.Listener {
+                targetLocation = it.getJSONArray("features").getJSONObject(key)
+                targetList.put(targetLocation)
+                getTargetDirection()
+                //binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
                 Log.d("MainActivity", "test: " + targetLocation.toString())
             }, Response.ErrorListener {
                 Log.d("MainActivity", "Api call failed")
