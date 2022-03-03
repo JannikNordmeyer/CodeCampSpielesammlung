@@ -2,17 +2,6 @@ package com.example.testapplication
 
 
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
-import com.example.testapplication.databinding.FragmentPlaceholderspiel1Binding
-
 /*import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
 import com.esri.arcgisruntime.toolkit.R
 import com.esri.arcgisruntime.mapping.ArcGISMap
@@ -20,6 +9,8 @@ import com.esri.arcgisruntime.mapping.BasemapStyle
 import com.esri.arcgisruntime.mapping.Viewpoint
 import com.esri.arcgisruntime.mapping.view.MapView*/
 
+//import com.esri.arcgisruntime.toolkit.compass.Compass
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -29,32 +20,45 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.media.MediaPlayer
-import java.io.IOException
+import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.android.volley.Request
-import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.*
+import com.example.testapplication.databinding.FragmentPlaceholderspiel1Binding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-//import com.esri.arcgisruntime.toolkit.compass.Compass
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.json.JSONObject
-import java.io.InputStream
-import java.lang.Exception
-import kotlin.random.Random
-import android.widget.Toast
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.random.Random
+import android.R
+import android.app.AlertDialog
+
+import android.content.Intent
+
+import android.content.DialogInterface
+import android.location.LocationRequest
+import android.os.CountDownTimer
+import android.provider.Settings
+import android.widget.Toast
+import com.google.android.gms.location.LocationResult
+
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 
 
 class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
@@ -81,6 +85,10 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     private var targetDirectionDegree: Double = 0.0
     lateinit var compass: ImageView
     lateinit var lastLocation: Location
+    private var gps_enabled = false
+    private var network_enabled = false
+    lateinit var timer: CountDownTimer
+    var timerStarted = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -97,23 +105,83 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         mLocationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
+        timer = object : CountDownTimer(2000, 10) {
+            override fun onTick(millisUntilFinished: Long) {
+                Log.d("Compass", millisUntilFinished.toString())
+            }
+
+            override fun onFinish() {
+                Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+            }
+
+        }
+
+        var mLocationRequest = LocationRequest()
+        mLocationRequest.interval = 60000
+        mLocationRequest.fastestInterval = 5000
+        //mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        val mLocationCallback: LocationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                if (locationResult == null) {
+                    return
+                }
+                for (location in locationResult.locations) {
+                    if (location != null) {
+                        //TODO: UI updates.
+                    }
+                }
+            }
+        }
+        if (ActivityCompat.checkSelfPermission(
+                activity!!,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                activity!!,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+        }
+        LocationServices.getFusedLocationProviderClient(context)
+            .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
         apiCall()
+
+        try {
+            gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        } catch (ex: Exception) {
+        }
+
+        try {
+            network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        } catch (ex: Exception) {
+        }
+
+        Log.d("Compass", gps_enabled.toString())
+        Log.d("Compass", network_enabled.toString())
 
         binding.idBtnGenerate.setOnClickListener {
             apiCall()
             if(ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                val location = fusedLocationClient.lastLocation.addOnCompleteListener {
-                    val longitude = it.result.longitude
-                    val latitude = it.result.latitude
-                    val long = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
-                    val lat = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)
-                    val dir = FloatArray(2)
-                    dir[0] = longitude.toFloat() - long.toFloat()
-                    dir[1] = latitude.toFloat() - lat.toFloat()
-                    targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
-                    Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
-                    Log.d("Compass", targetDirectionDegree.toString())
+                val location = fusedLocationClient.lastLocation.addOnSuccessListener {
+                    if (it != null) {
+                        val longitude = it.longitude
+                        val latitude = it.latitude
+                        val long = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
+                        val lat = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)
+                        val dir = FloatArray(2)
+                        dir[0] = longitude.toFloat() - long.toFloat()
+                        dir[1] = latitude.toFloat() - lat.toFloat()
+                        targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
+                        Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
+                        Log.d("Compass", targetDirectionDegree.toString())
+                    }
                 }
 
             } else {
@@ -125,8 +193,16 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         return view
     }
 
-    private fun getLocation() {
-
+    private fun buildAlertMessageNoGps() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+            .setCancelable(false)
+            .setPositiveButton("Yes",
+                DialogInterface.OnClickListener { dialog, id -> startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) })
+            .setNegativeButton("No",
+                DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+        val alert: AlertDialog = builder.create()
+        alert.show()
     }
 
     private fun apiCall() {
@@ -197,8 +273,17 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                 //Log.d("Compass", currentAzimuth.toString())
 
                 //check for right direction
-                if (targetDirectionDegree - 1 <= azimuth && azimuth < targetDirectionDegree + 1) {
-                    Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+                if ((targetDirectionDegree - 5)%360 <= azimuth && azimuth <= (targetDirectionDegree + 5)%360) {
+                    //Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+                    //start
+                    if (!timerStarted) {
+                        timer.start()
+                        timerStarted = true
+                    }
+                } else {
+                    //stop
+                    timer.cancel()
+                    timerStarted = false
                 }
             }
         }
