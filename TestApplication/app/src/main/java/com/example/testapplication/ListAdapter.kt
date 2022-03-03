@@ -1,5 +1,7 @@
 package com.example.testapplication
 
+import android.app.PendingIntent.getActivity
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +17,14 @@ import com.google.firebase.auth.FirebaseAuth
 
 class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Adapter<ListAdapter.ListViewHolder>() {
 
-
     private lateinit var binding: FriendCardBinding
 
+    private lateinit var context: Context
+
+    override fun onBindViewHolder(holder: ListViewHolder, position: Int, payloads: MutableList<Any>) {
+        super.onBindViewHolder(holder, position, payloads)
+        context = holder.itemView.context
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
 
@@ -30,6 +37,8 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
         //Invite Button technology
         itemView.findViewById<Button>(R.id.BtnInvite).setOnClickListener(){
 
+            Toast.makeText(context,"Create a lobby, and they will be invited.",Toast.LENGTH_LONG).show()
+
             MyApplication.myRef.child("FriendCodes").get().addOnSuccessListener {
 
                 if (it != null && it.value != null) {
@@ -37,20 +46,11 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
                     val currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
                     val friendName = itemView.findViewById<TextView>(R.id.FriendName).text
                     var friendID = ""
+                    //Get friend id and push Toast that you will invite the friend with the room name
                     it.children.forEach(){
                         if(it.value == friendName){
-                            friendID = it.key.toString()
+                            MyApplication.inviteFriendID = it.key.toString()
                             Log.d("FREUNDES SHIT", friendID)
-                        }
-                    }
-
-                    //Send my friend a push notification with a random lobby code for our lobby :)
-                    MyApplication.myRef.child("MessagingTokens").child(friendID.toString()).get().addOnSuccessListener {
-                        if(it != null){
-                            val id = it.value.toString()
-                            val title = "Bald nimmt Schicksal seinen Lauf"
-                            val message = SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + " will dir die Zähne ausschlagen"
-                            PushNotification(NotificationData(title, message), id).also { MyApplication.sendNotification(it) }
                         }
                     }
                 }
