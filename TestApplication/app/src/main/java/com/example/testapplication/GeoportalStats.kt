@@ -1,59 +1,76 @@
-package com.example.testapplication
-
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.testapplication.GameNames
+import com.example.testapplication.MyApplication
+import com.example.testapplication.databinding.FragmentGeoportalStatsBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [GeoportalStats.newInstance] factory method to
- * create an instance of this fragment.
- */
 class GeoportalStats : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentGeoportalStatsBinding
+    var gamesPlayed = 0
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_geoportal_stats, container, false)
+
+        binding = FragmentGeoportalStatsBinding.inflate(inflater,container,false)
+        val view = binding.root
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
+            GameNames.COMPASS.toString()).child("GamesPlayed").get().addOnSuccessListener {
+            if(it != null){
+                binding.gamesPlayedText.setText(it.value.toString())
+                gamesPlayed = it.value.toString().toInt()
+            }
+        }
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
+            GameNames.COMPASS.toString()).child("Win%").get().addOnSuccessListener {
+            if(it != null){
+
+                var winCount = 0.0
+                var winPer = 0.0
+
+                var data = arrayOf<DataPoint>()
+
+                it.children.forEach(){
+
+                    if(it.value.toString().toInt() > 0){
+
+                        winCount += 1
+                        winPer = winCount / it.value.toString().toFloat()
+                        data = data.plus(DataPoint(winCount, winPer))
+                    }
+
+                }
+                binding.winPercentageText.setText(winPer.toString())
+                val series: LineGraphSeries<DataPoint> = LineGraphSeries(data)
+
+                binding.winGraph.getViewport().setScalable(true)
+                binding.winGraph.getViewport().setScrollable(true)
+                binding.winGraph.getViewport().setScalableY(true)
+                binding.winGraph.getViewport().setScrollableY(true)
+                binding.winGraph.getViewport().setXAxisBoundsManual(true)
+                binding.winGraph.getViewport().setMinX(1.0)
+                binding.winGraph.getViewport().setMaxX(winCount)
+
+                binding.winGraph.addSeries(series)
+                binding.winGraph.title = "Win Percentage:"
+                binding.winGraph.graphContentHeight
+            }
+        }
+
+
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GeoportalStats.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            GeoportalStats().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }
