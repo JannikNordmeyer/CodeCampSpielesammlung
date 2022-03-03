@@ -381,7 +381,7 @@ class GameHolder : AppCompatActivity() {
                     }
                 }
                 if(MyApplication.networkSetupComplete) viewmodel.gameTimer.start()
-                viewmodel.logic.reset()
+                viewmodel.resetGame()
                 MyApplication.networkSetupComplete = true
             }
             is SchrittzaehlerViewModel -> { //Your Setup Code here...
