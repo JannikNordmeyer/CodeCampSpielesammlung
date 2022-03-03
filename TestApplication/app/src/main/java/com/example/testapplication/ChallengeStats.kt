@@ -1,59 +1,106 @@
-package com.example.testapplication
-
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.testapplication.GameNames
+import com.example.testapplication.MyApplication
+import com.example.testapplication.databinding.FragmentChallengeStatsBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [ChallengeStats.newInstance] factory method to
- * create an instance of this fragment.
- */
 class ChallengeStats : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentChallengeStatsBinding
+    var gamesPlayed = 0
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_challenge_stats, container, false)
+
+        binding = FragmentChallengeStatsBinding.inflate(inflater,container,false)
+        val view = binding.root
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
+            GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").get().addOnSuccessListener {
+            if(it != null){
+                binding.gamesPlayedText.setText(it.value.toString())
+                gamesPlayed = it.value.toString().toInt()
+            }
+        }
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
+            GameNames.SCHRITTZAEHLER.toString()).child("Win%").get().addOnSuccessListener {
+            if(it != null){
+
+                var winCount = 0.0
+                var winPer = 0.0
+
+                var data = arrayOf<DataPoint>()
+
+                it.children.forEach(){
+
+                    if(it.value.toString().toInt() > 0){
+
+                        winCount += 1
+                        winPer = winCount / it.value.toString().toFloat()
+                        data = data.plus(DataPoint(winCount, winPer))
+                    }
+
+                }
+                binding.winPercentageText.setText(winPer.toString())
+                val series: LineGraphSeries<DataPoint> = LineGraphSeries(data)
+
+                binding.winGraph.getViewport().setScalable(true)
+                binding.winGraph.getViewport().setScrollable(true)
+                binding.winGraph.getViewport().setScalableY(true)
+                binding.winGraph.getViewport().setScrollableY(true)
+                binding.winGraph.getViewport().setXAxisBoundsManual(true)
+                binding.winGraph.getViewport().setMinX(1.0)
+                binding.winGraph.getViewport().setMaxX(winCount)
+
+                binding.winGraph.addSeries(series)
+                binding.winGraph.title = "Win Percentage:"
+                binding.winGraph.graphContentHeight
+            }
+        }
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
+            GameNames.SCHRITTZAEHLER.toString()).child("HighScore").get().addOnSuccessListener {
+            if(it != null){
+
+                var data = arrayOf<DataPoint>()
+
+                var counter = 0.0
+                it.children.forEach(){
+
+                    data = data.plus(DataPoint(counter, it.value.toString().toDouble()))
+                    counter += 1
+
+
+                }
+                val series: LineGraphSeries<DataPoint> = LineGraphSeries(data)
+
+                binding.scoreGraph.getViewport().setScalable(true)
+                binding.scoreGraph.getViewport().setScrollable(true)
+                binding.scoreGraph.getViewport().setScalableY(true)
+                binding.scoreGraph.getViewport().setScrollableY(true)
+                binding.scoreGraph.getViewport().setXAxisBoundsManual(true)
+                binding.scoreGraph.getViewport().setMinX(0.0)
+                binding.scoreGraph.getViewport().setMaxX(counter-1)
+
+                binding.scoreGraph.addSeries(series)
+                binding.scoreGraph.title = "High Scores:"
+                binding.scoreGraph.graphContentHeight
+            }
+        }
+
+
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ChallengeStats.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ChallengeStats().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

@@ -1,9 +1,11 @@
 package com.example.testapplication
 
+import ArithmeticsStats
+import GeoportalStats
+import ChallengeStats
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.testapplication.databinding.ActivityRegistrationBinding
 import com.example.testapplication.databinding.ActivityStatisticsBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -24,7 +26,7 @@ class Statistics : AppCompatActivity() {
 
         tabs = ArrayList()
         tabs.add(TicTacToeStats())
-        tabs.add(ArithmaticsStats())
+        tabs.add(ArithmeticsStats())
         tabs.add(GeoportalStats())
         tabs.add(ChallengeStats())
 

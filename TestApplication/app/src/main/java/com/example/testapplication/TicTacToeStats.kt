@@ -1,5 +1,6 @@
 package com.example.testapplication
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -57,14 +58,13 @@ class TicTacToeStats : Fragment() {
                 binding.winPercentageText.setText(winPer.toString())
                 val series: LineGraphSeries<DataPoint> = LineGraphSeries(data)
 
-                binding.winGraph.getViewport().setScalable(true);
-                binding.winGraph.getViewport().setScrollable(true);
-                binding.winGraph.getViewport().setScalableY(true);
-                binding.winGraph.getViewport().setScrollableY(true);
-                binding.winGraph.getViewport().setXAxisBoundsManual(true);
-                binding.winGraph.getViewport().setMinX(1.0);
-                binding.winGraph.getViewport().setMaxX(winCount);
-
+                binding.winGraph.getViewport().setScalable(true)
+                binding.winGraph.getViewport().setScrollable(true)
+                binding.winGraph.getViewport().setScalableY(true)
+                binding.winGraph.getViewport().setScrollableY(true)
+                binding.winGraph.getViewport().setXAxisBoundsManual(true)
+                binding.winGraph.getViewport().setMinX(1.0)
+                binding.winGraph.getViewport().setMaxX(winCount)
 
                 binding.winGraph.addSeries(series)
                 binding.winGraph.title = "Win Percentage:"
