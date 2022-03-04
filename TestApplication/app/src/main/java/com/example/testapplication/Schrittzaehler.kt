@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.FragmentSchrittzaehlerBinding
+import java.lang.Math.abs
 
 class Schrittzaehler : Fragment(), SensorEventListener {
 
@@ -22,9 +23,11 @@ class Schrittzaehler : Fragment(), SensorEventListener {
 
     var running = false
     lateinit var sensorManager: SensorManager
-    lateinit var stepsSensor: Sensor
 
     lateinit var myContext: Context
+
+    var halfStep = false
+    var steps = 0
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -39,13 +42,14 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         val viewmodel = ViewModelProvider(requireActivity()).get(SchrittzaehlerViewModel::class.java) //Shared Viewmodel w/ GameHolder
 
         sensorManager = myContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        stepsSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+
         return view
     }
 
     override fun onResume() {
         super.onResume()
         running = true
+        var stepsSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
         if (stepsSensor == null) {
             Toast.makeText(activity, "No Step Counter Sensor !", Toast.LENGTH_SHORT).show()
@@ -68,8 +72,18 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     //Called when sensor detects steps
     override fun onSensorChanged(event: SensorEvent) {
         if (running) {
-            binding.viewSchritteCounter.setText("" + event.values[0])
-            Log.d("Schrittzaehler:"," ############### Step detected ################")
+
+            if(kotlin.math.abs(event.values[0]) > 1.7){
+                halfStep = true
+                Log.d("Schrittzaehler:"," ############### HALSTEP ################")
+            }
+            if(halfStep && kotlin.math.abs(event.values[0]) < 0.5){
+
+                halfStep = false
+                steps += 1
+                binding.viewSchritteCounter.setText(steps.toString())
+
+            }
         }
         else Log.d("Schrittzaehler:"," ################### Ich spüre, running aber false ###################")
     }
