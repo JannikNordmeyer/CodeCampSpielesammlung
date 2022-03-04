@@ -16,6 +16,7 @@ import com.example.testapplication.databinding.ActivityGameHolderBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.lang.Integer.max
+import kotlin.random.Random
 
 class GameHolder : AppCompatActivity() {
 
@@ -97,7 +98,7 @@ class GameHolder : AppCompatActivity() {
         when (MyApplication.globalSelectedGame) {
             GameNames.COMPASS -> {
                 fragToLoad = PlaceholderSpiel1()
-                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel::class.java)
+                viewmodel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel()::class.java)
                 quickplayFilter = "PLACEHOLDERSPIEL1"
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
             }
@@ -289,6 +290,10 @@ class GameHolder : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
                         if (snapshot.value == false && MyApplication.isLoading) {
+                            if (MyApplication.isCodeMaker && MyApplication.globalSelectedGame == GameNames.COMPASS) {
+                                Log.d("Compass", "INIT GAME")
+                                (viewmodel as PlaceholderSpiel1ViewModel).initGame(this@GameHolder)
+                            }
                             stopLoad()
                             networkSetup(viewmodel)
                             MyApplication.isLoading = false
@@ -375,6 +380,19 @@ class GameHolder : AppCompatActivity() {
                 }
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
+                (viewmodel as PlaceholderSpiel1ViewModel).logic.listindex = 0
+                if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
+                    if (MyApplication.networkSetupComplete) {
+                        if (MyApplication.isCodeMaker) {
+                            Log.d("Compass", "INIT GAME")
+                            viewmodel.initGame(this)
+                        }
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
+                    }
+                    MyApplication.networkSetupComplete = true
+                }
+
             }
             is ArithmeticsViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {

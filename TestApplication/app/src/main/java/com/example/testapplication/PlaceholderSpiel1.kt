@@ -63,7 +63,9 @@ import kotlin.collections.ArrayList
 import androidx.core.content.ContextCompat
 
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.ViewModel
 import kotlin.math.*
+import kotlin.system.measureTimeMillis
 
 
 class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
@@ -74,29 +76,25 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     //private val mapView: MapView by lazy { fragmentPlaceholderspiel1Binding.mapView    }
 
     private lateinit var binding: FragmentPlaceholderspiel1Binding
+    lateinit var viewmodel: PlaceholderSpiel1ViewModel
 
-    lateinit var targetLocation: JSONObject
     lateinit var targetList: JSONArray
-    lateinit var indexList: ArrayList<Int>
-    var listindex = 0
+
     lateinit var sensorManager: SensorManager
     lateinit var sensorAccelerometer: Sensor
     lateinit var sensorMagneticField: Sensor
     lateinit var mLocationManager: LocationManager
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
     private var floatGravity = FloatArray(3)
     private var floatGeoMagnetic = FloatArray(3)
     private var azimuth = 0f
     private var currentAzimuth = 0f
-    private var targetDirectionDegree: Double = 0.0
     lateinit var compass: ImageView
     lateinit var lastLocation: Location
     private var gps_enabled = false
     private var network_enabled = false
     lateinit var timer: CountDownTimer
-    lateinit var completionTimer: CountDownTimer
     lateinit var vibrateTimer: CountDownTimer
     var vibTimerRunning = false
     var completionTime : Float = 0.0f
@@ -108,7 +106,10 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         binding = FragmentPlaceholderspiel1Binding.inflate(inflater,container,false)
         //val view = fragmentPlaceholderspiel1Binding.root
         val view = binding.root
-        val viewmodel = ViewModelProvider(requireActivity()).get(PlaceholderSpiel1ViewModel::class.java) //Shared Viewmodel w/ GameHolder
+        viewmodel = ViewModelProvider(requireActivity()).get(PlaceholderSpiel1ViewModel::class.java) //Shared Viewmodel w/ GameHolder
+        viewmodel.liveLocation.observe(viewLifecycleOwner, {
+            binding.idTarget.text = viewmodel.liveLocation.value
+        })
 
         // DEIN CODE HIER
         //++setContentView(fragmentPlaceholderspiel1Binding.root)
@@ -117,105 +118,50 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         mLocationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
+        viewmodel.fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
         targetList = JSONArray()
-        indexList = ArrayList()
-        targetLocation = JSONObject()
+        viewmodel.logic.indexList = ArrayList()
+        viewmodel.targetLocation = JSONObject()
         timer = object : CountDownTimer(2000, 10) {
             override fun onTick(millisUntilFinished: Long) {
                 Log.d("Compass", millisUntilFinished.toString())
-                viewmodel.score += completionTime
             }
 
             override fun onFinish() {
-                //TODO: FIX LIST LOOP
-                if (listindex < indexList.size) {
-                    apiCall(indexList[listindex++])
-                    getTargetDirection()
-                    Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+                Log.d("Compass", "INDEXLIST: " + viewmodel.logic.indexList.size.toString())
+
+                viewmodel.score += completionTime
+                Log.d("Compass", "score: " + viewmodel.score)
+                if (viewmodel.logic.listindex < viewmodel.logic.indexList.size) {
+                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex++], activity!!)
+                    viewmodel.getTargetDirection(activity!!)
+                    Log.d("Compass", "YOU FUCKING DID IT ${viewmodel.targetLocation.getJSONObject("properties").getString("Objekt")}")
                 } else {
-                    //Prüfe ob Raum existiert...
-                    MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
-                        if(it.value != null) {
-                            if(MyApplication.isCodeMaker) {
-                                //Schreib deinen score in die DB...
-                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
-                                //Warte darauf das Guest seinen Score einträgt...
-                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if (snapshot.value != null) {
-                                            var networkWinner = ""
-                                            if (viewmodel.score > snapshot.value.toString().toInt()) {
-                                                networkWinner = MyApplication.hostID
-                                            } else if (viewmodel.score < snapshot.value.toString().toInt()) {
-                                                networkWinner = MyApplication.guestID
-                                            } else networkWinner = "-1"  //Draw
-                                            //Enter Winner
-                                            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
-                                        }
-                                    }
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                        TODO("Not yet implemented")
-                                    }
-
-                                })
-                            } else {
-                                //Schreib deinen score in die DB...
-                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
-                                //Warte darauf das Host entscheidet wer gewonnen hat
-                            }
-                        }
-                    }
+                    viewmodel.completionTimer.cancel()
+                    Log.d("Compass", "TIME OUT TIMER")
+                    winnerCheck()
                 }
             }
         }
 
-        completionTimer = object : CountDownTimer(60000, 100) {
+        viewmodel.completionTimer = object : CountDownTimer(10000, 100) {
             override fun onTick(millisUntilFinished: Long) {
-                completionTime = 60000 - millisUntilFinished.toFloat()
+                completionTime = 10000 - millisUntilFinished.toFloat()
                 binding.idTimer.text = (completionTime/1000).toString()
             }
 
             override fun onFinish() {
-                if (listindex < indexList.size) {
-                    apiCall(indexList[listindex++])
-                    getTargetDirection()
-                    Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
+                if (viewmodel.logic.listindex < viewmodel.logic.indexList.size) {
+                    viewmodel.score += 10000
+                    Log.d("Compass", "score: " + viewmodel.score)
+                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex++], activity!!)
+                    viewmodel.getTargetDirection(activity!!)
+                    //Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
                 } else {
-                    //Prüfe ob Raum existiert...
-                    MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
-                        if(it.value != null) {
-                            if(MyApplication.isCodeMaker) {
-                                //Schreib deinen score in die DB...
-                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
-                                //Warte darauf das Guest seinen Score einträgt...
-                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if (snapshot.value != null) {
-                                            var networkWinner = ""
-                                            if (viewmodel.score > snapshot.value.toString().toInt()) {
-                                                networkWinner = MyApplication.hostID
-                                            } else if (viewmodel.score < snapshot.value.toString().toInt()) {
-                                                networkWinner = MyApplication.guestID
-                                            } else networkWinner = "-1"  //Draw
-                                            //Enter Winner
-                                            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
-                                        }
-                                    }
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                        TODO("Not yet implemented")
-                                    }
-
-                                })
-                            } else {
-                                //Schreib deinen score in die DB...
-                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
-                                //Warte darauf das Host entscheidet wer gewonnen hat
-                            }
-                        }
-                    }
+                    viewmodel.score += 10000
+                    Log.d("Compass", "score: " + viewmodel.score)
+                    Log.d("Compass", "POINT AT STUFF TIMER")
+                    winnerCheck()
                 }
 
             }
@@ -272,42 +218,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         LocationServices.getFusedLocationProviderClient(context)
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
 
-        if (MyApplication.isCodeMaker) {
-            for (i in 0..4) {
-                val rand = Random.nextInt(0,132)
-                //MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").push().setValue(rand)
-                indexList.add(rand)
-            }
-            Log.d("Compass", "lookatme"+indexList.toString())
-            val childUpdates = hashMapOf<String, Any>("1" to indexList[0], "2" to indexList[1], "3" to indexList[2], "4" to indexList[3], "5" to indexList[4])
-            MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").setValue(childUpdates).addOnSuccessListener {
-                MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
-            }
-
-        }
-
-        MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if(snapshot.value == true) {
-                    MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
-                        Log.d("Compass", "lookatme"+it.toString())
-
-                        for (data in it.children){
-                            indexList.add(data.value.toString().toInt())
-                        }
-                        Log.d("Compass", "lookatme"+indexList.toString())
-                        apiCall(indexList[listindex++])
-                    }
-
-                }
-            }
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-        })
-
-
-
+        viewmodel.initGame(activity!!)
 
         try {
             gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -332,81 +243,45 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         return view
     }
 
-    private fun getTargetDirection() {
-        //apiCall()
-        if(ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            val location = fusedLocationClient.lastLocation.addOnSuccessListener {
-                if (it != null) {
-                    completionTimer.start()
-                    val longitude = it.longitude
-                    val latitude = it.latitude
-                    val long = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
-                    val lat = targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)
-                    val dir = FloatArray(2)
-                    dir[0] = longitude.toFloat() - long.toFloat()
-                    dir[1] = latitude.toFloat() - lat.toFloat()
-                    targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
-                    Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
-                    Log.d("Compass", targetDirectionDegree.toString())
+    fun winnerCheck() {
+        //Prüfe ob Raum existiert...
+        MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
+            if(it.value != null) {
+                if(MyApplication.isCodeMaker) {
+                    //Schreib deinen score in die DB...
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
+                    //Warte darauf das Guest seinen Score einträgt...
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.value != null) {
+                                var networkWinner = ""
+                                if (viewmodel.score < snapshot.value.toString().toInt()) {
+                                    networkWinner = MyApplication.hostID
+                                } else if (viewmodel.score > snapshot.value.toString().toInt()) {
+                                    networkWinner = MyApplication.guestID
+                                } else networkWinner = "-1"  //Draw
+                                //Enter Winner
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+
+                    })
+                } else {
+                    //Schreib deinen score in die DB...
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
+                    //Warte darauf das Host entscheidet wer gewonnen hat
                 }
             }
-
-        } else {
-            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
-            Log.d("Compass", "No Access")
         }
     }
 
-    private fun apiCall() {
-        val url = "https://geoportal.kassel.de/arcgis/rest/services/Service_Daten/Freizeit_Kultur/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&" +
-                "geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationPar" +
-                "am=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&retu" +
-                "rnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVers" +
-                "ion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&par" +
-                "ameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-        val queue = Volley.newRequestQueue(activity)
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.GET,
-            url,
-            null,
-            Response.Listener {
-                val rand = Random.nextInt(0,132)
-                targetLocation = it.getJSONArray("features").getJSONObject(rand)
-                targetList.put(targetLocation)
-                //binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
-                targetLocation = targetList.getJSONObject(listindex)
-                Log.d("MainActivity", "test: " + targetLocation.toString())
-            }, Response.ErrorListener {
-                Log.d("MainActivity", "Api call failed")
-            }
-        )
-        queue.add(jsonObjectRequest)
-    }
 
-    private fun apiCall(key: Int) {
-        val url = "https://geoportal.kassel.de/arcgis/rest/services/Service_Daten/Freizeit_Kultur/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&" +
-                "geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationPar" +
-                "am=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&retu" +
-                "rnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVers" +
-                "ion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&par" +
-                "ameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-        val queue = Volley.newRequestQueue(activity)
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.GET,
-            url,
-            null,
-            Response.Listener {
-                targetLocation = it.getJSONArray("features").getJSONObject(key)
-                targetList.put(targetLocation)
-                getTargetDirection()
-                binding.idTarget.text = targetLocation.getJSONObject("properties").getString("Objekt")
-                Log.d("MainActivity", "test: " + targetLocation.toString())
-            }, Response.ErrorListener {
-                Log.d("MainActivity", "Api call failed")
-            }
-        )
-        queue.add(jsonObjectRequest)
-    }
+
+
 
 
     private fun setApiKeyForApp(){
@@ -453,7 +328,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                 //Log.d("Compass", currentAzimuth.toString())
 
                 //check for right direction
-                if ((targetDirectionDegree - 5)%360 <= azimuth && azimuth <= (targetDirectionDegree + 5)%360) {
+                if ((viewmodel.targetDirectionDegree - 5)%360 <= azimuth && azimuth <= (viewmodel.targetDirectionDegree + 5)%360) {
                     //Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
                     //start
                     if (!timerStarted) {
@@ -467,7 +342,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                     timerStarted = false
                 }
 
-                if ((targetDirectionDegree - 90)%360 <= azimuth && azimuth <= (targetDirectionDegree + 90)%360) {
+                if ((viewmodel.targetDirectionDegree - 90)%360 <= azimuth && azimuth <= (viewmodel.targetDirectionDegree + 90)%360) {
                     //Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
                     //start
                     if (!vibTimerRunning) {
