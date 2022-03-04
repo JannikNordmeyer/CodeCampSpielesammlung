@@ -32,8 +32,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var winnerCheckLock = false
 
     fun toggle(){   //Also switches the turn for Network
-        Log.d(TAG, MyApplication.hostID)
-        Log.d(TAG, MyApplication.guestID)
         if(MyApplication.onlineMode) {  //TODO: Figure out how to call GameHolder's toggleNetworkTurn() instead.
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
             if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID, { error, ref ->
@@ -60,7 +58,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     //Called from GameHolder whenever the Field changes.
     fun networkOnFieldUpdate(data : String?){
         //Update Local Board with Network Board
-        Log.d(TAG, "################ networkOnFieldUpdate #############")
         networkBoardToLocalBoard();
 
         //Check board
@@ -69,7 +66,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
 
     // Updates local board by taking in the values from the network board
     fun networkBoardToLocalBoard(){
-        Log.d(TAG, "########## networkBoardToLocalBoard ##############")
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
 
         field_data.get().addOnSuccessListener {
@@ -94,7 +90,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     // Updates network board by translating the values from the local board
     // Whenever we update the network board, the opponent's listener will be triggered to update the network board aswell.
     fun localBoardToNetworkBoard(){
-        Log.d(TAG, "LOCALBOARDTONETWORKBOARD TRIGGERED")
         val childUpdates = hashMapOf<String, Any>("0" to board[0][0], "1" to board[0][1], "2" to board[0][2], "3" to board[1][0], "4" to board[1][1], "5" to board[1][2], "6" to board[2][0], "7" to board[2][1], "8" to board[2][2])
 
         MyApplication.myRef.child("data").child(MyApplication.code).child("Field").updateChildren(childUpdates).addOnSuccessListener {
@@ -103,47 +98,36 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     }
 
     fun checkField(): Boolean {
-        Log.d(TAG, "###################")
-        Log.d(TAG, "####CHECK FIELD####")
-        Log.d(TAG, "###################")
         var win: Boolean = false
 
         for(i in 0..2){
 
             var row = true
             for(j in 0..2){
-                Log.d(TAG, board[i][j])
                 row = row && (board[i][j] == player)
             }
             win = win || row
 
         }
-        Log.d(TAG, "###ROWCHECK DONE###")
         for(i in 0..2){
             var column = true
             for(j in 0..2){
-                Log.d(TAG, board[i][j])
                 column = column && (board[j][i] == player)
             }
             win = win || column
         }
-        Log.d(TAG, "###COLUMCHECK DONE###")
         var diaR = true
 
         for(i in 0..2){
             diaR = diaR && (board[i][i] == player)
-            Log.d(TAG, board[i][i])
         }
-        Log.d(TAG, "###DIAGONAL RIGHT DONE###")
         win = win || diaR
 
         var diaL = true
 
         for(i in 0..2){
             diaL = diaL && (board[i][2-i] == player)
-            Log.d(TAG, board[i][2-i])
         }
-        Log.d(TAG, "###DIAGONAL LEFT DONE###")
         win = win || diaL
 
         var full = true
@@ -156,8 +140,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         }
 
         if(win || full){
-            Log.d(TAG, "win: " + win.toString())
-            Log.d(TAG, "full: " + full.toString())
             if(win){
                 if(player == CROSS) winner = WINNER_PLAYER_ONE
                 else winner = WINNER_PLAYER_TWO
@@ -187,7 +169,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     }
 
     fun click(a: Int, b: Int){
-        Log.d(TAG, "####ICH HABE GEKLICKT####")
         if(!MyApplication.onlineMode || MyApplication.myTurn) {
             if (board[a][b] != "" || winner != null) {
                 return

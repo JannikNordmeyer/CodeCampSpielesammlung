@@ -65,7 +65,6 @@ class GameHolder : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "##################### GAME HOLDER "+android.os.Process.myTid().toString()+" FUCKING DIED ####################")
         super.onDestroy()
         if (MyApplication.onlineMode) {
             //Update stats
@@ -146,7 +145,6 @@ class GameHolder : AppCompatActivity() {
             //Get and save ID of host and guest as a global control var
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").get().addOnSuccessListener(this) {
                 MyApplication.hostID = it.value.toString()
-                Log.d(TAG, MyApplication.hostID)
                 //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
                 if (MyApplication.isCodeMaker)
                     MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
@@ -158,36 +156,27 @@ class GameHolder : AppCompatActivity() {
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
             networkSetup(viewmodel)
 
-            Log.d(TAG, MyApplication.code)
-
             //Setup field, listener and logic for the variable that controls whose turn it is
             activePlayerListener = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null) {
-                        Log.d(TAG, "ACTIVE PLAYER LISTENER TRIGGERED")
                         val data_activePlayer = snapshot.value.toString()
-                        Log.d(TAG, data_activePlayer)
                         if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn = true
                         else MyApplication.myTurn = (data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker
-                        Log.d(TAG, MyApplication.myTurn.toString())
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.d(TAG, "ACTIVE PLAYER CANCELLED LISTENER TRIGGERED")
                     TODO("Not yet implemented")
                 }
 
             })
 
-            //NOTE REGARDING THE OLD DATA PROBLEM: Consider REMOVING and entirely recreating the board once we dont need it anymore (on game restart...)
-            //TODO: IMPLEMENT THIS
             //Listener that calls the fragment's network field update function if the "FieldUpdate" flag has been turned to true.
             // Also sets the flag back to false once the field has been updated.
             fieldUpdateListener = MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null && snapshot.value != false){
-                        Log.d(TAG, "Field update")
                         MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(false)
                         var data = snapshot.key
                         when (viewmodel) {
@@ -211,7 +200,6 @@ class GameHolder : AppCompatActivity() {
             winnerPlayerListener = MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
-                        Log.d(TAG, android.os.Process.myTid().toString()+": WINNER TRIGGERED")
                         val value = snapshot.value
                         val build = AlertDialog.Builder(this@GameHolder);
                         build.setCancelable(false)
@@ -256,7 +244,6 @@ class GameHolder : AppCompatActivity() {
                                 gamesPlayed++
                                 if (it.value == null) {
                                     startLoad()
-                                    Log.d(TAG, "########################### STARTING LOAD #################################")
                                     MyApplication.isLoading = true
                                     MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(true)
                                 } else if (it.value == true) {
@@ -307,7 +294,6 @@ class GameHolder : AppCompatActivity() {
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.value == "" && !MyApplication.Ileft){
-                            Log.d(TAG, "EXIT TRIGGERED")
                             val build = AlertDialog.Builder(this@GameHolder);
                             build.setCancelable(false)
                             build.setTitle("Game Over!")
@@ -323,7 +309,6 @@ class GameHolder : AppCompatActivity() {
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        Log.d(TAG, "EXIT CANCELLED TRIGGERED")
                         TODO("Not yet implemented")
                     }
                     //endregion
@@ -351,7 +336,6 @@ class GameHolder : AppCompatActivity() {
 
     //TODO: GENERALIZE STUFF
     fun networkSetup(viewmodel : ViewModel) {
-        Log.d(TAG, "NETWORK SETUP TRIGGERED")
         when (viewmodel) {
             is TicTacToeViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
@@ -370,7 +354,6 @@ class GameHolder : AppCompatActivity() {
                     }
                 } else if (MyApplication.isLoading) {
                     viewmodel.logic.networkBoardToLocalBoard()
-                    Log.d(TAG, "NETWORK SETUP BOARD UPDATE LOADING")
                 }
             }
             is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
