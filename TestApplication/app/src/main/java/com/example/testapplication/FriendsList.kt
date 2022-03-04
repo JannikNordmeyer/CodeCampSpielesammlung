@@ -15,6 +15,10 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import kotlin.random.Random
+import android.content.Intent
+
+
+
 
 class FriendsList : AppCompatActivity() {
 
@@ -54,6 +58,14 @@ class FriendsList : AppCompatActivity() {
         binding.IDButton.setOnClickListener{
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
             binding.CodeField.setText(currentUser)
+            val sharingIntent = Intent(Intent.ACTION_SEND)
+            sharingIntent.type = "text/plain"
+            val username = SplitString(FirebaseAuth.getInstance().currentUser!!.email!!)
+
+            val shareBody = "Friend Request by $username: $currentUser"
+            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Friend Request")
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
+            startActivity(Intent.createChooser(sharingIntent, "Share via"))
         }
 
         binding.buttonreturn.setOnClickListener{
