@@ -37,7 +37,7 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
         //Invite Button technology
         itemView.findViewById<Button>(R.id.BtnInvite).setOnClickListener(){
 
-            Toast.makeText(context,"Create a lobby, and they will be invited.",Toast.LENGTH_LONG).show()
+            Toast.makeText(context,"Create a lobby, and they will be invited.", Toast.LENGTH_LONG).show()
 
             MyApplication.myRef.child("FriendCodes").get().addOnSuccessListener {
 
