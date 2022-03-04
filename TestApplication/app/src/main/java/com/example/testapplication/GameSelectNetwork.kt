@@ -20,8 +20,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-//TODO: Database sollte einen entry haben für welches Spiel man überhaupt spielt für verschiende Queues. Benutze die selectedGames Konstante dafür!
-
 class GameSelectNetwork : AppCompatActivity() {
     private lateinit var binding: ActivityGameSelectNetworkBinding
     var host : Boolean = false
@@ -35,7 +33,6 @@ class GameSelectNetwork : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if(MyApplication.onlineMode) {
-            Log.d(TAG, "##### GAME SELECT NETWORK DESTROY CALLED #######")
             if (this::quickplayListener.isInitialized) {
                 MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(quickplayListener)
             }
@@ -45,8 +42,6 @@ class GameSelectNetwork : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_select_network)
-
-        Log.d(TAG, "##### GAME SELECT NETWORK ON CREATE CALLED #######")
 
         binding = ActivityGameSelectNetworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -81,7 +76,6 @@ class GameSelectNetwork : AppCompatActivity() {
         }
 
         fun startGame(){
-            Log.d(TAG, "#### START GAME ####")
             if(MyApplication.onlineMode) {
                 host = false
                 MyApplication.myTurn = MyApplication.isCodeMaker
@@ -93,7 +87,6 @@ class GameSelectNetwork : AppCompatActivity() {
         }
 
         fun networkHostGame(opponent : String){
-            Log.d(TAG, "NETWORK HOST GAME CALLED")
             //Generiere Raum Code
             MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
             MyApplication.isCodeMaker = true
@@ -101,14 +94,11 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
             MyApplication.onlineMode = true;
             //Markiere mich als Host im Raum
-            Log.d(TAG, "ADDING LISTENER FOR HOST ENTRY IN ROOM ???")
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
-                    Log.d(TAG, "ADDING LISTENER FOR GUEST ENTRY IN LOBBY")
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener ( object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
-                                Log.d(TAG,"START GAME FROM HOSTING GAME FUNCTION")
                                 startGame()
                                 stopLoad()
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").removeEventListener(this)
@@ -124,7 +114,6 @@ class GameSelectNetwork : AppCompatActivity() {
         }
 
         fun networkJoinGame(opponent : String){
-            Log.d(TAG, "####### NETWORK JOIN GAME CALLED #######")
             MyApplication.onlineMode = true;
             //Merke Raum Code
             MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(opponent)/*Host Email*/
@@ -132,17 +121,12 @@ class GameSelectNetwork : AppCompatActivity() {
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
             //Markiere mich als Guest im Raum
-            Log.d(TAG, "ADDING LISTENER FOR GUEST ENTRY IN ROOM")
-
-            //TODO: Bruder was ist das überhaupt für ein code? Was machen wir hier? Ist das ein crackhead on success listener??
 
             MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
-                    Log.d(TAG, "ADDING LISTENER FOR HOST ENTRY IN ROOM")
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Host").addValueEventListener (object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
-                                Log.d(TAG,"START GAME FROM JOINING GAME")
                                 startGame()
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("Host").removeEventListener(this)
                             }
@@ -156,12 +140,10 @@ class GameSelectNetwork : AppCompatActivity() {
             })
         }
 
-        //TODO: App sollte nicht explodieren wenn man nicht eingeloggt ist und offline spielen will
         //Wenn jemand während des wartens in der Quickplay Lobby deine Request animmt, hoste spiel.
         quickplayListener = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.value != null && snapshot.value != "" && host) {
-                    Log.d(TAG, "##### SOMEONE FOUND MY LOBBY: "+snapshot.value.toString()+"######")
                     networkHostGame(snapshot.value as String)
                 }
             }
@@ -174,25 +156,19 @@ class GameSelectNetwork : AppCompatActivity() {
 
         fun createLobby(LobbyName: String){
             startLoad()
-            Log.d(TAG, "ADDING ON SUCCESS LISTENER FOR GETTING QUICKPLAY LOBBY")
             //Hole die Liste von Spielern in der Quickplay Lobby
             MyApplication.myRef.child(LobbyName).child(quickplayFilter).get().addOnSuccessListener(this) {
-                Log.d(TAG, "NSIDE ON SUCCESS LISTENER FOR QUICKPLAY LOBBY")
                 if(it.value != null){  //Falls es Spieler gibt...
-                    Log.d(TAG, "FOUND OTHER PLAYER IN QUICKPLAY LOBBY")
                     //Heirate
                     MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
                     MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
                     //Join game
-                    Log.d(TAG, "CALLING NETWORK JOIN GAME FROM QUICKPLAY LISTENER")
                     networkJoinGame(it.value.toString())
                     stopLoad()
                 } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
-                    Log.d(TAG, "NO PLAYERS IN QUICKPLAY LOBBY - BECOME HOST")
                     host = true
                     MyApplication.myRef.child(LobbyName).child(quickplayFilter).setValue(FirebaseAuth.getInstance().currentUser!!.email)
                 }
-                Log.d(TAG, "QUICKPLAY LOBBY LISTENER END")
             }
         }
 
@@ -222,7 +198,6 @@ class GameSelectNetwork : AppCompatActivity() {
 
         binding.BtnOffline.setOnClickListener {
             MyApplication.onlineMode = false
-            Log.d(TAG,"START GAME FROM OFFLINE GAME")
             startGame()
         }
 

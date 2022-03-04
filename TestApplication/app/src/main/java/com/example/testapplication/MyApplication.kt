@@ -16,8 +16,6 @@ class MyApplication : Application() {
         var globalSelectedGame = GameNames.NONE         //The selected game
         var globalSelectedGameStatLocation = ""
 
-        //TODO: Rename isCodeMaker to isHost, but only do that after deleting the old files
-
         var isCodeMaker = true;                         //If the player made the code - aka if they are the host, Player 1.
         var code = "null"                               //"Room" Code
         var codeFound = false
