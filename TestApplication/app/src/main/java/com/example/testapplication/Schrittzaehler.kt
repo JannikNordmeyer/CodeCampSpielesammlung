@@ -50,7 +50,6 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     fun stopWait(){
         viewmodel.isWaiting = false
         viewmodel.running = true
-        binding.BtnStartChallenge.visibility = View.VISIBLE
         binding.editTextGoalNumber.visibility = View.VISIBLE
         binding.TextViewSchritte.visibility = View.VISIBLE
         binding.textFieldGoalSteps.visibility = View.VISIBLE
@@ -110,6 +109,7 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         viewmodel.logic.livegoalscore.observe(viewLifecycleOwner){
             if(viewmodel.isWaiting){
                 stopWait()
+                viewmodel.score = 0
             }
         }
 
