@@ -83,16 +83,6 @@ class GameSelect : AppCompatActivity() {
             startGame()
         }
 
-        binding.ButtonPlaceholderSpiel4.setOnClickListener(){
-            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL4
-            startGame()
-        }
-
-        binding.ButtonPlaceholderSpiel5.setOnClickListener(){
-            MyApplication.globalSelectedGame = GameNames.PLACEHOLDERSPIEL5
-            startGame()
-        }
-
         binding.ButtonLogin.setOnClickListener(){
 
             val intent = Intent(this, Login::class.java);
