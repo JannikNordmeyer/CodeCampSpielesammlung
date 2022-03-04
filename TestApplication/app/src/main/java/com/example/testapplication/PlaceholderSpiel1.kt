@@ -38,10 +38,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import org.json.JSONObject
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.acos
-import kotlin.math.pow
-import kotlin.math.sqrt
 import kotlin.random.Random
 import android.R
 import android.app.AlertDialog
@@ -67,10 +63,7 @@ import kotlin.collections.ArrayList
 import androidx.core.content.ContextCompat
 
 import androidx.core.content.ContextCompat.getSystemService
-
-
-
-
+import kotlin.math.*
 
 
 class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
@@ -131,12 +124,50 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         timer = object : CountDownTimer(2000, 10) {
             override fun onTick(millisUntilFinished: Long) {
                 Log.d("Compass", millisUntilFinished.toString())
+                viewmodel.score += completionTime
             }
 
             override fun onFinish() {
-                apiCall(indexList[listindex++])
-                getTargetDirection()
-                Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+                //TODO: FIX LIST LOOP
+                if (listindex < indexList.size) {
+                    apiCall(indexList[listindex++])
+                    getTargetDirection()
+                    Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
+                } else {
+                    //Prüfe ob Raum existiert...
+                    MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
+                        if(it.value != null) {
+                            if(MyApplication.isCodeMaker) {
+                                //Schreib deinen score in die DB...
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
+                                //Warte darauf das Guest seinen Score einträgt...
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if (snapshot.value != null) {
+                                            var networkWinner = ""
+                                            if (viewmodel.score > snapshot.value.toString().toInt()) {
+                                                networkWinner = MyApplication.hostID
+                                            } else if (viewmodel.score < snapshot.value.toString().toInt()) {
+                                                networkWinner = MyApplication.guestID
+                                            } else networkWinner = "-1"  //Draw
+                                            //Enter Winner
+                                            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        TODO("Not yet implemented")
+                                    }
+
+                                })
+                            } else {
+                                //Schreib deinen score in die DB...
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
+                                //Warte darauf das Host entscheidet wer gewonnen hat
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -147,9 +178,46 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
             }
 
             override fun onFinish() {
-                apiCall(indexList[listindex++])
-                getTargetDirection()
-                Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
+                if (listindex < indexList.size) {
+                    apiCall(indexList[listindex++])
+                    getTargetDirection()
+                    Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
+                } else {
+                    //Prüfe ob Raum existiert...
+                    MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
+                        if(it.value != null) {
+                            if(MyApplication.isCodeMaker) {
+                                //Schreib deinen score in die DB...
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
+                                //Warte darauf das Guest seinen Score einträgt...
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if (snapshot.value != null) {
+                                            var networkWinner = ""
+                                            if (viewmodel.score > snapshot.value.toString().toInt()) {
+                                                networkWinner = MyApplication.hostID
+                                            } else if (viewmodel.score < snapshot.value.toString().toInt()) {
+                                                networkWinner = MyApplication.guestID
+                                            } else networkWinner = "-1"  //Draw
+                                            //Enter Winner
+                                            MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        TODO("Not yet implemented")
+                                    }
+
+                                })
+                            } else {
+                                //Schreib deinen score in die DB...
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
+                                //Warte darauf das Host entscheidet wer gewonnen hat
+                            }
+                        }
+                    }
+                }
+
             }
         }
 

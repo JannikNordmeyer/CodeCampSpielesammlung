@@ -11,5 +11,6 @@ class PlaceholderSpiel1ViewModel: ViewModel() {
     var logic = PlaceholderSpiel1Logic()
 
     //WEITERER CODE HIER
+    var score : Float = 0.0f
 
 }
