@@ -7,6 +7,16 @@
     tools:context=".Registration">
 
 
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="240dp"
+        android:layout_height="190dp"
+        app:layout_constraintBottom_toTopOf="@+id/email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/pushnotificationslogo" />
+
     <EditText
         android:id="@+id/email"
         android:layout_width="0dp"
