@@ -3,10 +3,17 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 
-class SchrittzaehlerLogic (){
+class SchrittzaehlerLogic (viewmodel: SchrittzaehlerViewModel){
+
+    var viewmodel = viewmodel
+
+    var livegoalscore: MutableLiveData<Int?> = MutableLiveData<Int?>()
 
     fun networkOnFieldUpdate(data : String?){
-        //TODO: Update Field with data received...
+        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GoalScore").get().addOnSuccessListener {
+            viewmodel.goalscore = it.value.toString().toInt()
+            livegoalscore.value = viewmodel.goalscore
+        }
     }
 
     //DEIN CODE HIER

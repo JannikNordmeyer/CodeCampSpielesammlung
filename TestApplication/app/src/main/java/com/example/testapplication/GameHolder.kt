@@ -194,7 +194,6 @@ class GameHolder : AppCompatActivity() {
                             is TicTacToeViewModel -> if (snapshot.value != "")(viewmodel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel1ViewModel -> (viewmodel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
                             is SchrittzaehlerViewModel -> (viewmodel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
-                            //FieldUpdate -> Partner has added their score to DB
                             is ArithmeticsViewModel -> (viewmodel as ArithmeticsViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel4ViewModel -> (viewmodel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel5ViewModel -> (viewmodel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
@@ -387,7 +386,15 @@ class GameHolder : AppCompatActivity() {
                 viewmodel.resetGame()
                 MyApplication.networkSetupComplete = true
             }
-            is SchrittzaehlerViewModel -> { //Your Setup Code here...
+            is SchrittzaehlerViewModel -> {
+                if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
+                    MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
+                    if (MyApplication.networkSetupComplete) {
+                        MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
+                    }
+                }
+                MyApplication.networkSetupComplete = true
+                viewmodel.livenetworkReset.value = true
             }
             is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
             }
