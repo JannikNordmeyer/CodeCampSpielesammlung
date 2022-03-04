@@ -35,12 +35,11 @@ class GameHolder : AppCompatActivity() {
     lateinit var remachtListener: ValueEventListener
     lateinit var exitPlayerListener: ValueEventListener
 
-    //Session stat variables TODO: Probably make a proper GameHolder viewmodel to save these in
+    //Session stat variables
     var gamesPlayed = 1
 
     var quickplayFilter = ""
 
-    //TODO: Needing this function every single time is pretty stupid, find a better solution!
     //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
     fun SplitString(str: String): String {
         var split = str.split("@")
@@ -55,13 +54,6 @@ class GameHolder : AppCompatActivity() {
                 MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").setValue(_gamesPlayed)
             }
         }
-    }
-
-    //Call this function within games to switch network Turn! //TODO: Actually figure out how to do that instead of copy and pasting it in there
-    fun toggleNetworkTurn(){
-        val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
-        if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID)
-        else networkActivePlayer.setValue(MyApplication.hostID)
     }
 
     override fun onDestroy() {
@@ -334,7 +326,6 @@ class GameHolder : AppCompatActivity() {
         MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
     }
 
-    //TODO: GENERALIZE STUFF
     fun networkSetup(viewmodel : ViewModel) {
         when (viewmodel) {
             is TicTacToeViewModel -> {

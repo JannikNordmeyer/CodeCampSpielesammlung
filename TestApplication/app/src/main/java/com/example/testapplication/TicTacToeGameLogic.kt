@@ -32,7 +32,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var winnerCheckLock = false
 
     fun toggle(){   //Also switches the turn for Network
-        if(MyApplication.onlineMode) {  //TODO: Figure out how to call GameHolder's toggleNetworkTurn() instead.
+        if(MyApplication.onlineMode) {
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
             if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID, { error, ref ->
                 //setValue operation is done, you'll get null in errror and ref is the path reference for firebase database
