@@ -55,7 +55,6 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         binding.TextViewSchritte.visibility = View.VISIBLE
         binding.textFieldGoalSteps.visibility = View.VISIBLE
         binding.textFieldStepCounter.visibility = View.VISIBLE
-        binding.editTextGoalNumber.visibility = View.VISIBLE
         binding.idPB.visibility = View.GONE
     }
 
@@ -120,6 +119,8 @@ class Schrittzaehler : Fragment(), SensorEventListener {
             binding.editTextGoalNumber.text.clear()
             viewmodel.goalscore = goalScore
             binding.textFieldGoalSteps.text = goalScore.toString()
+            viewmodel.score = 0
+            binding.textFieldStepCounter.text = "0"
             if(MyApplication.onlineMode) {
                 //Pass goalScore to guest
                 MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GoalScore").setValue(viewmodel.goalscore).addOnSuccessListener {
