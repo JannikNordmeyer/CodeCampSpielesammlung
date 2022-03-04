@@ -34,13 +34,14 @@ import com.google.firebase.database.ValueEventListener
 class Arithmetics : Fragment() {
 
     private lateinit var binding: FragmentArithmeticsBinding
+    lateinit var viewmodel: ArithmeticsViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
 
         binding = FragmentArithmeticsBinding.inflate(inflater,container,false)
         val view = binding.root
-        val viewmodel = ViewModelProvider(requireActivity()).get(ArithmeticsViewModel::class.java)
+        viewmodel = ViewModelProvider(requireActivity()).get(ArithmeticsViewModel::class.java)
 
         viewmodel.logic.start()
 
@@ -144,6 +145,11 @@ class Arithmetics : Fragment() {
         viewmodel.gameTimer = timer
 
         return view
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        viewmodel.gameTimer.cancel()
+
     }
 
 }

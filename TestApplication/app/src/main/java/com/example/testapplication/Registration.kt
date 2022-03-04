@@ -23,6 +23,17 @@ class Registration : AppCompatActivity() {
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val email:String = intent.getStringExtra("email").toString()
+        val password:String = intent.getStringExtra("password").toString()
+
+        if(email != null){
+            binding.email.setText(email)
+        }
+        if(password != null){
+            binding.password.setText(password)
+        }
+
+
         binding.buttonreturn.setOnClickListener() {
             finish()
         }

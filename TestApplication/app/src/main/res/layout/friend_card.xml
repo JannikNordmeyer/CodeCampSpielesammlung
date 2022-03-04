@@ -38,11 +38,12 @@
 
         <ImageButton
             android:id="@+id/deleteButton"
-            android:layout_width="37dp"
+            android:layout_width="47dp"
             android:layout_height="47dp"
             android:text="X"
             android:background="@drawable/roundcorner"
             android:scaleType="fitCenter"
+            android:padding="5dp"
             android:src="@drawable/x"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

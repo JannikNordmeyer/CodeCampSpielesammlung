@@ -29,6 +29,8 @@ class Login : AppCompatActivity() {
         binding.buttonregister.setOnClickListener(){
 
             val intent = Intent(this, Registration::class.java);
+            intent.putExtra("email", binding.email.text.toString())
+            intent.putExtra("password", binding.password.text.toString())
             startActivity(intent)
 
         }

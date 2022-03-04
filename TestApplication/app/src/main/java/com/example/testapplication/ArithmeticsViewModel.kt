@@ -27,4 +27,5 @@ class ArithmeticsViewModel: ViewModel() {
     }
 
     lateinit var gameTimer: CountDownTimer
+
 }
