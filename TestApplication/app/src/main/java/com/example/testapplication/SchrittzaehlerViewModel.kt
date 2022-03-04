@@ -10,12 +10,12 @@ class SchrittzaehlerViewModel: ViewModel() {
     var score = 0
     var running = false
     var halfStep = false
-    var goalscore = 0
+    var goalscore = 100
     var isWaiting = false
 
     fun reset(){
         score = 0
-        goalscore = 0
+        goalscore = 100
         running = false
         halfStep = false
         isWaiting = false

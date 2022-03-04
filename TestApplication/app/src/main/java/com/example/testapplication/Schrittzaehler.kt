@@ -43,6 +43,7 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         binding.TextViewSchritte.visibility = View.GONE
         binding.textFieldGoalSteps.visibility = View.GONE
         binding.textFieldStepCounter.visibility = View.GONE
+        binding.editTextGoalNumber.visibility = View.GONE
         binding.idPB.visibility = View.VISIBLE
     }
 
@@ -54,6 +55,7 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         binding.TextViewSchritte.visibility = View.VISIBLE
         binding.textFieldGoalSteps.visibility = View.VISIBLE
         binding.textFieldStepCounter.visibility = View.VISIBLE
+        binding.editTextGoalNumber.visibility = View.VISIBLE
         binding.idPB.visibility = View.GONE
     }
 
