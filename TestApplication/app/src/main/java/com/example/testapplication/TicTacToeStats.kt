@@ -46,7 +46,6 @@ class TicTacToeStats : Fragment() {
         binding.winGraph.getViewport().setScalableY(true)
         binding.winGraph.getViewport().setScrollableY(true)
         binding.winGraph.getViewport().setXAxisBoundsManual(true)
-        binding.winGraph.getViewport().setMinX(1.0)
         binding.winGraph.getViewport().setMaxX(viewmodel.TicTacToeWinCount.toDouble())
 
         binding.winGraph.addSeries(series)

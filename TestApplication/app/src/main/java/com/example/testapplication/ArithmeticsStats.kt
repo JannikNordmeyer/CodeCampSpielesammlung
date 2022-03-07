@@ -8,14 +8,14 @@ import com.example.testapplication.GameNames
 import com.example.testapplication.MyApplication
 import com.example.testapplication.StatisticsViewModel
 import com.example.testapplication.databinding.FragmentArithmeticsStatsBinding
-import com.example.testapplication.databinding.FragmentChallengeStatsBinding
+import com.example.testapplication.databinding.FragmentTicTacToeStatsBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 
-class ChallengeStats : Fragment() {
+class ArithmeticsStats : Fragment() {
 
-    private lateinit var binding: FragmentChallengeStatsBinding
+    private lateinit var binding: FragmentArithmeticsStatsBinding
     lateinit var viewmodel: StatisticsViewModel
 
 
@@ -24,11 +24,11 @@ class ChallengeStats : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = FragmentChallengeStatsBinding.inflate(inflater,container,false)
+        binding = FragmentArithmeticsStatsBinding.inflate(inflater,container,false)
         val view = binding.root
         viewmodel = ViewModelProvider(requireActivity()).get(StatisticsViewModel::class.java)
 
-        viewmodel.ChallengeData.observe(viewLifecycleOwner){
+        viewmodel.ArithmeticsData.observe(viewLifecycleOwner){
             load()
         }
 
@@ -36,33 +36,33 @@ class ChallengeStats : Fragment() {
     }
     fun load(){
 
-        if(viewmodel.ChallengeData.value == null){
+        if(viewmodel.ArithmeticsData.value == null){
             return
         }
-        binding.gamesPlayedText.text =viewmodel.ChallengeGamesPlayed.toString()
-        binding.winPercentageText.text = viewmodel.ChallengeWinPercentage.toString()
+        binding.gamesPlayedText.text =viewmodel.ArithmeticsGamesPlayed.toString()
+        binding.winPercentageText.text = viewmodel.ArithmeticsWinPercentage.toString()
 
-        val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.ChallengeData.value)
+        val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.ArithmeticsData.value)
 
         binding.winGraph.getViewport().setScalable(true)
         binding.winGraph.getViewport().setScrollable(true)
         binding.winGraph.getViewport().setScalableY(true)
         binding.winGraph.getViewport().setScrollableY(true)
         binding.winGraph.getViewport().setXAxisBoundsManual(true)
-        binding.winGraph.getViewport().setMaxX(viewmodel.ChallengeWinCount.toDouble())
+        binding.winGraph.getViewport().setMaxX(viewmodel.ArithmeticsWinCount.toDouble())
 
         binding.winGraph.addSeries(series)
         binding.winGraph.title = "Win Percentage:"
         binding.winGraph.graphContentHeight
 
-        val series2: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.ChallengeHighScore.value)
+        val series2: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.ArithmeticsHighScore.value)
 
         binding.scoreGraph.getViewport().setScalable(true)
         binding.scoreGraph.getViewport().setScrollable(true)
         binding.scoreGraph.getViewport().setScalableY(true)
         binding.scoreGraph.getViewport().setScrollableY(true)
         binding.scoreGraph.getViewport().setXAxisBoundsManual(true)
-        binding.scoreGraph.getViewport().setMaxX(viewmodel.ChallengeWinCount.toDouble())
+        binding.scoreGraph.getViewport().setMaxX(viewmodel.ArithmeticsWinCount.toDouble())
 
         binding.scoreGraph.addSeries(series2)
         binding.scoreGraph.title = "High Score Development:"

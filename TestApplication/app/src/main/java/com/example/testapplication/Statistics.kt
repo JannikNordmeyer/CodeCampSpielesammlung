@@ -12,6 +12,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 
 class Statistics : AppCompatActivity() {
 
@@ -75,12 +76,116 @@ class Statistics : AppCompatActivity() {
                         data = data.plus(DataPoint(winCount, winPer))
                     }
                 }
-                viewmodel.TicTacToeWinPercentage = winPer.toInt()
+                viewmodel.TicTacToeWinPercentage = winPer
                 viewmodel.TicTacToeWinCount = winCount.toInt()
                 viewmodel.TicTacToeData.value = data
 
             }
         }
+        //Laden der Dated aus Firebase-Datenbank: Compass
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("GamesPlayed").get().addOnSuccessListener {
+            if(it != null){
+                viewmodel.CompassGamesPlayed = it.value.toString().toInt()
+            }
+        }
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("Win%").get().addOnSuccessListener {
+            if(it != null){
+                var winCount = 0.0
+                var winPer = 0.0
+                var data = arrayOf<DataPoint>()
+
+                it.children.forEach(){
+                    if(it.value.toString().toInt() > 0){
+                        winCount += 1
+                        winPer = winCount / it.value.toString().toFloat()
+                        data = data.plus(DataPoint(winCount, winPer))
+                    }
+                }
+                viewmodel.CompassWinPercentage = winPer
+                viewmodel.CompassWinCount = winCount.toInt()
+                viewmodel.CompassData.value = data
+
+            }
+        }
+
+        //Laden der Dated aus Firebase-Datenbank: Arithmetics
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").get().addOnSuccessListener {
+            if(it != null){
+                viewmodel.ArithmeticsGamesPlayed = it.value.toString().toInt()
+            }
+        }
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("Win%").get().addOnSuccessListener {
+            if(it != null){
+                var winCount = 0.0
+                var winPer = 0.0
+                var data = arrayOf<DataPoint>()
+
+                it.children.forEach(){
+                    if(it.value.toString().toInt() > 0){
+                        winCount += 1
+                        winPer = winCount / it.value.toString().toFloat()
+                        data = data.plus(DataPoint(winCount, winPer))
+                    }
+                }
+                viewmodel.ArithmeticsWinPercentage = winPer
+                viewmodel.ArithmeticsWinCount = winCount.toInt()
+                viewmodel.ArithmeticsData.value = data
+
+            }
+        }
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
+            GameNames.ARITHMETICS.toString()).child("HighScore").get().addOnSuccessListener {
+            if(it != null){
+                var data = arrayOf<DataPoint>()
+                var counter = 0.0
+                it.children.forEach(){
+                    data = data.plus(DataPoint(counter, it.value.toString().toDouble()))
+                    counter += 1
+                }
+                viewmodel.ArithmeticsHighScore.value = data
+            }
+        }
+        //Laden der Dated aus Firebase-Datenbank: Schrittzähler
+
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").get().addOnSuccessListener {
+            if(it != null){
+                viewmodel.ChallengeGamesPlayed = it.value.toString().toInt()
+            }
+        }
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").get().addOnSuccessListener {
+            if(it != null){
+                var winCount = 0.0
+                var winPer = 0.0
+                var data = arrayOf<DataPoint>()
+
+                it.children.forEach(){
+                    if(it.value.toString().toInt() > 0){
+                        winCount += 1
+                        winPer = winCount / it.value.toString().toFloat()
+                        data = data.plus(DataPoint(winCount, winPer))
+                    }
+                }
+                viewmodel.ChallengeWinPercentage = winPer
+                viewmodel.ChallengeWinCount = winCount.toInt()
+                viewmodel.ChallengeData.value = data
+
+            }
+        }
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
+            GameNames.SCHRITTZAEHLER.toString()).child("HighScore").get().addOnSuccessListener {
+            if(it != null){
+                var data = arrayOf<DataPoint>()
+                var counter = 0.0
+                it.children.forEach(){
+                    data = data.plus(DataPoint(counter, it.value.toString().toDouble()))
+                    counter += 1
+                }
+                viewmodel.ChallengeHighScore.value = data
+            }
+        }
+
 
 
 
