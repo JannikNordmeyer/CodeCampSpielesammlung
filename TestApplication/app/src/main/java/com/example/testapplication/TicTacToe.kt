@@ -1,19 +1,12 @@
 package com.example.testapplication
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.FragmentTictactoeBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import kotlin.system.exitProcess
-
 
 class TicTacToe : Fragment() {
 
@@ -39,7 +32,6 @@ class TicTacToe : Fragment() {
 
     }
 
-    private val TAG = TicTacToeGameLogic::class.java.simpleName
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
