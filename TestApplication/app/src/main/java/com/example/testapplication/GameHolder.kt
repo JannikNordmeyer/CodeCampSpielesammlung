@@ -76,6 +76,8 @@ class GameHolder : AppCompatActivity() {
         binding = ActivityGameHolderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewmodel = ViewModelProvider(this).get(GameHolderViewModel()::class.java)
+
         //Select Fragment and load it's Viewmodel
         when (MyApplication.globalSelectedGame) {
             GameNames.COMPASS -> {
