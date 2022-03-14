@@ -75,6 +75,7 @@ class GameHolder : AppCompatActivity() {
 
         binding = ActivityGameHolderBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewmodel = ViewModelProvider(this).get(GameHolderViewModel()::class.java)
 
         viewmodel = ViewModelProvider(this).get(GameHolderViewModel()::class.java)
 
