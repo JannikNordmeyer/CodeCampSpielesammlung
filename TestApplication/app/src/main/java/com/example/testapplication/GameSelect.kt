@@ -1,6 +1,10 @@
 package com.example.testapplication
 
 import android.content.Intent
+import android.graphics.BlendModeColorFilter
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -22,6 +26,16 @@ class GameSelect : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun fadeOutButtons(){
+        binding.FriendsButton.alpha = 0.5F
+        binding.statsButton.alpha = 0.5F
+    }
+
+    fun fadeInButtons(){
+        binding.FriendsButton.alpha = 1F
+        binding.statsButton.alpha = 1F
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_select)
@@ -37,35 +51,35 @@ class GameSelect : AppCompatActivity() {
 
         var currentuser = FirebaseAuth.getInstance().currentUser
         if(currentuser != null) {
+            MyApplication.isLoggedIn = true
+            fadeInButtons()
             binding.TextViewLoginStatus.setText("Logged in as " + currentuser.email)
+        }
+        else {
+            MyApplication.isLoggedIn = false
+            fadeOutButtons()
         }
 
         binding.ButtonLogout.setOnClickListener(){
             FirebaseAuth.getInstance().signOut()
             currentuser = null
+            MyApplication.isLoggedIn = false
+            fadeOutButtons()
             binding.TextViewLoginStatus.setText("You are not currently logged in.")
         }
 
         binding.statsButton.setOnClickListener(){
-
-            if(currentuser != null) {
+            if(MyApplication.isLoggedIn) {
                 val intent = Intent(this, Statistics::class.java);
                 startActivity(intent)
             }
             else{
                 Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
-
             }
         }
         binding.ButtonTicTacToe.setOnClickListener(){
-            if(currentuser != null) {
             MyApplication.globalSelectedGame = GameNames.TICTACTOE
             startGame()
-            }
-            else{
-                Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
-
-            }
         }
 
         binding.ButtonPlaceholderSpiel1.setOnClickListener(){
@@ -84,23 +98,18 @@ class GameSelect : AppCompatActivity() {
         }
 
         binding.ButtonLogin.setOnClickListener(){
-
             val intent = Intent(this, Login::class.java);
             startActivity(intent)
         }
 
         binding.FriendsButton.setOnClickListener(){
-
-            if(currentuser != null) {
+            if(MyApplication.isLoggedIn) {
                 val intent = Intent(this, FriendsList::class.java);
                 startActivity(intent)
                 }
             else{
                 Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
-
             }
-
         }
-
     }
 }

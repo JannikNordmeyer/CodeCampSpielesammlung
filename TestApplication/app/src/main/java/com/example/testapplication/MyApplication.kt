@@ -16,6 +16,8 @@ class MyApplication : Application() {
         var globalSelectedGame = GameNames.NONE         //The selected game
         var globalSelectedGameStatLocation = ""
 
+        var isLoggedIn = false;                         //Global control variable that checks if the user is logged in.
+
         var isCodeMaker = true;                         //If the player made the code - aka if they are the host, Player 1.
         var code = "null"                               //"Room" Code
         var codeFound = false

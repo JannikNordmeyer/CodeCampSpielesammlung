@@ -39,12 +39,26 @@ class GameSelectNetwork : AppCompatActivity() {
         }
     }
 
+    fun fadeOutButtons(){
+        binding.BtnQuickplay.alpha = 0.5F
+        binding.BtnOnlineRoomCode.alpha = 0.5F
+    }
+
+    fun fadeInButtons(){
+        binding.BtnQuickplay.alpha = 1F
+        binding.BtnOnlineRoomCode.alpha = 1F
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_select_network)
 
         binding = ActivityGameSelectNetworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if(!MyApplication.isLoggedIn){
+            fadeOutButtons()
+        }
 
         //Select Quickplay Filter
         when (MyApplication.globalSelectedGame) {
@@ -141,18 +155,21 @@ class GameSelectNetwork : AppCompatActivity() {
         }
 
         //Wenn jemand während des wartens in der Quickplay Lobby deine Request animmt, hoste spiel.
-        quickplayListener = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.value != null && snapshot.value != "" && host) {
-                    networkHostGame(snapshot.value as String)
+        if(MyApplication.isLoggedIn) {
+            quickplayListener = MyApplication.myRef.child("Users")
+                .child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.value != null && snapshot.value != "" && host) {
+                        networkHostGame(snapshot.value as String)
+                    }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
 
-        })
+            })
+        }
 
         fun createLobby(LobbyName: String){
             startLoad()
@@ -186,13 +203,18 @@ class GameSelectNetwork : AppCompatActivity() {
 
         // Lobby w/Name
         binding.BtnOnlineRoomCode.setOnClickListener {
-            lobbyName = binding.InviteLobbyName.text.toString()
-            if(MyApplication.inviteFriendID != ""){
-                inviteFriend(lobbyName)
-                MyApplication.inviteFriendID = ""
-                Toast.makeText(this,"Invited Friend!",Toast.LENGTH_SHORT).show()
+            if(MyApplication.isLoggedIn) {
+                lobbyName = binding.InviteLobbyName.text.toString()
+                if (MyApplication.inviteFriendID != "") {
+                    inviteFriend(lobbyName)
+                    MyApplication.inviteFriendID = ""
+                    Toast.makeText(this, "Invited Friend!", Toast.LENGTH_SHORT).show()
+                }
+                createLobby(lobbyName)
             }
-            createLobby(lobbyName)
+            else{
+                Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
+            }
         }
 
 
@@ -206,15 +228,25 @@ class GameSelectNetwork : AppCompatActivity() {
         }
 
         binding.BtnQuickplay.setOnClickListener {
-            lobbyName = "Quickplay"
-            createLobby(lobbyName)
+            if(MyApplication.isLoggedIn) {
+                lobbyName = "Quickplay"
+                createLobby(lobbyName)
+            }
+            else{
+                Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
+            }
         }
 
         //Verlasse Quickplay Lobby wenn man als Host Wartet
         binding.BtnCancel.setOnClickListener {
-            MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
-            host = false
-            stopLoad()
+            if(MyApplication.isLoggedIn) {
+                MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
+                host = false
+                stopLoad()
+            }
+            else{
+                Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
+            }
         }
 
     }

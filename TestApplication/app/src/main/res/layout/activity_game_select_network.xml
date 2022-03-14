@@ -18,9 +18,10 @@
         android:text="Create/Join Lobby"
         app:layout_constraintBottom_toTopOf="@+id/guideline14"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline33"
-        app:layout_constraintVertical_bias="0.522" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/BtnOffline"
