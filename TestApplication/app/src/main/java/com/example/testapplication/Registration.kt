@@ -72,68 +72,53 @@ class Registration : AppCompatActivity() {
 
 
                             //Anlegen der Zähler für die Statistiken
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(0)
-                            val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").push().getKey()
+                            var userpath = MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()))
+                            
+                            userpath.child(GameNames.TICTACTOE.toString()).child("GamesPlayed").setValue(0)
+                            val key: String? = userpath.child(GameNames.TICTACTOE.toString()).child("Win%").push().getKey()
                             val map: MutableMap<String, Any> = HashMap()
                             map[key!!] = 0
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("Win%").updateChildren(map)
+                            userpath.child(GameNames.TICTACTOE.toString()).child("Win%").updateChildren(map)
 
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").setValue(0)
-                            val key2: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("Win%").push().getKey()
+                            userpath.child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").setValue(0)
+                            val key2: String? = userpath.child(GameNames.ARITHMETICS.toString()).child("Win%").push().getKey()
                             val map2: MutableMap<String, Any> = HashMap()
                             map2[key2!!] = 0
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("Win%").updateChildren(map)
+                            userpath.child(GameNames.ARITHMETICS.toString()).child("Win%").updateChildren(map)
 
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").setValue(0)
-                            val key3: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("Win%").push().getKey()
+                            userpath.child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").setValue(0)
+                            val key3: String? = userpath.child(GameNames.ARITHMETICS.toString()).child("Win%").push().getKey()
                             val map3: MutableMap<String, Any> = HashMap()
                             map3[key3!!] = 0
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("HighScore").updateChildren(map)
+                            userpath.child(GameNames.ARITHMETICS.toString()).child("HighScore").updateChildren(map)
 
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").setValue(0)
-                            val key4: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").push().getKey()
+                            userpath.child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").setValue(0)
+                            val key4: String? = userpath.child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").push().getKey()
                             val map4: MutableMap<String, Any> = HashMap()
                             map4[key4!!] = 0
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").updateChildren(map)
+                            userpath.child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").updateChildren(map)
 
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").setValue(0)
-                            val key5: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").push().getKey()
+                            userpath.child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").setValue(0)
+                            val key5: String? = userpath.child(GameNames.SCHRITTZAEHLER.toString()).child("Win%").push().getKey()
                             val map5: MutableMap<String, Any> = HashMap()
                             map5[key5!!] = 0
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("HighScore").updateChildren(map)
+                            userpath.child(GameNames.SCHRITTZAEHLER.toString()).child("HighScore").updateChildren(map)
 
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("GamesPlayed").setValue(0)
-                            val key6: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("Win%").push().getKey()
+                            userpath.child(GameNames.COMPASS.toString()).child("GamesPlayed").setValue(0)
+                            val key6: String? = userpath.child(GameNames.COMPASS.toString()).child("Win%").push().getKey()
                             val map6: MutableMap<String, Any> = HashMap()
                             map6[key6!!] = 0
-                            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("Win%").updateChildren(map)
-
-
-
+                            userpath.child(GameNames.COMPASS.toString()).child("Win%").updateChildren(map)
+                            
                             Toast.makeText(this, "Registration Successful.", Toast.LENGTH_SHORT ).show()
-
                         }
                         else{
-
                             Toast.makeText(this, task.exception!!.message.toString(), Toast.LENGTH_SHORT ).show()
-
                         }
-
-
                     }
-
                 }
-
-
-
             }
             }
-
-
     }
 
-    fun SplitString(str:String): String{
-        var split=str.split("@")
-        return split[0]
-    }
 }

@@ -19,24 +19,10 @@ class TicTacToe : Fragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
 
-
-    //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
-    fun SplitString(str:String): String{
-        var split=str.split("@")
-        return split[0]
-    }
-
     fun getIcon(str : String) : Int{
-
-        if(str == "X"){
-            return R.drawable.x
-        }
-        if(str == "O"){
-            return return R.drawable.o
-        }
-
+        if(str == "X"){ return R.drawable.x }
+        if(str == "O"){ return return R.drawable.o }
         return return android.R.color.transparent
-
     }
 
     private val TAG = TicTacToeGameLogic::class.java.simpleName

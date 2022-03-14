@@ -34,7 +34,7 @@ class GameSelectNetwork : AppCompatActivity() {
         super.onDestroy()
         if(MyApplication.onlineMode) {
             if (this::quickplayListener.isInitialized) {
-                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(quickplayListener)
+                MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(quickplayListener)
             }
         }
     }
@@ -102,7 +102,7 @@ class GameSelectNetwork : AppCompatActivity() {
 
         fun networkHostGame(opponent : String){
             //Generiere Raum Code
-            MyApplication.code = SplitString(opponent)/*Guest Email*/ + SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
+            MyApplication.code = MyApplication.SplitString(opponent)/*Guest Email*/ + MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
             MyApplication.isCodeMaker = true
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
@@ -130,7 +130,7 @@ class GameSelectNetwork : AppCompatActivity() {
         fun networkJoinGame(opponent : String){
             MyApplication.onlineMode = true;
             //Merke Raum Code
-            MyApplication.code =  SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + SplitString(opponent)/*Host Email*/
+            MyApplication.code =  MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + MyApplication.SplitString(opponent)/*Host Email*/
             MyApplication.isCodeMaker = false
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child(lobbyName).child(quickplayFilter).setValue(null)
@@ -157,7 +157,7 @@ class GameSelectNetwork : AppCompatActivity() {
         //Wenn jemand während des wartens in der Quickplay Lobby deine Request animmt, hoste spiel.
         if(MyApplication.isLoggedIn) {
             quickplayListener = MyApplication.myRef.child("Users")
-                .child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener {
+                .child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null && snapshot.value != "" && host) {
                         networkHostGame(snapshot.value as String)
@@ -177,8 +177,8 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.myRef.child(LobbyName).child(quickplayFilter).get().addOnSuccessListener(this) {
                 if(it.value != null){  //Falls es Spieler gibt...
                     //Heirate
-                    MyApplication.myRef.child("Users").child(SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
-                    MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
+                    MyApplication.myRef.child("Users").child(MyApplication.SplitString(it.value.toString())).child("Request").setValue(FirebaseAuth.getInstance().currentUser!!.email)
+                    MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").setValue(it.value)
                     //Join game
                     networkJoinGame(it.value.toString())
                     stopLoad()
@@ -194,7 +194,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.myRef.child("MessagingTokens").child(MyApplication.inviteFriendID.toString()).get().addOnSuccessListener {
                 if(it != null){
                     val id = it.value.toString()
-                    val title = SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + " has invited you to a game of " + quickplayFilter
+                    val title = MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) + " has invited you to a game of " + quickplayFilter
                     val message = "Lobby Name: " + lobbyName
                     PushNotification(NotificationData(title, message), id).also { MyApplication.sendNotification(it) }
                 }
@@ -249,12 +249,6 @@ class GameSelectNetwork : AppCompatActivity() {
             }
         }
 
-    }
-
-    //cant save @ as key in the database so this function returns only the first part of the email that is used as the key instead
-    fun SplitString(str:String): String{
-        var split=str.split("@")
-        return split[0]
     }
 
     fun startLoad() {

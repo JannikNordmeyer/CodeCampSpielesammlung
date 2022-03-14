@@ -73,12 +73,12 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
                         }
                     }
 
-                    MyApplication.myRef.child("Users").child(SplitString(currentUser.toString())).child("Friends").get().addOnSuccessListener {
+                    MyApplication.myRef.child("Users").child(MyApplication.SplitString(currentUser.toString())).child("Friends").get().addOnSuccessListener {
                         it.children.forEach(){
                             if(it.key == friendID){
-                                MyApplication.myRef.child("Users").child(SplitString(currentUser.toString())).child("Friends").child(friendID).removeValue().addOnSuccessListener {
+                                MyApplication.myRef.child("Users").child(MyApplication.SplitString(currentUser.toString())).child("Friends").child(friendID).removeValue().addOnSuccessListener {
                                 }
-                                MyApplication.myRef.child("Users").child(SplitString(friendName.toString())).child("Friends").child(currentUserID).removeValue()
+                                MyApplication.myRef.child("Users").child(MyApplication.SplitString(friendName.toString())).child("Friends").child(currentUserID).removeValue()
                             }
                         }
                     }
@@ -95,12 +95,6 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
 
     override fun getItemCount(): Int {
         return FriendsList.size
-    }
-
-    //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
-    fun SplitString(str:String): String{
-        var split=str.split("@")
-        return split[0]
     }
 
     class ListViewHolder(itemView : View) :RecyclerView.ViewHolder(itemView){

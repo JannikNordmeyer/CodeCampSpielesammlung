@@ -41,18 +41,13 @@ class GameHolder : AppCompatActivity() {
 
     var quickplayFilter = ""
 
-    //cant save @ as key in the database so this function returns only the first part of the emil that is used as the key instead
-    fun SplitString(str: String): String {
-        var split = str.split("@")
-        return split[0]
-    }
 
     private fun updateStatistics() {
-        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener(this) {
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener(this) {
             if(it != null){
                 var _gamesPlayed = it.value.toString().toInt()
                 _gamesPlayed += gamesPlayed
-                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").setValue(_gamesPlayed)
+                MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").setValue(_gamesPlayed)
             }
         }
     }
@@ -73,7 +68,7 @@ class GameHolder : AppCompatActivity() {
             MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").removeEventListener(fieldUpdateListener)
             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").removeEventListener(winnerPlayerListener)
             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").removeEventListener(remachtListener)
-            MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(exitPlayerListener)
+            MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(exitPlayerListener)
         }
 
     }
@@ -204,12 +199,12 @@ class GameHolder : AppCompatActivity() {
                             build.setMessage("$value has won the game!")
                             //Win Percentage updaten
                             if(value == FirebaseAuth.getInstance().currentUser!!.email){
-                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener {
+                                MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener {
                                     if (it != null){
-                                        val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").push().getKey()
+                                        val key: String? = MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").push().getKey()
                                         val map: MutableMap<String, Any> = HashMap()
                                         map[key!!] = (it.value.toString().toInt() + gamesPlayed).toString()
-                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").updateChildren(map)
+                                        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("Win%").updateChildren(map)
                                     }
                                 }
                             }
@@ -219,12 +214,12 @@ class GameHolder : AppCompatActivity() {
                                 var score = 0
                                 if(MyApplication.globalSelectedGame == GameNames.ARITHMETICS){ score = (viewmodel as ArithmeticsViewModel).score }
                                 else{ score = (viewmodel as SchrittzaehlerViewModel).score }
-                                MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").get().addOnSuccessListener {
+                                MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").get().addOnSuccessListener {
                                     if (it != null){
-                                        val key: String? = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").push().getKey()
+                                        val key: String? = MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").push().getKey()
                                         val map: MutableMap<String, Any> = HashMap()
                                         map[key!!] = max(it.children.last().value.toString().toInt(),score)
-                                        MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").updateChildren(map)
+                                        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("HighScore").updateChildren(map)
                                     }
                                 }
 
@@ -287,7 +282,7 @@ class GameHolder : AppCompatActivity() {
             })
 
             //setup listener to quit game if Opponent leaves mid-match...
-            exitPlayerListener = MyApplication.myRef.child("Users").child(SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
+            exitPlayerListener = MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.value == "" && !MyApplication.Ileft){
@@ -326,8 +321,8 @@ class GameHolder : AppCompatActivity() {
 
     fun exitGame() {
         //cleanup
-        MyApplication.myRef.child("Users").child(SplitString(MyApplication.guestID)).child("Request").setValue("")
-        MyApplication.myRef.child("Users").child(SplitString(MyApplication.hostID)).child("Request").setValue("")
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(MyApplication.guestID)).child("Request").setValue("")
+        MyApplication.myRef.child("Users").child(MyApplication.SplitString(MyApplication.hostID)).child("Request").setValue("")
         MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
     }
 
