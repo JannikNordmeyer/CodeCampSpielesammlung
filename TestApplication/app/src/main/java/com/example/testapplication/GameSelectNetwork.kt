@@ -31,7 +31,7 @@ class GameSelectNetwork : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if(MyApplication.onlineMode) {
+        if(MyApplication.isLoggedIn) {
             //Unsub listener
             if (this::quickplayListener.isInitialized) {
                 MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request").removeEventListener(quickplayListener)
@@ -41,6 +41,13 @@ class GameSelectNetwork : AppCompatActivity() {
             if(viewmodel.lobbyName != "" && host){
                 if(viewmodel.lobbyName.equals("Quickplay")){
                     MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).child(viewmodel.quickplayName).removeValue()
+                    MyApplication.myRef.child(viewmodel.lobbyName).get().addOnSuccessListener {
+                        for (child in it.children) {
+                            if (child.value == viewmodel.quickplayName) {
+                                MyApplication.myRef.child(viewmodel.lobbyName).child(child.key!!).removeValue()
+                            }
+                        }
+                    }
                 }
                 else MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).removeValue()
             }
