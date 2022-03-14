@@ -8,6 +8,8 @@ import android.graphics.PorterDuff
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.MyApplication.Companion.FRIENDS_TOPIC
 import com.example.testapplication.MyApplication.Companion.sendNotification
 import com.example.testapplication.databinding.ActivityGameSelectBinding
@@ -20,6 +22,7 @@ class GameSelect : AppCompatActivity() {
 
     private val TAG = GameSelect::class.java.simpleName
     private lateinit var binding: ActivityGameSelectBinding
+    lateinit var viewmodel: ViewModel
 
     fun startGame(){
         val intent = Intent(this, GameSelectNetwork::class.java)   //Previously went to GameHolder
@@ -42,6 +45,8 @@ class GameSelect : AppCompatActivity() {
 
         binding = ActivityGameSelectBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewmodel = ViewModelProvider(this).get(GameSelectNetworkViewModel()::class.java)
 
         //Get reference to database once on game launch
         MyApplication.database = FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
