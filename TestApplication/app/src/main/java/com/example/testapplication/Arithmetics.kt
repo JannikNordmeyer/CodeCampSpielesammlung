@@ -123,6 +123,7 @@ class Arithmetics : Fragment() {
                                                         } else networkWinner = "-1"  //Draw
                                                         //Enter Winner
                                                         MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                                                        MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").removeEventListener(this)
                                                     }
                                                 }
 
