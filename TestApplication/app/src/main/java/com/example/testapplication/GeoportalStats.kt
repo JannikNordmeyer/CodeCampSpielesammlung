@@ -3,17 +3,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.testapplication.GameNames
-import com.example.testapplication.MyApplication
+import androidx.lifecycle.ViewModelProvider
+import com.example.testapplication.StatisticsViewModel
 import com.example.testapplication.databinding.FragmentGeoportalStatsBinding
-import com.google.firebase.auth.FirebaseAuth
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 
 class GeoportalStats : Fragment() {
 
     private lateinit var binding: FragmentGeoportalStatsBinding
-    var gamesPlayed = 0
+    lateinit var viewmodel: StatisticsViewModel
 
 
     override fun onCreateView(
@@ -23,54 +22,34 @@ class GeoportalStats : Fragment() {
 
         binding = FragmentGeoportalStatsBinding.inflate(inflater,container,false)
         val view = binding.root
+        viewmodel = ViewModelProvider(requireActivity()).get(StatisticsViewModel::class.java)
 
-        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
-            GameNames.COMPASS.toString()).child("GamesPlayed").get().addOnSuccessListener {
-            if(it != null){
-                binding.gamesPlayedText.setText(it.value.toString())
-                gamesPlayed = it.value.toString().toInt()
-            }
+        viewmodel.CompassData.observe(viewLifecycleOwner){
+            load()
         }
-
-        MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(
-            GameNames.COMPASS.toString()).child("Win%").get().addOnSuccessListener {
-            if(it != null){
-
-                var winCount = 0.0
-                var winPer = 0.0
-
-                var data = arrayOf<DataPoint>()
-
-                it.children.forEach(){
-
-                    if(it.value.toString().toInt() > 0){
-
-                        winCount += 1
-                        winPer = winCount / it.value.toString().toFloat()
-                        data = data.plus(DataPoint(winCount, winPer))
-                    }
-
-                }
-                binding.winPercentageText.setText(winPer.toString())
-                val series: LineGraphSeries<DataPoint> = LineGraphSeries(data)
-
-                binding.winGraph.getViewport().setScalable(true)
-                binding.winGraph.getViewport().setScrollable(true)
-                binding.winGraph.getViewport().setScalableY(true)
-                binding.winGraph.getViewport().setScrollableY(true)
-                binding.winGraph.getViewport().setXAxisBoundsManual(true)
-                binding.winGraph.getViewport().setMinX(1.0)
-                binding.winGraph.getViewport().setMaxX(winCount)
-
-                binding.winGraph.addSeries(series)
-                binding.winGraph.title = "Win Percentage:"
-                binding.winGraph.graphContentHeight
-            }
-        }
-
-
 
         return view
+    }
+    fun load(){
+
+        if(viewmodel.CompassData.value == null){
+            return
+        }
+        binding.gamesPlayedText.text =viewmodel.CompassGamesPlayed.toString()
+        binding.winPercentageText.text = viewmodel.CompassWinPercentage.toString()
+
+        val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.CompassData.value)
+
+        binding.winGraph.getViewport().setScalable(true)
+        binding.winGraph.getViewport().setScrollable(true)
+        binding.winGraph.getViewport().setScalableY(true)
+        binding.winGraph.getViewport().setScrollableY(true)
+        binding.winGraph.getViewport().setXAxisBoundsManual(true)
+        binding.winGraph.getViewport().setMaxX(viewmodel.CompassWinCount.toDouble())
+
+        binding.winGraph.addSeries(series)
+        binding.winGraph.title = "Win Percentage:"
+        binding.winGraph.graphContentHeight
     }
 
 }

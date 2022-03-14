@@ -2,10 +2,7 @@ package com.example.testapplication
 
 import android.os.CountDownTimer
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
-import java.util.*
-import kotlin.coroutines.coroutineContext
 
 class ArithmeticsViewModel: ViewModel() {
 
