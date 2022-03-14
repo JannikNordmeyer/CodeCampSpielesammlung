@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import kotlin.random.Random
 
-class PlaceholderSpiel1Logic (){
+class KompassLogic (){
 
     var indexList: ArrayList<Int> = ArrayList()
     var listindex = 0

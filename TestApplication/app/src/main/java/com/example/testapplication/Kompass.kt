@@ -11,6 +11,7 @@ import com.esri.arcgisruntime.mapping.view.MapView*/
 
 //import com.esri.arcgisruntime.toolkit.compass.Compass
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
@@ -30,53 +31,36 @@ import android.widget.ImageView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.*
-import com.example.testapplication.databinding.FragmentPlaceholderspiel1Binding
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.example.testapplication.databinding.FragmentKompassBinding
 import com.google.android.gms.location.LocationServices
 import org.json.JSONObject
-import java.util.*
-import kotlin.random.Random
-import android.R
-import android.app.AlertDialog
 
-import android.content.Intent
-
-import android.content.DialogInterface
-import android.location.LocationRequest
 import android.os.*
-import android.provider.Settings
-import android.widget.Toast
 import com.google.android.gms.location.LocationResult
 
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.*
-import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import org.json.JSONArray
 import kotlin.collections.ArrayList
+import android.content.Intent
 
-import androidx.core.content.ContextCompat
-
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.ViewModel
-import kotlin.math.*
-import kotlin.system.measureTimeMillis
+import android.content.DialogInterface
+import android.provider.Settings
+import java.lang.Exception
 
 
-class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
-    private val TAG = PlaceholderSpiel1::class.java.simpleName
+class Kompass : Fragment(), SensorEventListener, LocationListener {
+    private val TAG = Kompass::class.java.simpleName
 
     //private val fragmentPlaceholderspiel1Binding by lazy {        FragmentPlaceholderspiel1Binding.inflate(layoutInflater)    }
 
     //private val mapView: MapView by lazy { fragmentPlaceholderspiel1Binding.mapView    }
 
-    private lateinit var binding: FragmentPlaceholderspiel1Binding
-    lateinit var viewmodel: PlaceholderSpiel1ViewModel
+    private lateinit var binding: FragmentKompassBinding
+    lateinit var viewmodel: KompassViewModel
 
     lateinit var targetList: JSONArray
 
@@ -100,13 +84,20 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     var completionTime : Float = 0.0f
     var timerStarted = false
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewmodel.completionTimer.cancel()
+        timer.cancel()
+        vibrateTimer.cancel()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        binding = FragmentPlaceholderspiel1Binding.inflate(inflater,container,false)
+        binding = FragmentKompassBinding.inflate(inflater,container,false)
         //val view = fragmentPlaceholderspiel1Binding.root
         val view = binding.root
-        viewmodel = ViewModelProvider(requireActivity()).get(PlaceholderSpiel1ViewModel::class.java) //Shared Viewmodel w/ GameHolder
+        viewmodel = ViewModelProvider(requireActivity()).get(KompassViewModel::class.java) //Shared Viewmodel w/ GameHolder
         viewmodel.liveLocation.observe(viewLifecycleOwner, {
             binding.idTarget.text = viewmodel.liveLocation.value
         })
@@ -124,21 +115,20 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
         viewmodel.targetLocation = JSONObject()
         timer = object : CountDownTimer(2000, 10) {
             override fun onTick(millisUntilFinished: Long) {
-                Log.d("Compass", millisUntilFinished.toString())
             }
 
             override fun onFinish() {
-                Log.d("Compass", "INDEXLIST: " + viewmodel.logic.indexList.size.toString())
-
                 viewmodel.score += completionTime
-                Log.d("Compass", "score: " + viewmodel.score)
                 if (viewmodel.logic.listindex < viewmodel.logic.indexList.size) {
-                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex++], activity!!)
-                    viewmodel.getTargetDirection(activity!!)
-                    Log.d("Compass", "YOU FUCKING DID IT ${viewmodel.targetLocation.getJSONObject("properties").getString("Objekt")}")
+                    Log.d("Kompass", "Listindex: ${viewmodel.logic.listindex}")
+                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex], activity!!)
+                    //viewmodel.getTargetDirection(activity!!)
+                    Log.d("Kompass", "TIMER FINISH: POINTED AT NOT LAST")
+                    viewmodel.logic.listindex++
+                    Log.d("Kompass", "LISTINDEX INCREASED")
                 } else {
                     viewmodel.completionTimer.cancel()
-                    Log.d("Compass", "TIME OUT TIMER")
+                    Log.d("Kompass", "TIMER FINISH: POINTED AT LAST")
                     winnerCheck()
                 }
             }
@@ -151,19 +141,22 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
             }
 
             override fun onFinish() {
+                timer.cancel()
                 if (viewmodel.logic.listindex < viewmodel.logic.indexList.size) {
                     viewmodel.score += 10000
-                    Log.d("Compass", "score: " + viewmodel.score)
-                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex++], activity!!)
-                    viewmodel.getTargetDirection(activity!!)
+                    Log.d("Kompass", "Listindex: ${viewmodel.logic.listindex}")
+                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex], activity!!)
+                    //viewmodel.getTargetDirection(activity!!)
+                    Log.d("Kompass", "TIMER FINISH: OUT OF TIME NOT LAST")
+                    viewmodel.logic.listindex++
+                    Log.d("Kompass", "LISTINDEX INCREASED")
+
                     //Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
                 } else {
                     viewmodel.score += 10000
-                    Log.d("Compass", "score: " + viewmodel.score)
-                    Log.d("Compass", "POINT AT STUFF TIMER")
+                    Log.d("Kompass", "TIMER FINISH: OUT OF TIME LAST")
                     winnerCheck()
                 }
-
             }
         }
 
@@ -220,15 +213,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
 
         viewmodel.initGame(activity!!)
 
-        try {
-            gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        } catch (ex: Exception) {
-        }
 
-        try {
-            network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        } catch (ex: Exception) {
-        }
 
 
         binding.idBtnGenerate.setOnClickListener {
@@ -262,6 +247,7 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                                 } else networkWinner = "-1"  //Draw
                                 //Enter Winner
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(networkWinner)
+                                MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").removeEventListener(this)
                             }
                         }
 
@@ -325,11 +311,9 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                 ani.fillAfter = true
 
                 compass.startAnimation(ani)
-                //Log.d("Compass", currentAzimuth.toString())
 
                 //check for right direction
                 if ((viewmodel.targetDirectionDegree - 5)%360 <= azimuth && azimuth <= (viewmodel.targetDirectionDegree + 5)%360) {
-                    //Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
                     //start
                     if (!timerStarted) {
                         timer.start()
@@ -343,7 +327,6 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
                 }
 
                 if ((viewmodel.targetDirectionDegree - 90)%360 <= azimuth && azimuth <= (viewmodel.targetDirectionDegree + 90)%360) {
-                    //Log.d("Compass", "YOU FUCKING DID IT ${targetLocation.getJSONObject("properties").getString("Objekt")}")
                     //start
                     if (!vibTimerRunning) {
                         //vibrateTimer.start()
@@ -379,7 +362,6 @@ class PlaceholderSpiel1 : Fragment(), SensorEventListener, LocationListener {
     }
 
     override fun onLocationChanged(location: Location) {
-        Log.d("Compass", location.toString())
     }
 
 

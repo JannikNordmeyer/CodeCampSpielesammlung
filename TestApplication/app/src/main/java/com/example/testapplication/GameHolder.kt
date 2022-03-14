@@ -1,14 +1,10 @@
 package com.example.testapplication
 
 import android.app.AlertDialog
-import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,7 +12,6 @@ import com.example.testapplication.databinding.ActivityGameHolderBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.lang.Integer.max
-import kotlin.random.Random
 
 class GameHolder : AppCompatActivity() {
 
@@ -81,8 +76,8 @@ class GameHolder : AppCompatActivity() {
         //Select Fragment and load it's Viewmodel
         when (MyApplication.globalSelectedGame) {
             GameNames.COMPASS -> {
-                fragToLoad = PlaceholderSpiel1()
-                gameViewModel = ViewModelProvider(this).get(PlaceholderSpiel1ViewModel()::class.java)
+                fragToLoad = Kompass()
+                gameViewModel = ViewModelProvider(this).get(KompassViewModel()::class.java)
                 viewmodel.quickplayFilter = "PLACEHOLDERSPIEL1"
                 Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
             }
@@ -167,7 +162,7 @@ class GameHolder : AppCompatActivity() {
                         var data = snapshot.key
                         when (gameViewModel) {
                             is TicTacToeViewModel -> if (snapshot.value != "")(gameViewModel as TicTacToeViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel1ViewModel -> (gameViewModel as PlaceholderSpiel1ViewModel).logic.networkOnFieldUpdate(data)
+                            is KompassViewModel -> (gameViewModel as KompassViewModel).logic.networkOnFieldUpdate(data)
                             is SchrittzaehlerViewModel -> (gameViewModel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
                             is ArithmeticsViewModel -> (gameViewModel as ArithmeticsViewModel).logic.networkOnFieldUpdate(data)
                             is PlaceholderSpiel4ViewModel -> (gameViewModel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
@@ -263,7 +258,7 @@ class GameHolder : AppCompatActivity() {
                         if (snapshot.value == false && MyApplication.isLoading) {
                             if (MyApplication.isCodeMaker && MyApplication.globalSelectedGame == GameNames.COMPASS) {
                                 Log.d("Compass", "INIT GAME")
-                                (gameViewModel as PlaceholderSpiel1ViewModel).initGame(this@GameHolder)
+                                (gameViewModel as KompassViewModel).initGame(this@GameHolder)
                             }
                             stopLoad()
                             networkSetup(gameViewModel)
@@ -345,8 +340,8 @@ class GameHolder : AppCompatActivity() {
                     gameViewModel.logic.networkBoardToLocalBoard()
                 }
             }
-            is PlaceholderSpiel1ViewModel -> { //Your Setup Code here...
-                (gameViewModel as PlaceholderSpiel1ViewModel).logic.listindex = 0
+            is KompassViewModel -> { //Your Setup Code here...
+                Log.d("Kompass", "LISTINDEX RESET NETWORKSETUP")
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
                     if (MyApplication.networkSetupComplete) {
