@@ -40,7 +40,6 @@ class GameSelectNetwork : AppCompatActivity() {
             //close lobby if we kill app while running
             if(viewmodel.lobbyName != "" && host){
                 if(viewmodel.lobbyName.equals("Quickplay")){
-                    MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).child(viewmodel.quickplayName).removeValue()
                     MyApplication.myRef.child(viewmodel.lobbyName).get().addOnSuccessListener {
                         for (child in it.children) {
                             if (child.value == viewmodel.quickplayName) {
