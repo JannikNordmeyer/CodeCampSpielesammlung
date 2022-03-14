@@ -23,13 +23,13 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-class PlaceholderSpiel1ViewModel(): ViewModel() {
+class KompassViewModel(): ViewModel() {
 
     fun networkOnFieldUpdate(data : String?){
         //TODO: Update Field with data received...
     }
 
-    var logic = PlaceholderSpiel1Logic()
+    var logic = KompassLogic()
     var liveLocation:MutableLiveData<String?> = MutableLiveData<String?>()
 
     //WEITERER CODE HIER
@@ -44,6 +44,7 @@ class PlaceholderSpiel1ViewModel(): ViewModel() {
 
     fun initGame(passedActivity: Activity) {
         if (MyApplication.isCodeMaker || !MyApplication.onlineMode) {
+            Log.d("Kompass", "LISTINDEX RESET INIT GAME")
             logic.listindex = 0
             score = 0f
             logic.indexList.clear()
@@ -58,13 +59,18 @@ class PlaceholderSpiel1ViewModel(): ViewModel() {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
                 }
             }
-            apiCall(logic.indexList[logic.listindex++],passedActivity)
+            Log.d("Kompass", "API CALL")
+            Log.d("Kompass", "Listindex: ${logic.listindex}")
+            apiCall(logic.indexList[logic.listindex],passedActivity)
+            logic.listindex++
+            Log.d("Kompass", "LISTINDEX INCREASED")
 
         } else {
             MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value == true) {
+                        Log.d("Kompass", "LISTINDEX RESET FIELDUPDATE")
                         logic.listindex = 0
                         score = 0f
                         MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
@@ -73,7 +79,10 @@ class PlaceholderSpiel1ViewModel(): ViewModel() {
                             for (data in it.children){
                                 logic.indexList.add(data.value.toString().toInt())
                             }
-                            apiCall(logic.indexList[logic.listindex++], passedActivity)
+                            Log.d("Kompass", "Listindex: ${logic.listindex}")
+                            apiCall(logic.indexList[logic.listindex], passedActivity)
+                            logic.listindex++
+                            Log.d("Kompass", "LISTINDEX INCREASED")
                             Log.d("Compass", "lookatme"+logic.indexList.toString())
                         }
                     }
@@ -100,6 +109,7 @@ class PlaceholderSpiel1ViewModel(): ViewModel() {
             Response.Listener {
                 targetLocation = it.getJSONArray("features").getJSONObject(key)
                 //targetList.put(targetLocation)
+                //Log.d("Kompass", "LISTINDEX: $key")
                 getTargetDirection(passedActivity)
                 //TODO: LIVEDATE COMING SOON TM
                 liveLocation.value = targetLocation.getJSONObject("properties").getString("Objekt")
@@ -114,8 +124,11 @@ class PlaceholderSpiel1ViewModel(): ViewModel() {
     fun getTargetDirection(passedActivity: Activity) {
         //apiCall()
         if(ActivityCompat.checkSelfPermission(passedActivity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+
             val location = fusedLocationClient.lastLocation.addOnSuccessListener {
+                Log.d("Kompass", "ONSUC START")
                 if (it != null) {
+                    Log.d("Kompass", "IT != NULL")
                     completionTimer.cancel()
                     completionTimer.start()
                     val longitude = it.longitude
@@ -128,7 +141,10 @@ class PlaceholderSpiel1ViewModel(): ViewModel() {
                     targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
                     Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
                     Log.d("Compass", targetDirectionDegree.toString())
+                } else {
+                    getTargetDirection(passedActivity)
                 }
+
             }
 
         } else {
