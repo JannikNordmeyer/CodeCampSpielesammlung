@@ -95,15 +95,13 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                               savedInstanceState: Bundle?): View? {
 
         binding = FragmentKompassBinding.inflate(inflater,container,false)
-        //val view = fragmentPlaceholderspiel1Binding.root
         val view = binding.root
         viewmodel = ViewModelProvider(requireActivity()).get(KompassViewModel::class.java) //Shared Viewmodel w/ GameHolder
+        //Set text
         viewmodel.liveLocation.observe(viewLifecycleOwner, {
-            binding.idTarget.text = viewmodel.liveLocation.value
+            binding.idTarget.text = "Ort:\n"+viewmodel.liveLocation.value.toString()
         })
 
-        // DEIN CODE HIER
-        //++setContentView(fragmentPlaceholderspiel1Binding.root)
         compass = binding.compass
         sensorManager = activity!!.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -137,7 +135,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.completionTimer = object : CountDownTimer(10000, 100) {
             override fun onTick(millisUntilFinished: Long) {
                 completionTime = 10000 - millisUntilFinished.toFloat()
-                binding.idTimer.text = (completionTime/1000).toString()
+                binding.idTimer.text = "Time:\n"+(completionTime/1000).toString()
             }
 
             override fun onFinish() {
@@ -212,19 +210,6 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
 
         viewmodel.initGame(activity!!)
-
-
-
-
-        binding.idBtnGenerate.setOnClickListener {
-            val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-            if (vibrator.hasVibrator()) { // Vibrator availability checking
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)) // New vibrate method for API Level 26 or higher
-                }
-            }
-        }
-
         return view
     }
 
