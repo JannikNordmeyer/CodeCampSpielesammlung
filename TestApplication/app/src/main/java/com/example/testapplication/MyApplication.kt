@@ -1,6 +1,7 @@
 package com.example.testapplication
 
 import android.app.Application
+import android.hardware.Sensor
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope

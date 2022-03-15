@@ -16,6 +16,4 @@ class SchrittzaehlerLogic (viewmodel: SchrittzaehlerViewModel){
         }
     }
 
-    //DEIN CODE HIER
-
 }

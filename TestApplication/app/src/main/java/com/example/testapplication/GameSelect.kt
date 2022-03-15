@@ -8,6 +8,8 @@ import android.graphics.BlendModeColorFilter
 import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.PorterDuff
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -55,6 +57,18 @@ class GameSelect : AppCompatActivity() {
 
         viewmodel = ViewModelProvider(this).get(GameSelectNetworkViewModel()::class.java)
 
+        //Perform sensor check for games that need it and grey out/disable them if you dont have them
+        val sensorManager = this.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val kompassAvailable = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null && sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null
+        val schrittzaehlerAvailable = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
+
+        if(!kompassAvailable){
+            binding.ButtonKompass.alpha = 0.5F
+        }
+        if(!schrittzaehlerAvailable){
+            binding.ButtonSchrittzaehler.alpha = 0.5F
+        }
+
         //Get reference to database once on game launch
         MyApplication.database = FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
         MyApplication.myRef = MyApplication.database.reference;
@@ -94,43 +108,53 @@ class GameSelect : AppCompatActivity() {
             startGame()
         }
 
-        binding.ButtonPlaceholderSpiel1.setOnClickListener(){
-            mLocationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            var gps_enabled = false
-            try {
-                gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-            } catch (ex: Exception) {
+        binding.ButtonKompass.setOnClickListener(){
+            if(kompassAvailable) {
+                mLocationManager =
+                    this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                var gps_enabled = false
+                try {
+                    gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                } catch (ex: Exception) {
+                }
+
+
+                if (!gps_enabled) {
+                    // notify user
+                    val build = AlertDialog.Builder(this)
+                        .setMessage("GPS is not enabled")
+                        .setPositiveButton("open location settings",
+                            DialogInterface.OnClickListener { paramDialogInterface, paramInt ->
+                                this.startActivity(
+                                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                )
+                            })
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                } else {
+                    MyApplication.globalSelectedGame = GameNames.COMPASS
+                    startGame()
+                }
             }
-
-
-            if (!gps_enabled) {
-                // notify user
-                val build = AlertDialog.Builder(this)
-                    .setMessage("GPS is not enabled")
-                    .setPositiveButton("open location settings",
-                        DialogInterface.OnClickListener { paramDialogInterface, paramInt ->
-                            this.startActivity(
-                                Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                            )
-                        })
-                    .setNegativeButton("Cancel", null)
-                    .show()
-                //build.setCancelable(false)
-            } else {
-                MyApplication.globalSelectedGame = GameNames.COMPASS
-                startGame()
+            else{
+                Toast.makeText(this, "Your device does not support this game.", Toast.LENGTH_SHORT ).show()
             }
 
         }
 
-        binding.ButtonPlaceholderSpiel2.setOnClickListener(){
+        binding.ButtonArithmetik.setOnClickListener(){
             MyApplication.globalSelectedGame = GameNames.ARITHMETICS
             startGame()
         }
 
-        binding.ButtonPlaceholderSpiel3.setOnClickListener(){
-            MyApplication.globalSelectedGame = GameNames.SCHRITTZAEHLER
-            startGame()
+        binding.ButtonSchrittzaehler.setOnClickListener(){
+            if(schrittzaehlerAvailable) {
+                MyApplication.globalSelectedGame = GameNames.SCHRITTZAEHLER
+                startGame()
+            }
+            else{
+                Toast.makeText(this, "Your device does not support this game.", Toast.LENGTH_SHORT ).show()
+            }
         }
 
         binding.ButtonLogin.setOnClickListener(){
