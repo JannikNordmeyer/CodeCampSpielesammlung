@@ -19,8 +19,7 @@ class TicTacToe : Fragment() {
     }
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         binding = FragmentTictactoeBinding.inflate(inflater,container,false)
         val view = binding.root
@@ -28,10 +27,16 @@ class TicTacToe : Fragment() {
         val viewmodel = ViewModelProvider(requireActivity()).get(TicTacToeViewModel::class.java) //Shared Viewmodel w/ GameHolder
         fun updatePrompt(){
             if(viewmodel.logic.winner == null){
-                if(viewmodel.logic.player == "X"){
-                    binding.playerprompt.setText("Player 1's Turn:")}
+                if(!MyApplication.onlineMode) {
+                    if (viewmodel.logic.player == "X") {
+                        binding.playerprompt.setText("Player 1's Turn:")
+                    } else {
+                        binding.playerprompt.setText("Player 2's Turn:")
+                    }
+                }
                 else{
-                    binding.playerprompt.setText("Player 2's Turn:")
+                    if(MyApplication.myTurn) binding.playerprompt.setText("It's your turn!:")
+                    else binding.playerprompt.setText("Waiting for other player...")
                 }
             }
             else{
