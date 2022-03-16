@@ -50,6 +50,7 @@ import android.content.Intent
 import android.content.DialogInterface
 import android.provider.Settings
 import java.lang.Exception
+import kotlin.system.exitProcess
 
 
 class Kompass : Fragment(), SensorEventListener, LocationListener {
@@ -61,6 +62,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
     private lateinit var binding: FragmentKompassBinding
     lateinit var viewmodel: KompassViewModel
+    lateinit var goalAlert: AlertDialog
 
     lateinit var targetList: JSONArray
 
@@ -89,6 +91,9 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.completionTimer.cancel()
         timer.cancel()
         vibrateTimer.cancel()
+        if(this::goalAlert.isInitialized){
+            goalAlert.dismiss()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -127,7 +132,11 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 } else {
                     viewmodel.completionTimer.cancel()
                     Log.d("Kompass", "TIMER FINISH: POINTED AT LAST")
-                    winnerCheck()
+                    if (MyApplication.onlineMode) {
+                        winnerCheck()
+                    } else {
+                        resetGame()
+                    }
                 }
             }
         }
@@ -135,7 +144,15 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.completionTimer = object : CountDownTimer(10000, 100) {
             override fun onTick(millisUntilFinished: Long) {
                 completionTime = 10000 - millisUntilFinished.toFloat()
-                binding.idTimer.text = "Time:\n"+(completionTime/1000).toString()
+                var time = (completionTime/1000).toString().split(".")
+                var sec = time[0]
+                var mili = time[1]
+                if (mili.length == 1) {
+                    mili += "00"
+                } else if (mili.length == 2) {
+                    mili += "0"
+                }
+                binding.idTimer.text = "Time:\n"+ sec +"."+ mili
             }
 
             override fun onFinish() {
@@ -153,7 +170,11 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 } else {
                     viewmodel.score += 10000
                     Log.d("Kompass", "TIMER FINISH: OUT OF TIME LAST")
-                    winnerCheck()
+                    if (MyApplication.onlineMode) {
+                        winnerCheck()
+                    } else {
+                        resetGame()
+                    }
                 }
             }
         }
@@ -248,6 +269,17 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 }
             }
         }
+    }
+
+    fun resetGame() {
+        val build = AlertDialog.Builder(activity!!);
+        build.setTitle("Goal reached!")
+        build.setMessage("You took "+viewmodel.score.toString()+" Seconds!")
+        build.setPositiveButton("Restart") {dialog, which ->
+            viewmodel.initGame(activity!!)
+        }
+        build.setCancelable(false)
+        goalAlert = build.show()
     }
 
 
