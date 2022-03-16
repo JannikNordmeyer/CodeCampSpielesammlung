@@ -100,7 +100,7 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         activity!!.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         fun networkSetup() {
-            if(MyApplication.isCodeMaker){
+            if(MyApplication.isHost){
                 showSetup()
             }
             else{
@@ -202,7 +202,7 @@ class Schrittzaehler : Fragment(), SensorEventListener {
                         showSetup()
                     }
                     else{
-                        if(MyApplication.isCodeMaker) {
+                        if(MyApplication.isHost) {
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(MyApplication.hostID)
                         }
                         else{

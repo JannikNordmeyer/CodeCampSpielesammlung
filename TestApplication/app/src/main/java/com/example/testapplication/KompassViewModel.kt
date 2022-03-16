@@ -43,7 +43,7 @@ class KompassViewModel(): ViewModel() {
 
 
     fun initGame(passedActivity: Activity) {
-        if (MyApplication.isCodeMaker || !MyApplication.onlineMode) {
+        if (MyApplication.isHost || !MyApplication.onlineMode) {
             Log.d("Kompass", "LISTINDEX RESET INIT GAME")
             logic.listindex = 0
             score = 0f

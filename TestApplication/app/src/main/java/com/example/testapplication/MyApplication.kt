@@ -19,11 +19,8 @@ class MyApplication : Application() {
 
         var isLoggedIn = false;                         //Global control variable that checks if the user is logged in.
 
-        var isCodeMaker = true;                         //If the player made the code - aka if they are the host, Player 1.
+        var isHost = true;                         //If the player made the code - aka if they are the host, Player 1.
         var code = "null"                               //"Room" Code
-        var codeFound = false
-        var checkTemp = true
-        var keyValue : String = "null"
         var onlineMode = false;                         //If the game is being played in online mode
         var myTurn = false;                             //If, regardless of game, the local player can make a move.
         var hostID = "null"
@@ -31,7 +28,6 @@ class MyApplication : Application() {
         var networkSetupComplete = false;
         var isLoading = false
         var Ileft = false;
-        var gameActive = true
 
         var inviteFriendID = ""
 
@@ -50,9 +46,7 @@ class MyApplication : Application() {
 
         fun sendNotification(notification : PushNotification) = CoroutineScope(Dispatchers.IO).launch {
             try {
-
                 var response = RetrofitInstance.api.postNotification(notification)
-
             }catch (e : Exception){}
         }
     }

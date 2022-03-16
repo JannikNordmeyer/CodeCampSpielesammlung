@@ -34,7 +34,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     fun toggle(){   //Also switches the turn for Network
         if(MyApplication.onlineMode) {
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
-            if(MyApplication.isCodeMaker) networkActivePlayer.setValue(MyApplication.guestID, { error, ref ->
+            if(MyApplication.isHost) networkActivePlayer.setValue(MyApplication.guestID, { error, ref ->
                 //setValue operation is done, you'll get null in errror and ref is the path reference for firebase database
                 if (error != null) {
                     Log.d(TAG, "Host to Guest failed")
@@ -154,7 +154,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                     clear()
                 }, 1500)
             } else {
-                var networkWinner = if (MyApplication.isCodeMaker) {
+                var networkWinner = if (MyApplication.isHost) {
                     MyApplication.hostID
                 } else {
                     MyApplication.guestID

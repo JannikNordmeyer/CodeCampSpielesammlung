@@ -127,7 +127,7 @@ class GameHolder : AppCompatActivity() {
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").get().addOnSuccessListener(this) {
                 MyApplication.hostID = it.value.toString()
                 //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
-                if (MyApplication.isCodeMaker)
+                if (MyApplication.isHost)
                     MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
             }
             MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").get().addOnSuccessListener(this) {
@@ -142,8 +142,8 @@ class GameHolder : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null) {
                         val data_activePlayer = snapshot.value.toString()
-                        if ((data_activePlayer == MyApplication.hostID) && MyApplication.isCodeMaker) MyApplication.myTurn = true
-                        else MyApplication.myTurn = (data_activePlayer == MyApplication.guestID) && !MyApplication.isCodeMaker
+                        if ((data_activePlayer == MyApplication.hostID) && MyApplication.isHost) MyApplication.myTurn = true
+                        else MyApplication.myTurn = (data_activePlayer == MyApplication.guestID) && !MyApplication.isHost
                     }
                 }
 
@@ -256,7 +256,7 @@ class GameHolder : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
                         if (snapshot.value == false && MyApplication.isLoading) {
-                            if (MyApplication.isCodeMaker && MyApplication.globalSelectedGame == GameNames.COMPASS) {
+                            if (MyApplication.isHost && MyApplication.globalSelectedGame == GameNames.COMPASS) {
                                 Log.d("Compass", "INIT GAME")
                                 (gameViewModel as KompassViewModel).initGame(this@GameHolder)
                             }
@@ -333,7 +333,7 @@ class GameHolder : AppCompatActivity() {
                         MyApplication.networkSetupComplete = true
                     }
 
-                    if (!MyApplication.isCodeMaker) {
+                    if (!MyApplication.isHost) {
                         (gameViewModel as TicTacToeViewModel).logic.player = "O"
                     }
                 } else if (MyApplication.isLoading) {
@@ -345,7 +345,7 @@ class GameHolder : AppCompatActivity() {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
                     if (MyApplication.networkSetupComplete) {
-                        if (MyApplication.isCodeMaker) {
+                        if (MyApplication.isHost) {
                             Log.d("Compass", "INIT GAME")
                             gameViewModel.initGame(this)
                         }

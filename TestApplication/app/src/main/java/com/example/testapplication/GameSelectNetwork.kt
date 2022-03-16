@@ -1,24 +1,16 @@
 package com.example.testapplication
 
-import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.example.testapplication.databinding.ActivityGameSelectNetworkBinding
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 class GameSelectNetwork : AppCompatActivity() {
@@ -110,7 +102,7 @@ class GameSelectNetwork : AppCompatActivity() {
                 host = false
                 viewmodel.quickplayName = ""
                 viewmodel.lobbyName = ""
-                MyApplication.myTurn = MyApplication.isCodeMaker
+                MyApplication.myTurn = MyApplication.isHost
                 MyApplication.networkSetupComplete = false
                 MyApplication.Ileft = false;
             }
@@ -121,7 +113,7 @@ class GameSelectNetwork : AppCompatActivity() {
         fun networkHostGame(opponent : String){
             //Generiere Raum Code
             MyApplication.code = MyApplication.SplitString(opponent)/*Guest Email*/ + MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
-            MyApplication.isCodeMaker = true
+            MyApplication.isHost = true
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).setValue(null)
             MyApplication.onlineMode = true;
@@ -149,7 +141,7 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.onlineMode = true;
             //Merke Raum Code
             MyApplication.code =  MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Guest Email*/ + MyApplication.SplitString(opponent)/*Host Email*/
-            MyApplication.isCodeMaker = false
+            MyApplication.isHost = false
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).setValue(null)
             //Markiere mich als Guest im Raum

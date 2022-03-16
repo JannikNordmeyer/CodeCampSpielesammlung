@@ -77,7 +77,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Statistics"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".GameSelect"
             android:exported="true"
