@@ -50,6 +50,7 @@ import android.content.Intent
 import android.content.DialogInterface
 import android.provider.Settings
 import java.lang.Exception
+import kotlin.system.exitProcess
 
 
 class Kompass : Fragment(), SensorEventListener, LocationListener {
@@ -61,6 +62,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
     private lateinit var binding: FragmentKompassBinding
     lateinit var viewmodel: KompassViewModel
+    lateinit var goalAlert: AlertDialog
 
     lateinit var targetList: JSONArray
 
@@ -89,6 +91,9 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.completionTimer.cancel()
         timer.cancel()
         vibrateTimer.cancel()
+        if(this::goalAlert.isInitialized){
+            goalAlert.dismiss()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -127,7 +132,11 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 } else {
                     viewmodel.completionTimer.cancel()
                     Log.d("Kompass", "TIMER FINISH: POINTED AT LAST")
-                    winnerCheck()
+                    if (MyApplication.onlineMode) {
+                        winnerCheck()
+                    } else {
+                        resetGame()
+                    }
                 }
             }
         }
@@ -161,7 +170,11 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 } else {
                     viewmodel.score += 10000
                     Log.d("Kompass", "TIMER FINISH: OUT OF TIME LAST")
-                    winnerCheck()
+                    if (MyApplication.onlineMode) {
+                        winnerCheck()
+                    } else {
+                        resetGame()
+                    }
                 }
             }
         }
@@ -259,7 +272,14 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
     }
 
     fun resetGame() {
-        
+        val build = AlertDialog.Builder(activity!!);
+        build.setTitle("Goal reached!")
+        build.setMessage("You took "+viewmodel.score.toString()+" Seconds!")
+        build.setPositiveButton("Restart") {dialog, which ->
+            viewmodel.initGame(activity!!)
+        }
+        build.setCancelable(false)
+        goalAlert = build.show()
     }
 
 
