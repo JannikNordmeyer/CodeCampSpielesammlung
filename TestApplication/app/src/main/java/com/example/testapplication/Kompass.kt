@@ -135,7 +135,15 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.completionTimer = object : CountDownTimer(10000, 100) {
             override fun onTick(millisUntilFinished: Long) {
                 completionTime = 10000 - millisUntilFinished.toFloat()
-                binding.idTimer.text = "Time:\n"+(completionTime/1000).toString()
+                var time = (completionTime/1000).toString().split(".")
+                var sec = time[0]
+                var mili = time[1]
+                if (mili.length == 1) {
+                    mili += "00"
+                } else if (mili.length == 2) {
+                    mili += "0"
+                }
+                binding.idTimer.text = "Time:\n"+ sec +"."+ mili
             }
 
             override fun onFinish() {
@@ -248,6 +256,10 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 }
             }
         }
+    }
+
+    fun resetGame() {
+        
     }
 
 
