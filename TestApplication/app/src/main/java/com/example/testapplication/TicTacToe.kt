@@ -35,16 +35,17 @@ class TicTacToe : Fragment() {
                     }
                 }
                 else{
-                    if(MyApplication.myTurn) binding.playerprompt.setText("It's your turn!:")
+                    if(MyApplication.myTurn) binding.playerprompt.setText("It's your turn!")
                     else binding.playerprompt.setText("Waiting for other player...")
                 }
             }
             else{
-                if(viewmodel.logic.winner == 0){
-                    binding.playerprompt.setText("It's a Draw.")
-                }
-                else{
-                    binding.playerprompt.setText("Player "+viewmodel.logic.winner+" wins.")
+                if(!MyApplication.onlineMode) {
+                    if (viewmodel.logic.winner == 0) {
+                        binding.playerprompt.setText("It's a Draw.")
+                    } else {
+                        binding.playerprompt.setText("Player " + viewmodel.logic.winner + " wins.")
+                    }
                 }
             }
         }
