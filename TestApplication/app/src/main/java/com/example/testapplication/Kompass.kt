@@ -1,15 +1,6 @@
 package com.example.testapplication
 
 
-
-/*import com.esri.arcgisruntime.ArcGISRuntimeEnvironment
-import com.esri.arcgisruntime.toolkit.R
-import com.esri.arcgisruntime.mapping.ArcGISMap
-import com.esri.arcgisruntime.mapping.BasemapStyle
-import com.esri.arcgisruntime.mapping.Viewpoint
-import com.esri.arcgisruntime.mapping.view.MapView*/
-
-//import com.esri.arcgisruntime.toolkit.compass.Compass
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
@@ -56,15 +47,9 @@ import kotlin.system.exitProcess
 class Kompass : Fragment(), SensorEventListener, LocationListener {
     private val TAG = Kompass::class.java.simpleName
 
-    //private val fragmentPlaceholderspiel1Binding by lazy {        FragmentPlaceholderspiel1Binding.inflate(layoutInflater)    }
-
-    //private val mapView: MapView by lazy { fragmentPlaceholderspiel1Binding.mapView    }
-
     private lateinit var binding: FragmentKompassBinding
     lateinit var viewmodel: KompassViewModel
     lateinit var goalAlert: AlertDialog
-
-    lateinit var targetList: JSONArray
 
     lateinit var sensorManager: SensorManager
     lateinit var sensorAccelerometer: Sensor
@@ -77,12 +62,8 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
     private var azimuth = 0f
     private var currentAzimuth = 0f
     lateinit var compass: ImageView
-    lateinit var lastLocation: Location
-    private var gps_enabled = false
-    private var network_enabled = false
     lateinit var timer: CountDownTimer
-    lateinit var vibrateTimer: CountDownTimer
-    var vibTimerRunning = false
+    var vibrate = false
     var completionTime : Float = 0.0f
     var timerStarted = false
 
@@ -90,7 +71,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         super.onDestroy()
         viewmodel.completionTimer.cancel()
         timer.cancel()
-        vibrateTimer.cancel()
+
         if(this::goalAlert.isInitialized){
             goalAlert.dismiss()
         }
@@ -113,24 +94,25 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         sensorMagneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         mLocationManager = activity!!.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         viewmodel.fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
-        targetList = JSONArray()
-        viewmodel.logic.indexList = ArrayList()
+        viewmodel.indexList = ArrayList()
         viewmodel.targetLocation = JSONObject()
+
         timer = object : CountDownTimer(2000, 10) {
             override fun onTick(millisUntilFinished: Long) {
             }
 
             override fun onFinish() {
                 viewmodel.score += completionTime
-                if (viewmodel.logic.listindex < viewmodel.logic.indexList.size) {
-                    Log.d("Kompass", "Listindex: ${viewmodel.logic.listindex}")
-                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex], activity!!)
+                if (viewmodel.listindex < viewmodel.indexList.size) {
+                    Log.d("Kompass", "Listindex: ${viewmodel.listindex}")
+                    viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
                     //viewmodel.getTargetDirection(activity!!)
                     Log.d("Kompass", "TIMER FINISH: POINTED AT NOT LAST")
-                    viewmodel.logic.listindex++
+                    viewmodel.listindex++
                     Log.d("Kompass", "LISTINDEX INCREASED")
                 } else {
                     viewmodel.completionTimer.cancel()
+                    viewmodel.vibrateActive = false
                     Log.d("Kompass", "TIMER FINISH: POINTED AT LAST")
                     if (MyApplication.onlineMode) {
                         winnerCheck()
@@ -157,18 +139,19 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
             override fun onFinish() {
                 timer.cancel()
-                if (viewmodel.logic.listindex < viewmodel.logic.indexList.size) {
+                if (viewmodel.listindex < viewmodel.indexList.size) {
                     viewmodel.score += 10000
-                    Log.d("Kompass", "Listindex: ${viewmodel.logic.listindex}")
-                    viewmodel.apiCall(viewmodel.logic.indexList[viewmodel.logic.listindex], activity!!)
+                    Log.d("Kompass", "Listindex: ${viewmodel.listindex}")
+                    viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
                     //viewmodel.getTargetDirection(activity!!)
                     Log.d("Kompass", "TIMER FINISH: OUT OF TIME NOT LAST")
-                    viewmodel.logic.listindex++
+                    viewmodel.listindex++
                     Log.d("Kompass", "LISTINDEX INCREASED")
 
                     //Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
                 } else {
                     viewmodel.score += 10000
+                    viewmodel.vibrateActive = false
                     Log.d("Kompass", "TIMER FINISH: OUT OF TIME LAST")
                     if (MyApplication.onlineMode) {
                         winnerCheck()
@@ -179,21 +162,6 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             }
         }
 
-        vibrateTimer = object : CountDownTimer(1000, 100) {
-            override fun onTick(millisUntilFinished: Long) {
-            }
-
-            override fun onFinish() {
-                val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                if (vibrator.hasVibrator()) { // Vibrator availability checking
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)) // New vibrate method for API Level 26 or higher
-                    }
-                }
-                vibrateTimer.start()
-            }
-
-        }
 
         var mLocationRequest = LocationRequest()
         mLocationRequest.interval = 60000
@@ -230,7 +198,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         LocationServices.getFusedLocationProviderClient(context)
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
 
-        viewmodel.initGame(activity!!)
+        viewmodel.logic.initGame(activity!!)
         return view
     }
 
@@ -276,24 +244,10 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         build.setTitle("Goal reached!")
         build.setMessage("You took "+viewmodel.score.toString()+" Seconds!")
         build.setPositiveButton("Restart") {dialog, which ->
-            viewmodel.initGame(activity!!)
+            viewmodel.logic.initGame(activity!!)
         }
         build.setCancelable(false)
         goalAlert = build.show()
-    }
-
-
-
-
-
-
-    private fun setApiKeyForApp(){
-        // set your API key
-        // Note: it is not best practice to store API keys in source code. The API key is referenced
-        // here for the convenience of this tutorial.
-
-        //ArcGISRuntimeEnvironment.setApiKey("AAPKa5c9d216029045fd884dc4daf9ed63555-Hc8HL0cr6zUfmclNZ1ZN4k_-_slINrK0IQjgPlN2x9jaJUNUhCZ6COFv_xxd55")
-
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -344,21 +298,23 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 }
 
                 if ((viewmodel.targetDirectionDegree - 90)%360 <= azimuth && azimuth <= (viewmodel.targetDirectionDegree + 90)%360) {
-                    //start
-                    if (!vibTimerRunning) {
-                        //vibrateTimer.start()
-                        val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                    //start //vibrateTimer.start()
+                    val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                    if (!vibrate && viewmodel.vibrateActive) {
                         if (vibrator.hasVibrator()) { // Vibrator availability checking
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)) // New vibrate method for API Level 26 or higher
+                                vibrator.vibrate(
+                                    VibrationEffect.createOneShot(
+                                        500,
+                                        VibrationEffect.DEFAULT_AMPLITUDE
+                                    )
+                                )
                             }
                         }
-                        vibTimerRunning = true
+                        vibrate = true
                     }
                 } else {
-                    //stop
-                    //vibrateTimer.cancel()
-                    vibTimerRunning = false
+                    vibrate = false
                 }
             }
         }

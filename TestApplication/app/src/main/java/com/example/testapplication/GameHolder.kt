@@ -258,7 +258,7 @@ class GameHolder : AppCompatActivity() {
                         if (snapshot.value == false && MyApplication.isLoading) {
                             if (MyApplication.isHost && MyApplication.globalSelectedGame == GameNames.COMPASS) {
                                 Log.d("Compass", "INIT GAME")
-                                (gameViewModel as KompassViewModel).initGame(this@GameHolder)
+                                (gameViewModel as KompassViewModel).logic.initGame(this@GameHolder)
                             }
                             stopLoad()
                             networkSetup(gameViewModel)
@@ -347,7 +347,7 @@ class GameHolder : AppCompatActivity() {
                     if (MyApplication.networkSetupComplete) {
                         if (MyApplication.isHost) {
                             Log.d("Compass", "INIT GAME")
-                            gameViewModel.initGame(this)
+                            gameViewModel.logic.initGame(this)
                         }
                         MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
                     }
