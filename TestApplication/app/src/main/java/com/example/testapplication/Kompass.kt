@@ -104,16 +104,11 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             override fun onFinish() {
                 viewmodel.score += completionTime
                 if (viewmodel.listindex < viewmodel.indexList.size) {
-                    Log.d("Kompass", "Listindex: ${viewmodel.listindex}")
                     viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
-                    //viewmodel.getTargetDirection(activity!!)
-                    Log.d("Kompass", "TIMER FINISH: POINTED AT NOT LAST")
                     viewmodel.listindex++
-                    Log.d("Kompass", "LISTINDEX INCREASED")
                 } else {
                     viewmodel.completionTimer.cancel()
                     viewmodel.vibrateActive = false
-                    Log.d("Kompass", "TIMER FINISH: POINTED AT LAST")
                     if (MyApplication.onlineMode) {
                         winnerCheck()
                     } else {
@@ -123,9 +118,9 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             }
         }
 
-        viewmodel.completionTimer = object : CountDownTimer(10000, 100) {
+        viewmodel.completionTimer = object : CountDownTimer(30000, 100) {
             override fun onTick(millisUntilFinished: Long) {
-                completionTime = 10000 - millisUntilFinished.toFloat()
+                completionTime = 30000 - millisUntilFinished.toFloat()
                 var time = (completionTime/1000).toString().split(".")
                 var sec = time[0]
                 var mili = time[1]
@@ -140,19 +135,14 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             override fun onFinish() {
                 timer.cancel()
                 if (viewmodel.listindex < viewmodel.indexList.size) {
-                    viewmodel.score += 10000
-                    Log.d("Kompass", "Listindex: ${viewmodel.listindex}")
+                    viewmodel.score += 30000
                     viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
-                    //viewmodel.getTargetDirection(activity!!)
-                    Log.d("Kompass", "TIMER FINISH: OUT OF TIME NOT LAST")
                     viewmodel.listindex++
-                    Log.d("Kompass", "LISTINDEX INCREASED")
 
                     //Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
                 } else {
-                    viewmodel.score += 10000
+                    viewmodel.score += 30000
                     viewmodel.vibrateActive = false
-                    Log.d("Kompass", "TIMER FINISH: OUT OF TIME LAST")
                     if (MyApplication.onlineMode) {
                         winnerCheck()
                     } else {

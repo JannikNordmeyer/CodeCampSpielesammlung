@@ -46,8 +46,6 @@ class KompassLogic (viewModel: KompassViewModel){
                     MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
                 }
             }
-            Log.d("Kompass", "API CALL")
-            Log.d("Kompass", "Listindex: ${viewmodel.listindex}")
             apiCall(viewmodel.indexList[viewmodel.listindex],passedActivity)
             viewmodel.listindex++
             Log.d("Kompass", "LISTINDEX INCREASED")
@@ -57,21 +55,16 @@ class KompassLogic (viewModel: KompassViewModel){
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value == true) {
-                        Log.d("Kompass", "LISTINDEX RESET FIELDUPDATE")
                         viewmodel.listindex = 0
                         viewmodel.score = 0f
                         viewmodel.vibrateActive = true
                         MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
-                            Log.d("Compass", "lookatme"+it.toString())
                             viewmodel.indexList.clear()
                             for (data in it.children){
                                 viewmodel.indexList.add(data.value.toString().toInt())
                             }
-                            Log.d("Kompass", "Listindex: ${viewmodel.listindex}")
                             apiCall(viewmodel.indexList[viewmodel.listindex], passedActivity)
                             viewmodel.listindex++
-                            Log.d("Kompass", "LISTINDEX INCREASED")
-                            Log.d("Compass", "lookatme"+viewmodel.indexList.toString())
                         }
                     }
                 }
@@ -101,7 +94,6 @@ class KompassLogic (viewModel: KompassViewModel){
                 getTargetDirection(passedActivity)
                 //TODO: LIVEDATE COMING SOON TM
                 viewmodel.liveLocation.value = viewmodel.targetLocation.getJSONObject("properties").getString("Objekt")
-                Log.d("MainActivity", "test: " + viewmodel.targetLocation.toString())
             }, Response.ErrorListener {
                 Log.d("MainActivity", "Api call failed")
             }
@@ -114,9 +106,7 @@ class KompassLogic (viewModel: KompassViewModel){
         if(ActivityCompat.checkSelfPermission(passedActivity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
 
             val location = viewmodel.fusedLocationClient.lastLocation.addOnSuccessListener {
-                Log.d("Kompass", "ONSUC START")
                 if (it != null) {
-                    Log.d("Kompass", "IT != NULL")
                     viewmodel.completionTimer.cancel()
                     viewmodel.completionTimer.start()
                     val longitude = it.longitude
@@ -127,8 +117,6 @@ class KompassLogic (viewModel: KompassViewModel){
                     dir[0] = longitude.toFloat() - long.toFloat()
                     dir[1] = latitude.toFloat() - lat.toFloat()
                     viewmodel.targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
-                    Log.d("Compass", dir[0].toString() +" , " + dir[1].toString())
-                    Log.d("Compass", viewmodel.targetDirectionDegree.toString())
                 } else {
                     getTargetDirection(passedActivity)
                 }
@@ -137,7 +125,6 @@ class KompassLogic (viewModel: KompassViewModel){
 
         } else {
             ActivityCompat.requestPermissions(passedActivity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
-            Log.d("Compass", "No Access")
         }
     }
 
