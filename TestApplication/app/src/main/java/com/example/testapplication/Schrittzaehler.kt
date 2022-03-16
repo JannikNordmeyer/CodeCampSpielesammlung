@@ -1,16 +1,21 @@
 package com.example.testapplication
 
+import android.app.AlertDialog
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModelProvider
@@ -29,10 +34,18 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     lateinit var sensorManager: SensorManager
     lateinit var myContext: Context
     lateinit var viewmodel: SchrittzaehlerViewModel
+    lateinit var goalAlert: AlertDialog
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         myContext = context
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(this::goalAlert.isInitialized){
+            goalAlert.dismiss()
+        }
     }
 
     fun startWait(){
@@ -77,14 +90,14 @@ class Schrittzaehler : Fragment(), SensorEventListener {
         binding.textFieldStepCounter.visibility = View.VISIBLE
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         binding = FragmentSchrittzaehlerBinding.inflate(inflater,container,false)
         val view = binding.root
         viewmodel = ViewModelProvider(requireActivity()).get(SchrittzaehlerViewModel::class.java) //Shared Viewmodel w/ GameHolder
 
         sensorManager = myContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        activity!!.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         fun networkSetup() {
             if(MyApplication.isCodeMaker){
@@ -170,7 +183,21 @@ class Schrittzaehler : Fragment(), SensorEventListener {
 
                 //You did it :)
                 if(viewmodel.score >= viewmodel.goalscore){
+
+                    val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                    if (vibrator.hasVibrator()) { // Vibrator availability checking
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE)) // New vibrate method for API Level 26 or higher
+                        }
+                    }
+
                     if(!MyApplication.onlineMode) {
+
+                        val build = AlertDialog.Builder(activity!!);
+                        build.setTitle("Goal reached!")
+                        build.setMessage("You have walked "+viewmodel.goalscore.toString()+" Steps!")
+                        goalAlert = build.show()
+
                         viewmodel.reset()
                         showSetup()
                     }
