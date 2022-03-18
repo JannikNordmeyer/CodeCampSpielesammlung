@@ -97,30 +97,46 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.indexList = ArrayList()
         viewmodel.targetLocation = JSONObject()
 
+        //timer that triggers when phone is pointing towards the target
         timer = object : CountDownTimer(2000, 10) {
             override fun onTick(millisUntilFinished: Long) {
             }
 
             override fun onFinish() {
+                //adds the time it took to the total score
                 viewmodel.score += completionTime
+
+                //not last target
                 if (viewmodel.listindex < viewmodel.indexList.size) {
+                    //next api call
                     viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
                     viewmodel.listindex++
-                } else {
+                }
+                //last target
+                else {
+                    //stops the completion timer
                     viewmodel.completionTimer.cancel()
+
+                    //stops phone from vibrating after game is complete
                     viewmodel.vibrateActive = false
                     if (MyApplication.onlineMode) {
+                        //online mode rematch/exit
                         winnerCheck()
                     } else {
+                        //offline mode restart
                         resetGame()
                     }
                 }
             }
         }
 
+        //timer that sets the max amount of time you have for a single target
         viewmodel.completionTimer = object : CountDownTimer(30000, 100) {
             override fun onTick(millisUntilFinished: Long) {
+                //calculate passed time
                 completionTime = 30000 - millisUntilFinished.toFloat()
+
+                //string format the time to 3 digits after the .
                 var time = (completionTime/1000).toString().split(".")
                 var sec = time[0]
                 var mili = time[1]
@@ -129,30 +145,41 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 } else if (mili.length == 2) {
                     mili += "0"
                 }
+
+                //update ui
                 binding.idTimer.text = "Time:\n"+ sec +"."+ mili
             }
 
             override fun onFinish() {
                 timer.cancel()
+                //not last target
                 if (viewmodel.listindex < viewmodel.indexList.size) {
+                    //add the max time to the score
                     viewmodel.score += 30000
+
+                    //next api call
                     viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
                     viewmodel.listindex++
-
-                    //Toast.makeText(context, "OUT OF TIME!", Toast.LENGTH_SHORT).show()
-                } else {
+                }
+                //last target
+                else {
+                    //add max time to the score
                     viewmodel.score += 30000
+
+                    //stops phone from vibrating after game is complete
                     viewmodel.vibrateActive = false
                     if (MyApplication.onlineMode) {
+                        //online mode reset/exit
                         winnerCheck()
                     } else {
+                        //offline mode reset
                         resetGame()
                     }
                 }
             }
         }
 
-
+        //location request to make sure that the phone has a last location for getTargetDirection()
         var mLocationRequest = LocationRequest()
         mLocationRequest.interval = 60000
         mLocationRequest.fastestInterval = 5000
@@ -188,18 +215,19 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         LocationServices.getFusedLocationProviderClient(context)
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
 
+        //initialize the game for the first time
         viewmodel.logic.initGame(activity!!)
         return view
     }
 
     fun winnerCheck() {
-        //Prüfe ob Raum existiert...
+        //check if room exists
         MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
             if(it.value != null) {
                 if(MyApplication.isHost) {
-                    //Schreib deinen score in die DB...
+                    //write score to the database
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
-                    //Warte darauf das Guest seinen Score einträgt...
+                    //wait for guest to insert his score
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
@@ -221,18 +249,21 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
                     })
                 } else {
-                    //Schreib deinen score in die DB...
+                    //write your score to the database
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
-                    //Warte darauf das Host entscheidet wer gewonnen hat
+                    //wait for host to determine the winner
                 }
             }
         }
     }
 
     fun resetGame() {
+        //game over alert dialoge
         val build = AlertDialog.Builder(activity!!);
-        build.setTitle("Goal reached!")
+        build.setTitle("Game Over!")
         build.setMessage("You took "+viewmodel.score.toString()+" Seconds!")
+
+        //restart option
         build.setPositiveButton("Restart") {dialog, which ->
             viewmodel.logic.initGame(activity!!)
         }

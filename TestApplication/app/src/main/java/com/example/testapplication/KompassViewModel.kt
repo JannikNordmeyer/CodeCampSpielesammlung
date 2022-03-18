@@ -26,7 +26,6 @@ import kotlin.random.Random
 class KompassViewModel(): ViewModel() {
 
     fun networkOnFieldUpdate(data : String?){
-        //TODO: Update Field with data received...
     }
 
     var logic = KompassLogic(this)
