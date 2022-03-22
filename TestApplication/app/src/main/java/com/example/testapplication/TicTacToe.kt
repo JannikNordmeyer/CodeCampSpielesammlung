@@ -83,4 +83,14 @@ class TicTacToe : Fragment() {
         return view
     }
 
+    override fun onStart() {
+        super.onStart()
+        MyApplication.ticTacToeOpen = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        MyApplication.ticTacToeOpen = false
+    }
+
 }

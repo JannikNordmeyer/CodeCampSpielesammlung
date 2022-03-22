@@ -5,6 +5,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.FirebaseError
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
@@ -28,9 +29,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var player = CROSS
     var winner:Int? = null
 
-    var fieldListenerLock = false
-    var winnerCheckLock = false
-
     fun toggle(){   //Also switches the turn for Network
         if(MyApplication.onlineMode) {
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
@@ -39,11 +37,31 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                 if (error != null) {
                     Log.d(TAG, "Host to Guest failed")
                 }
+                else{
+                    MyApplication.myRef.child("MessagingTokens").child(MyApplication.guestFriendID).get().addOnSuccessListener {
+                        if(it != null){
+                            val id = it.value.toString()
+                            val title = "Your Turn!"
+                            val message = "Your Opponent has Passed the Turn."
+                            PushNotification(NotificationData(title, message), id).also {MyApplication.sendNotification(it)}
+                        }
+                    }
+                }
             })
             else networkActivePlayer.setValue(MyApplication.hostID, { error, ref ->
                 //setValue operation is done, you'll get null in errror and ref is the path reference for firebase database
                 if (error != null) {
                     Log.d(TAG, "Guest to Host failed")
+                }
+                else{
+                    MyApplication.myRef.child("MessagingTokens").child(MyApplication.hostFriendID).get().addOnSuccessListener {
+                        if(it != null){
+                            val id = it.value.toString()
+                            val title = "Your Turn!"
+                            val message = "Your Opponent has Passed the Turn."
+                            PushNotification(NotificationData(title, message), id).also {MyApplication.sendNotification(it)}
+                        }
+                    }
                 }
             })
             networkActivePlayer.get().addOnSuccessListener {
