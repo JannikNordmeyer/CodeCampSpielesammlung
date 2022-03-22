@@ -1,5 +1,6 @@
 package com.example.testapplication
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_HIGH
@@ -9,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import android.widget.RemoteViews
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -24,12 +24,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
 
         super.onMessageReceived(message)
+        var intent: Intent
 
         if(message.data["title"] == "Your Turn!" && MyApplication.ticTacToeOpen){
             return
         }
 
-        val intent = Intent(this, GameSelect::class.java)
+        intent = Intent(this, GameSelect::class.java)
+
+
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationID = Random.nextInt()
 
@@ -38,17 +41,31 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             createNotificationChannel(notificationManager)
         }
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this,0,intent, FLAG_ONE_SHOT)
-        val notification = NotificationCompat.Builder(this, channelID)
-            .setContentTitle(message.data["title"])
-            .setContentText(message.data["message"])
-            .setSmallIcon(R.drawable.ic_stat_appicon)
-            .setAutoCancel(true)
-            .setOnlyAlertOnce(true)
-            .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
-            .setContentIntent(pendingIntent)
-            .build()
+        var notification: Notification
+        if(message.data["title"] == "Your Turn!"){
+            notification = NotificationCompat.Builder(this, channelID)
+                .setContentTitle(message.data["title"])
+                .setContentText(message.data["message"])
+                .setSmallIcon(R.drawable.ic_stat_appicon)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
+                .build()
+        }
+        else {
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            val pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_ONE_SHOT)
+            notification = NotificationCompat.Builder(this, channelID)
+                .setContentTitle(message.data["title"])
+                .setContentText(message.data["message"])
+                .setSmallIcon(R.drawable.ic_stat_appicon)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setVibrate(longArrayOf(1000, 1000, 1000, 1000))
+                .setContentIntent(pendingIntent)
+                .build()
+        }
 
         notificationManager.notify(notificationID, notification)
 
