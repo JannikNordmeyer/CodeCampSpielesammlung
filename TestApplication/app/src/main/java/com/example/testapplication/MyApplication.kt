@@ -24,6 +24,8 @@ class MyApplication : Application() {
         var onlineMode = false;                         //If the game is being played in online mode
         var myTurn = false;                             //If, regardless of game, the local player can make a move.
         var hostID = "null"
+        var hostFriendID = ""
+        var guestFriendID = ""
         var guestID = "null"
         var networkSetupComplete = false;
         var isLoading = false

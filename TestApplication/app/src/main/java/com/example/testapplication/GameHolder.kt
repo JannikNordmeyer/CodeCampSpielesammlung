@@ -130,8 +130,15 @@ class GameHolder : AppCompatActivity() {
                 if (MyApplication.isHost)
                     MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
             }
+            MyApplication.myRef.child("data").child(MyApplication.code).child("HostFC").get().addOnSuccessListener(this) {
+                MyApplication.hostFriendID = it.value.toString()
+            }
+
             MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").get().addOnSuccessListener(this) {
                 MyApplication.guestID = it.value.toString()
+            }
+            MyApplication.myRef.child("data").child(MyApplication.code).child("GuestFC").get().addOnSuccessListener(this) {
+                MyApplication.guestFriendID = it.value.toString()
             }
 
             //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.

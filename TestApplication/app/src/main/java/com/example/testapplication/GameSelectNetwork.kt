@@ -117,7 +117,8 @@ class GameSelectNetwork : AppCompatActivity() {
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).setValue(null)
             MyApplication.onlineMode = true;
-            //Markiere mich als Host im Raum
+            //Markiere mich als Host im Raum + notiere meine FriendID
+            MyApplication.myRef.child("data").child(MyApplication.code).child("HostFC").setValue(FirebaseAuth.getInstance().currentUser!!.uid)
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").addValueEventListener ( object : ValueEventListener {
@@ -144,8 +145,8 @@ class GameSelectNetwork : AppCompatActivity() {
             MyApplication.isHost = false
             //Verlasse Quickplay Lobby
             MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).setValue(null)
-            //Markiere mich als Guest im Raum
-
+            //Markiere mich als Guest im Raum + notiere meine FriendID
+            MyApplication.myRef.child("data").child(MyApplication.code).child("GuestFC").setValue(FirebaseAuth.getInstance().currentUser!!.uid)
             MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").setValue(FirebaseAuth.getInstance().currentUser!!.email, { error, ref ->
                 if (error == null) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Host").addValueEventListener (object : ValueEventListener {
