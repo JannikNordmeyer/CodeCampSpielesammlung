@@ -25,6 +25,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         super.onMessageReceived(message)
 
+        if(message.data["title"] == "Your Turn!" && MyApplication.ticTacToeOpen){
+            return
+        }
+
         val intent = Intent(this, GameSelect::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationID = Random.nextInt()

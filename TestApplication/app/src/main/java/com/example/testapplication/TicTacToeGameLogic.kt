@@ -37,7 +37,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                 if (error != null) {
                     Log.d(TAG, "Host to Guest failed")
                 }
-                else{
+                else if(MyApplication.guestFriendID != ""){
                     MyApplication.myRef.child("MessagingTokens").child(MyApplication.guestFriendID).get().addOnSuccessListener {
                         if(it != null){
                             val id = it.value.toString()
@@ -53,7 +53,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                 if (error != null) {
                     Log.d(TAG, "Guest to Host failed")
                 }
-                else{
+                else if(MyApplication.hostFriendID != ""){
                     MyApplication.myRef.child("MessagingTokens").child(MyApplication.hostFriendID).get().addOnSuccessListener {
                         if(it != null){
                             val id = it.value.toString()
