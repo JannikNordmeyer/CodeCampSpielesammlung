@@ -2,27 +2,19 @@ package com.example.testapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testapplication.MyApplication.Companion.sendNotification
 import com.example.testapplication.databinding.ActivityFriendsBinding
-import com.example.testapplication.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import kotlin.random.Random
 import android.content.Intent
 
-
-
-
 class FriendsList : AppCompatActivity() {
-
-    private val TAG = FriendsList::class.java.simpleName
 
     private lateinit var binding: ActivityFriendsBinding
 
@@ -32,11 +24,7 @@ class FriendsList : AppCompatActivity() {
     lateinit var names : ArrayList<String>
     lateinit var ids : ArrayList<String>
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val viewmodel = ViewModelProvider(this).get(FriendsListViewModel::class.java)
 
         names = arrayListOf()
         ids = arrayListOf()
@@ -51,7 +39,7 @@ class FriendsList : AppCompatActivity() {
         newRecyclerView = binding.RecyclerViewFriends
         newRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        newArrayList = ArrayList<Friend>()
+        newArrayList = ArrayList()
         getUserData()
 
 
@@ -114,7 +102,6 @@ class FriendsList : AppCompatActivity() {
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -122,11 +109,9 @@ class FriendsList : AppCompatActivity() {
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
 
         })
@@ -138,7 +123,6 @@ class FriendsList : AppCompatActivity() {
             if (it != null) {
                 names.clear()
                 ids.clear()
-                val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
                 it.children.forEach(){
                     names.add(it.value.toString())
                     ids.add(it.key.toString())
@@ -158,7 +142,4 @@ class FriendsList : AppCompatActivity() {
         }
         newRecyclerView.adapter = ListAdapter(newArrayList)
     }
-
-
-
 }

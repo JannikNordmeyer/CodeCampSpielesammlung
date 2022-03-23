@@ -11,21 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.FragmentArithmeticsBinding
-import android.view.inputmethod.EditorInfo
-
-import android.widget.TextView
-
-import android.widget.TextView.OnEditorActionListener
-
-import android.R.string.no
-import android.util.Log
 import android.view.KeyEvent
-import android.R
-
-import android.widget.EditText
-
-import android.R.string.no
-import android.text.method.KeyListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -46,22 +32,20 @@ class Arithmetics : Fragment() {
         viewmodel.logic.start()
 
         viewmodel.logic.liveExpr.observe(viewLifecycleOwner){
-            binding.operand1.setText(it.first.toString())
-            binding.operand2.setText(it.second.toString())
-            binding.operator.setText(it.third.toString())
+            binding.operand1.text = it.first.toString()
+            binding.operand2.text = it.second.toString()
+            binding.operator.text = it.third.toString()
         }
         viewmodel.logic.liveScore.observe(viewLifecycleOwner){
-            binding.score.setText((viewmodel.score*1000).toString())
+            binding.score.text = (viewmodel.score*1000).toString()
         }
 
         //Submit
         binding.button.setOnClickListener(){
-            if(binding.timer.getText().toString().toInt() > 0) {
-                Log.d("aaa", "#########################################")
-                val input = binding.resultField.getText().toString()
-                Log.d("aaa", input)
+            if(binding.timer.text.toString().toInt() > 0) {
+                val input = binding.resultField.text.toString()
                 viewmodel.enter(input)
-                binding.resultField.getText().clear()
+                binding.resultField.text.clear()
                 binding.button.isEnabled = false
                 binding.resultField.isEnabled = false
                 val timer = object: CountDownTimer(800, 1000) {
@@ -94,7 +78,7 @@ class Arithmetics : Fragment() {
 
         val timer = object: CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                binding.timer.setText((millisUntilFinished/1000).toString())
+                binding.timer.text = (millisUntilFinished/1000).toString()
             }
             override fun onFinish() {
                 if(!MyApplication.onlineMode) {
@@ -144,13 +128,11 @@ class Arithmetics : Fragment() {
         }
         timer.start()
         viewmodel.gameTimer = timer
-
         return view
     }
     override fun onDestroy() {
         super.onDestroy()
         viewmodel.gameTimer.cancel()
-
     }
 
 }
