@@ -20,7 +20,6 @@ class FriendsList : AppCompatActivity() {
 
     private lateinit var newRecyclerView : RecyclerView
     private lateinit var newArrayList : ArrayList<Friend>
-    lateinit var viewModel : FriendsListViewModel
     lateinit var names : ArrayList<String>
     lateinit var ids : ArrayList<String>
 

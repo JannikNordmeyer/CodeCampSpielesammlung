@@ -1,14 +1,8 @@
 package com.example.testapplication
-import android.app.PendingIntent.getActivity
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.FirebaseError
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 
 class TicTacToeGameLogic (var board: Array<Array<String>>){
 

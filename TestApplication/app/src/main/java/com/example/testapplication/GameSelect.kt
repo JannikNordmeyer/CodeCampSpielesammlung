@@ -4,10 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.BlendModeColorFilter
-import android.graphics.Color
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.location.LocationManager
@@ -18,7 +14,6 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.MyApplication.Companion.FRIENDS_TOPIC
-import com.example.testapplication.MyApplication.Companion.sendNotification
 import com.example.testapplication.databinding.ActivityGameSelectBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -28,7 +23,6 @@ import java.lang.Exception
 
 class GameSelect : AppCompatActivity() {
 
-    private val TAG = GameSelect::class.java.simpleName
     private lateinit var binding: ActivityGameSelectBinding
     lateinit var viewmodel: ViewModel
     lateinit var mLocationManager : LocationManager
@@ -57,7 +51,7 @@ class GameSelect : AppCompatActivity() {
 
         viewmodel = ViewModelProvider(this).get(GameSelectNetworkViewModel()::class.java)
 
-        //Perform sensor check for games that need it and grey out/disable them if you dont have them
+        //Perform sensor check for games that need it and grey out/disable them if you don't have them
         val sensorManager = this.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val kompassAvailable = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null && sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null
         val schrittzaehlerAvailable = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null

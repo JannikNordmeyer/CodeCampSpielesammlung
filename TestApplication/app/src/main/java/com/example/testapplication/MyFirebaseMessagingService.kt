@@ -20,7 +20,6 @@ const val channelID = "NotificationChannel"
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-
     override fun onMessageReceived(message: RemoteMessage) {
 
         super.onMessageReceived(message)

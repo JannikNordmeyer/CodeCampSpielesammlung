@@ -12,7 +12,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
 
 class Statistics : AppCompatActivity() {
 
@@ -185,9 +184,6 @@ class Statistics : AppCompatActivity() {
                 viewmodel.ChallengeHighScore.value = data
             }
         }
-
-
-
 
 
     }

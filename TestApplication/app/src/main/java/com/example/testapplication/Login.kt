@@ -20,9 +20,7 @@ class Login : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         binding.buttonreturn.setOnClickListener(){
-
             finish()
         }
 
@@ -70,20 +68,10 @@ class Login : AppCompatActivity() {
                         else{
 
                             Toast.makeText(this, task.exception!!.message.toString(), Toast.LENGTH_SHORT ).show()
-
-
                         }
-
-
                     }
-
                 }
-
-
-
             }
         }
-
-
     }
 }
