@@ -30,6 +30,7 @@ class ChallengeStats : Fragment() {
 
         return view
     }
+    //Läd Daten aus dem Viewmodel
     private fun load(){
 
         if(viewmodel.ChallengeData.value == null){

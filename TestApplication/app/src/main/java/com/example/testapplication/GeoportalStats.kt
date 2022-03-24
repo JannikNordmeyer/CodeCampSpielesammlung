@@ -30,7 +30,8 @@ class GeoportalStats : Fragment() {
 
         return view
     }
-    fun load(){
+    //Läd Daten aus dem Viewmodel
+    private fun load(){
 
         if(viewmodel.CompassData.value == null){
             return

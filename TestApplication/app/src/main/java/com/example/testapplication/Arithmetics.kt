@@ -75,7 +75,7 @@ class Arithmetics : Fragment() {
             }
         })
 
-
+        //Timer
         val timer = object: CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 binding.timer.text = (millisUntilFinished/1000).toString()

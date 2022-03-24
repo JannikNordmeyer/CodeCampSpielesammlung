@@ -30,6 +30,7 @@ class ArithmeticsStats : Fragment() {
 
         return view
     }
+    //Läd Daten aus dem Viewmodel
     private fun load(){
 
         if(viewmodel.ArithmeticsData.value == null){

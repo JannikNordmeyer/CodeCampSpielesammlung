@@ -1,8 +1,6 @@
 package com.example.testapplication
 
 import androidx.lifecycle.ViewModel
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 
 class TicTacToeViewModel: ViewModel() {
 

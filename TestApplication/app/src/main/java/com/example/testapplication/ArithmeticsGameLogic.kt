@@ -1,5 +1,4 @@
 package com.example.testapplication
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 
 class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
@@ -21,6 +20,7 @@ class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
     fun networkOnFieldUpdate(data : String?) {
     }
 
+    //Generiert Array mit Rechenaufgaben
     fun start() {
 
         var i = 0
@@ -68,6 +68,7 @@ class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
         cycle()
     }
 
+    //Verarbeited Eingabe des Spielers
     fun enter(result: String?) {
 
         var trueResult = result?.toIntOrNull()
@@ -108,6 +109,7 @@ class ArithmeticsGameLogic (viewmodel: ArithmeticsViewModel){
         cycle()
     }
 
+    //Zeigt die nächste Aufgabe an
     private fun cycle(){
 
         liveExpr.value = expressions[exprCounter]

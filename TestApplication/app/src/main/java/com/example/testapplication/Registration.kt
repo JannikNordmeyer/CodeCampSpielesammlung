@@ -35,6 +35,7 @@ class Registration : AppCompatActivity() {
             finish()
         }
 
+        //Führt Firebase_Registrierung durch
         binding.buttonregister.setOnClickListener(){
 
             when {

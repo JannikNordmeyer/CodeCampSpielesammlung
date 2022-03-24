@@ -29,7 +29,6 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
 
         val layoutInflater = LayoutInflater.from(parent.context)
         binding = FriendCardBinding.inflate(layoutInflater)
-        //setContentView(binding.root)
 
         //Invite Button technology
         itemView.findViewById<Button>(R.id.BtnInvite).setOnClickListener(){

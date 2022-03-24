@@ -23,7 +23,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var player = CROSS
     var winner:Int? = null
 
-    fun toggle(){   //Also switches the turn for Network
+    private fun toggle(){   //Also switches the turn for Network
         if(MyApplication.onlineMode) {
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
             if(MyApplication.isHost) networkActivePlayer.setValue(MyApplication.guestID, { error, ref ->
@@ -109,8 +109,9 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         }
     }
 
-    fun checkField(): Boolean {
-        var win: Boolean = false
+    //Überprüft Spielfeld auf Gewinn oder Unentschieden
+    private fun checkField(): Boolean {
+        var win = false
 
         for(i in 0..2){
 
@@ -196,7 +197,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         }
     }
 
-    fun clear() {
+    private fun clear() {
         for(i in 0..2){
             for(j in 0..2){
                 board[i][j]= ""

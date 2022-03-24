@@ -33,6 +33,7 @@ class Login : AppCompatActivity() {
 
         }
 
+        //Führt Login in der Firebase-Datenbank durch
         binding.buttonlogin.setOnClickListener(){
 
             when {
@@ -57,7 +58,6 @@ class Login : AppCompatActivity() {
 
                         if (task.isSuccessful) {
 
-                            val firebaseUser: FirebaseUser = task.result!!.user!!
                             Toast.makeText(this, "Login Successful.", Toast.LENGTH_SHORT ).show()
 
                             val intent = Intent(this, GameSelect::class.java)

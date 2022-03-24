@@ -41,7 +41,7 @@ class FriendsList : AppCompatActivity() {
         newArrayList = ArrayList()
         getUserData()
 
-
+        //Liest eigenen Freundescode aus
         binding.IDButton.setOnClickListener{
             val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
             binding.CodeField.setText(currentUser)
@@ -59,6 +59,7 @@ class FriendsList : AppCompatActivity() {
             finish()
         }
 
+        //Sendet Anfrage an die Datenbank, um Nutzer als Freund hinzuzufügen
         binding.RequestButton.setOnClickListener{
 
             val requestID = binding.CodeField.text
@@ -80,6 +81,7 @@ class FriendsList : AppCompatActivity() {
                     getUserData()
                     Toast.makeText(this, "Added Friend.", Toast.LENGTH_SHORT ).show()
 
+                    //Push Notification senden
                     MyApplication.myRef.child("MessagingTokens").child(requestID.toString()).get().addOnSuccessListener {
                         if(it != null){
                             val id = it.value.toString()
@@ -95,6 +97,7 @@ class FriendsList : AppCompatActivity() {
             }
         }
 
+        //Listener für Echtzeit-Darstellung der Freundesliste
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 getUserData()
@@ -117,6 +120,7 @@ class FriendsList : AppCompatActivity() {
 
     }
 
+    //Liest alle Freunde aus der Datenbank aus
     private fun getUserData() {
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Friends").get().addOnSuccessListener {
             if (it != null) {
@@ -131,6 +135,7 @@ class FriendsList : AppCompatActivity() {
         }
     }
 
+    //Erstellt die Freundesliste neu
     fun updateRecyclerView(){
         newArrayList.clear()
         var i = 0
