@@ -3,7 +3,6 @@ package com.example.testapplication
 import com.example.testapplication.MyApplication.Companion.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 
 class RetrofitInstance {
 
@@ -18,7 +17,6 @@ class RetrofitInstance {
 
             retrofit.create(NotificationAPI::class.java)
         }
-
 
 
     }

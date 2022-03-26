@@ -12,7 +12,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.google.firebase.auth.FirebaseAuth
 import com.jjoe64.graphview.series.DataPoint
-import com.jjoe64.graphview.series.LineGraphSeries
 
 class Statistics : AppCompatActivity() {
 
@@ -44,7 +43,7 @@ class Statistics : AppCompatActivity() {
         binding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
 
             override fun onTabSelected(tab: TabLayout.Tab) {
-                val pos = binding.tabLayout.getSelectedTabPosition()
+                val pos = binding.tabLayout.selectedTabPosition
                 fragToLoad = tabs[pos]
 
                 supportFragmentManager.beginTransaction().apply {
@@ -56,7 +55,7 @@ class Statistics : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
 
-        //Laden der Dated aus Firebase-Datenbank: TicTacToe
+        //Laden der Daten aus Firebase-Datenbank: TicTacToe
 
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.TICTACTOE.toString()).child("GamesPlayed").get().addOnSuccessListener {
             if(it != null){
@@ -82,7 +81,7 @@ class Statistics : AppCompatActivity() {
 
             }
         }
-        //Laden der Dated aus Firebase-Datenbank: Compass
+        //Laden der Daten aus Firebase-Datenbank: Compass
 
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.COMPASS.toString()).child("GamesPlayed").get().addOnSuccessListener {
             if(it != null){
@@ -109,7 +108,7 @@ class Statistics : AppCompatActivity() {
             }
         }
 
-        //Laden der Dated aus Firebase-Datenbank: Arithmetics
+        //Laden der Daten aus Firebase-Datenbank: Arithmetics
 
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.ARITHMETICS.toString()).child("GamesPlayed").get().addOnSuccessListener {
             if(it != null){
@@ -147,7 +146,7 @@ class Statistics : AppCompatActivity() {
                 viewmodel.ArithmeticsHighScore.value = data
             }
         }
-        //Laden der Dated aus Firebase-Datenbank: Schrittzähler
+        //Laden der Daten aus Firebase-Datenbank: Schrittzähler
 
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(GameNames.SCHRITTZAEHLER.toString()).child("GamesPlayed").get().addOnSuccessListener {
             if(it != null){
@@ -185,9 +184,6 @@ class Statistics : AppCompatActivity() {
                 viewmodel.ChallengeHighScore.value = data
             }
         }
-
-
-
 
 
     }

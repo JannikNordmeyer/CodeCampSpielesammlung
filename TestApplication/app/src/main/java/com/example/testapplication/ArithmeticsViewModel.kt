@@ -9,7 +9,7 @@ class ArithmeticsViewModel: ViewModel() {
     var logic = ArithmeticsGameLogic(this)
 
     var score = 0
-    var opponent_score = 0
+    var opponentScore = 0
 
     fun enter(result: String?) {
 
@@ -18,7 +18,7 @@ class ArithmeticsViewModel: ViewModel() {
 
     fun resetGame(){
         score = 0
-        opponent_score = 0
+        opponentScore = 0
         logic.start()
         Log.d("VIEWMODEL RESET CALLED","VIEWMODEL RESET CALLED")
     }

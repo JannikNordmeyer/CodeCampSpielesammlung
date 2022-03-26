@@ -17,8 +17,6 @@ class GameHolder : AppCompatActivity() {
 
     private lateinit var binding: ActivityGameHolderBinding
 
-    private val TAG = GameHolder::class.java.simpleName
-
     lateinit var fragToLoad: Fragment
     lateinit var gameViewModel: ViewModel
     lateinit var viewmodel: GameHolderViewModel
@@ -79,39 +77,32 @@ class GameHolder : AppCompatActivity() {
                 fragToLoad = Kompass()
                 gameViewModel = ViewModelProvider(this).get(KompassViewModel()::class.java)
                 viewmodel.quickplayFilter = "PLACEHOLDERSPIEL1"
-                Log.d(TAG, "LOADED PLACEHOLDERSPIEL1")
             }
             GameNames.ARITHMETICS -> {
                 fragToLoad = Arithmetics()
                 gameViewModel = ViewModelProvider(this).get(ArithmeticsViewModel::class.java)
                 viewmodel.quickplayFilter = "ARITHMETICS"
-                Log.d(TAG, "LOADED PLACEHOLDERSPIEL2")
             }
             GameNames.SCHRITTZAEHLER -> {
                 fragToLoad = Schrittzaehler()
                 gameViewModel = ViewModelProvider(this).get(SchrittzaehlerViewModel::class.java)
                 viewmodel.quickplayFilter = "SCHRITTZAEHLER"
-                Log.d(TAG, "LOADED SCHRITTZAEHLER")
             }
             GameNames.PLACEHOLDERSPIEL4 -> {
                 fragToLoad = PlaceholderSpiel4()
                 gameViewModel = ViewModelProvider(this).get(PlaceholderSpiel4ViewModel::class.java)
                 viewmodel.quickplayFilter = "PLACEHOlDERSPIEL4"
-                Log.d(TAG, "LOADED PLACEHOLDERSPIEL4")
             }
             GameNames.PLACEHOLDERSPIEL5 -> {
                 fragToLoad = PlaceholderSpiel5()
                 gameViewModel = ViewModelProvider(this).get(PlaceholderSpiel5ViewModel::class.java)
                 viewmodel.quickplayFilter = "PLACEHOLDERSPIEL5"
-                Log.d(TAG, "LOADED PLACEHOLDERSPIEL5")
             }
             GameNames.TICTACTOE -> {
                 fragToLoad = TicTacToe()
                 gameViewModel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
                 viewmodel.quickplayFilter = "TICTACTOE"
-                Log.d(TAG, "LOADED TICTACTOE")
             }
-            else -> Log.d(TAG, " ERROR: FAILED TO LOAD GAME")
         }
 
         //Load Fragment
@@ -155,7 +146,6 @@ class GameHolder : AppCompatActivity() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
                 }
 
             })
@@ -254,9 +244,7 @@ class GameHolder : AppCompatActivity() {
 
 
 
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
+                override fun onCancelled(error: DatabaseError) {}
 
             })
             remachtListener = MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").addValueEventListener(object : ValueEventListener {
@@ -341,7 +329,7 @@ class GameHolder : AppCompatActivity() {
                     }
 
                     if (!MyApplication.isHost) {
-                        (gameViewModel as TicTacToeViewModel).logic.player = "O"
+                        (gameViewModel).logic.player = "O"
                     }
                 } else if (MyApplication.isLoading) {
                     gameViewModel.logic.networkBoardToLocalBoard()

@@ -1,6 +1,3 @@
 package com.example.testapplication
 
-data class NotificationData(val title :String, val message : String) {
-
-
-}
+data class NotificationData(val title :String, val message : String)

@@ -1,17 +1,14 @@
 package com.example.testapplication
 
 import android.app.Application
-import android.hardware.Sensor
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import java.lang.Exception
 
-//Globale Kontroll Variablen. Sollten (Hoffe ich) nicht bei Application Death sterben ähnlich wie Zeug im Viewmodel.
+//Globale Kontrollvariablen. Sollten (Hoffe ich) nicht bei Application Death sterben ähnlich wie Zeug im Viewmodel.
 class MyApplication : Application() {
     companion object {
         var globalSelectedGame = GameNames.NONE         //The selected game

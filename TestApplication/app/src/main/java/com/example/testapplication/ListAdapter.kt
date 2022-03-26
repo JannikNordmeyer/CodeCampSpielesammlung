@@ -1,9 +1,6 @@
 package com.example.testapplication
 
-import android.app.PendingIntent.getActivity
 import android.content.Context
-import android.media.Image
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +29,6 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
 
         val layoutInflater = LayoutInflater.from(parent.context)
         binding = FriendCardBinding.inflate(layoutInflater)
-        //setContentView(binding.root)
 
         //Invite Button technology
         itemView.findViewById<Button>(R.id.BtnInvite).setOnClickListener(){
@@ -42,15 +38,12 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
             MyApplication.myRef.child("FriendCodes").get().addOnSuccessListener {
 
                 if (it != null && it.value != null) {
-                    val currentUser = FirebaseAuth.getInstance().currentUser!!.email
-                    val currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
+
                     val friendName = itemView.findViewById<TextView>(R.id.FriendName).text
-                    var friendID = ""
                     //Get friend id and push Toast that you will invite the friend with the room name
                     it.children.forEach(){
                         if(it.value == friendName){
                             MyApplication.inviteFriendID = it.key.toString()
-                            Log.d("FREUNDES SHIT", friendID)
                         }
                     }
                 }
@@ -90,7 +83,7 @@ class ListAdapter(private val FriendsList : ArrayList<Friend>) : RecyclerView.Ad
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val currentItem = FriendsList[position]
-        holder.FriendName.setText(currentItem.Name)
+        holder.FriendName.text = currentItem.Name
     }
 
     override fun getItemCount(): Int {

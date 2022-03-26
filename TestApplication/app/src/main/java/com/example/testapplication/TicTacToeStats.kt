@@ -31,7 +31,8 @@ class TicTacToeStats : Fragment() {
 
         return view
     }
-    fun load(){
+    //Läd Daten aus dem Viewmodel
+    private fun load(){
 
         if(viewmodel.TicTacToeData.value == null){
             return
@@ -41,12 +42,12 @@ class TicTacToeStats : Fragment() {
 
         val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.TicTacToeData.value)
 
-        binding.winGraph.getViewport().setScalable(true)
-        binding.winGraph.getViewport().setScrollable(true)
-        binding.winGraph.getViewport().setScalableY(true)
-        binding.winGraph.getViewport().setScrollableY(true)
-        binding.winGraph.getViewport().setXAxisBoundsManual(true)
-        binding.winGraph.getViewport().setMaxX(viewmodel.TicTacToeWinCount.toDouble())
+        binding.winGraph.viewport.isScalable = true
+        binding.winGraph.viewport.isScrollable = true
+        binding.winGraph.viewport.setScalableY(true)
+        binding.winGraph.viewport.setScrollableY(true)
+        binding.winGraph.viewport.isXAxisBoundsManual = true
+        binding.winGraph.viewport.setMaxX(viewmodel.TicTacToeWinCount.toDouble())
 
         binding.winGraph.addSeries(series)
         binding.winGraph.title = "Win Percentage:"

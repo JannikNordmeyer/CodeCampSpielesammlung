@@ -12,10 +12,11 @@ class TicTacToe : Fragment() {
 
     private lateinit var binding: FragmentTictactoeBinding
 
-    fun getIcon(str : String) : Int{
+    //Gibt Grafik für entsprechendes Symbol zurück
+    private fun getIcon(str : String) : Int{
         if(str == "X"){ return R.drawable.x }
         if(str == "O"){ return return R.drawable.o }
-        return return android.R.color.transparent
+        return android.R.color.transparent
     }
 
 
@@ -29,22 +30,22 @@ class TicTacToe : Fragment() {
             if(viewmodel.logic.winner == null){
                 if(!MyApplication.onlineMode) {
                     if (viewmodel.logic.player == "X") {
-                        binding.playerprompt.setText("Player 1's Turn:")
+                        binding.playerprompt.text = "Player 1's Turn:"
                     } else {
-                        binding.playerprompt.setText("Player 2's Turn:")
+                        binding.playerprompt.text = "Player 2's Turn:"
                     }
                 }
                 else{
-                    if(MyApplication.myTurn) binding.playerprompt.setText("It's your turn!")
-                    else binding.playerprompt.setText("Waiting for other player...")
+                    if(MyApplication.myTurn) binding.playerprompt.text = "It's your turn!"
+                    else binding.playerprompt.text = "Waiting for other player..."
                 }
             }
             else{
                 if(!MyApplication.onlineMode) {
                     if (viewmodel.logic.winner == 0) {
-                        binding.playerprompt.setText("It's a Draw.")
+                        binding.playerprompt.text = "It's a Draw."
                     } else {
-                        binding.playerprompt.setText("Player " + viewmodel.logic.winner + " wins.")
+                        binding.playerprompt.text = "Player " + viewmodel.logic.winner + " wins."
                     }
                 }
             }

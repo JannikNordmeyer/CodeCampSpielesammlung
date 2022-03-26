@@ -2,11 +2,8 @@ package com.example.testapplication
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
