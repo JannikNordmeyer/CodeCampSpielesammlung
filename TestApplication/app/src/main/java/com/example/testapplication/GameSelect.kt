@@ -27,11 +27,13 @@ class GameSelect : AppCompatActivity() {
     lateinit var viewmodel: ViewModel
     lateinit var mLocationManager : LocationManager
 
-    fun startGame(){
-        val intent = Intent(this, GameSelectNetwork::class.java)   //Previously went to GameHolder
+    //Hilfsfunktion zum übergehen zum SelectNetwork
+    fun goToNetworkSetup(){
+        val intent = Intent(this, GameSelectNetwork::class.java)
         startActivity(intent)
     }
 
+    //UI-Hilfs funktionen um online-only buttons auszublenden falls man nicht eingeloggt ist
     fun fadeOutButtons(){
         binding.FriendsButton.alpha = 0.5F
         binding.statsButton.alpha = 0.5F
@@ -42,6 +44,7 @@ class GameSelect : AppCompatActivity() {
         binding.statsButton.alpha = 1F
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_select)
@@ -51,7 +54,7 @@ class GameSelect : AppCompatActivity() {
 
         viewmodel = ViewModelProvider(this).get(GameSelectNetworkViewModel()::class.java)
 
-        //Perform sensor check for games that need it and grey out/disable them if you don't have them
+        //Sensor-Check: Welche Spiele kann der Nutzer spielen? Nicht spielbare Spiele werden ausgeblendet.
         val sensorManager = this.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val kompassAvailable = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null && sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null
         val schrittzaehlerAvailable = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null
@@ -63,12 +66,13 @@ class GameSelect : AppCompatActivity() {
             binding.ButtonSchrittzaehler.alpha = 0.5F
         }
 
-        //Get reference to database once on game launch
+
+        //Hol Database Referenz
         MyApplication.database = FirebaseDatabase.getInstance("https://spielesammulng-default-rtdb.europe-west1.firebasedatabase.app")
         MyApplication.myRef = MyApplication.database.reference;
-
         FirebaseMessaging.getInstance().subscribeToTopic(FRIENDS_TOPIC)
 
+        //Check ob man schon eingeloggt ist
         var currentuser = FirebaseAuth.getInstance().currentUser
         if(currentuser != null) {
             MyApplication.isLoggedIn = true
@@ -80,6 +84,8 @@ class GameSelect : AppCompatActivity() {
             fadeOutButtons()
         }
 
+        //Button Listeners:
+        //logt den User aus und schaltet online-only funktionen aus
         binding.ButtonLogout.setOnClickListener(){
             FirebaseAuth.getInstance().signOut()
             currentuser = null
@@ -88,6 +94,7 @@ class GameSelect : AppCompatActivity() {
             binding.TextViewLoginStatus.setText("You are not currently logged in.")
         }
 
+        //geht in den Stat Bildschrim oder zeigt Fehlermeldung falls man nicht eingeloggt ist.
         binding.statsButton.setOnClickListener(){
             if(MyApplication.isLoggedIn) {
                 val intent = Intent(this, Statistics::class.java);
@@ -97,13 +104,17 @@ class GameSelect : AppCompatActivity() {
                 Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
             }
         }
+
+        //Wählt TTT als Spiel aus und geht in den NetworkSelect Bildschrim
         binding.ButtonTicTacToe.setOnClickListener(){
             MyApplication.globalSelectedGame = GameNames.TICTACTOE
-            startGame()
+            goToNetworkSetup()
         }
 
+        //Wählt Kompass als Spiel aus + führt GPS Rechte check aus
         binding.ButtonKompass.setOnClickListener(){
             if(kompassAvailable) {
+                //Prüft für GPS Rechte...
                 mLocationManager =
                     this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                 var gps_enabled = false
@@ -112,9 +123,8 @@ class GameSelect : AppCompatActivity() {
                 } catch (ex: Exception) {
                 }
 
-
                 if (!gps_enabled) {
-                    // notify user
+                    // Falls keine vorhanden, verlange diese.
                     val build = AlertDialog.Builder(this)
                         .setMessage("GPS is not enabled")
                         .setPositiveButton("open location settings",
@@ -126,8 +136,9 @@ class GameSelect : AppCompatActivity() {
                         .setNegativeButton("Cancel", null)
                         .show()
                 } else {
+                    //Falls vorhanden, gehe zu networkSetup.
                     MyApplication.globalSelectedGame = GameNames.COMPASS
-                    startGame()
+                    goToNetworkSetup()
                 }
             }
             else{
@@ -136,26 +147,30 @@ class GameSelect : AppCompatActivity() {
 
         }
 
+        //Wählt Arithmetik als Spiel aus
         binding.ButtonArithmetik.setOnClickListener(){
             MyApplication.globalSelectedGame = GameNames.ARITHMETICS
-            startGame()
+            goToNetworkSetup()
         }
 
+        //Wählt Schrittzaehler als Spiel aus
         binding.ButtonSchrittzaehler.setOnClickListener(){
             if(schrittzaehlerAvailable) {
                 MyApplication.globalSelectedGame = GameNames.SCHRITTZAEHLER
-                startGame()
+                goToNetworkSetup()
             }
             else{
                 Toast.makeText(this, "Your device does not support this game.", Toast.LENGTH_SHORT ).show()
             }
         }
 
+        //Geht in den Login screen
         binding.ButtonLogin.setOnClickListener(){
             val intent = Intent(this, Login::class.java);
             startActivity(intent)
         }
 
+        //Geht in den Freundes Screen
         binding.FriendsButton.setOnClickListener(){
             if(MyApplication.isLoggedIn) {
                 val intent = Intent(this, FriendsList::class.java);

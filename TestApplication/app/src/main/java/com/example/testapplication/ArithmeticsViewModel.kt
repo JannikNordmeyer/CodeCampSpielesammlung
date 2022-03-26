@@ -12,15 +12,14 @@ class ArithmeticsViewModel: ViewModel() {
     var opponentScore = 0
 
     fun enter(result: String?) {
-
         logic.enter(result)
     }
 
+    //Reset für Spiel Variablen
     fun resetGame(){
         score = 0
         opponentScore = 0
         logic.start()
-        Log.d("VIEWMODEL RESET CALLED","VIEWMODEL RESET CALLED")
     }
 
     lateinit var gameTimer: CountDownTimer

@@ -26,6 +26,8 @@ class TicTacToe : Fragment() {
         val view = binding.root
 
         val viewmodel = ViewModelProvider(requireActivity()).get(TicTacToeViewModel::class.java) //Shared Viewmodel w/ GameHolder
+
+        //Hilfsfunktion für Update Text um Turn zu signalisieren
         fun updatePrompt(){
             if(viewmodel.logic.winner == null){
                 if(!MyApplication.onlineMode) {
@@ -51,10 +53,12 @@ class TicTacToe : Fragment() {
             }
         }
 
+        //Setup Livedata Listeners
         viewmodel.logic.livewinner.observe(viewLifecycleOwner){
             updatePrompt()
         }
 
+        //Update Board bei board veränderung
         viewmodel.logic.liveboard.observe(viewLifecycleOwner, {
 
             binding.topleft.setImageResource(getIcon(viewmodel.logic.board[0][0]))
@@ -71,6 +75,7 @@ class TicTacToe : Fragment() {
             updatePrompt()
         })
 
+        //Listeners für indiv. Buttons
         binding.topleft.setOnClickListener(){ viewmodel.click(0, 0) }
         binding.topmid.setOnClickListener(){ viewmodel.click(0, 1) }
         binding.topright.setOnClickListener(){ viewmodel.click(0, 2) }
@@ -84,6 +89,7 @@ class TicTacToe : Fragment() {
         return view
     }
 
+    //Funktionen um zu erkennen ob TTT grad im vordergrund ist für Notifikationen
     override fun onStart() {
         super.onStart()
         MyApplication.ticTacToeOpen = true

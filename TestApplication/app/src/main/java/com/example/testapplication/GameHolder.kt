@@ -29,7 +29,8 @@ class GameHolder : AppCompatActivity() {
     lateinit var winnerPlayerListener: ValueEventListener
     lateinit var remachtListener: ValueEventListener
     lateinit var exitPlayerListener: ValueEventListener
-    
+
+    //Hilf Funktion welche Statistik aktualisiert
     private fun updateStatistics() {
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child(MyApplication.globalSelectedGameStatLocation).child("GamesPlayed").get().addOnSuccessListener(this) {
             if(it != null){
@@ -71,12 +72,12 @@ class GameHolder : AppCompatActivity() {
 
         viewmodel = ViewModelProvider(this).get(GameHolderViewModel()::class.java)
 
-        //Select Fragment and load it's Viewmodel
+        //Je nach ausgewählten Spiel wird das Fragment zum laden ausgewählt und dessen Viewmodel
         when (MyApplication.globalSelectedGame) {
             GameNames.COMPASS -> {
                 fragToLoad = Kompass()
                 gameViewModel = ViewModelProvider(this).get(KompassViewModel()::class.java)
-                viewmodel.quickplayFilter = "PLACEHOLDERSPIEL1"
+                viewmodel.quickplayFilter = "COMPASS"
             }
             GameNames.ARITHMETICS -> {
                 fragToLoad = Arithmetics()
@@ -88,16 +89,6 @@ class GameHolder : AppCompatActivity() {
                 gameViewModel = ViewModelProvider(this).get(SchrittzaehlerViewModel::class.java)
                 viewmodel.quickplayFilter = "SCHRITTZAEHLER"
             }
-            GameNames.PLACEHOLDERSPIEL4 -> {
-                fragToLoad = PlaceholderSpiel4()
-                gameViewModel = ViewModelProvider(this).get(PlaceholderSpiel4ViewModel::class.java)
-                viewmodel.quickplayFilter = "PLACEHOlDERSPIEL4"
-            }
-            GameNames.PLACEHOLDERSPIEL5 -> {
-                fragToLoad = PlaceholderSpiel5()
-                gameViewModel = ViewModelProvider(this).get(PlaceholderSpiel5ViewModel::class.java)
-                viewmodel.quickplayFilter = "PLACEHOLDERSPIEL5"
-            }
             GameNames.TICTACTOE -> {
                 fragToLoad = TicTacToe()
                 gameViewModel = ViewModelProvider(this).get(TicTacToeViewModel::class.java)
@@ -105,19 +96,17 @@ class GameHolder : AppCompatActivity() {
             }
         }
 
-        //Load Fragment
+        //Lade Fragment
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.FrameLayoutGameHolder, fragToLoad)
             commit()
         }
 
-        //If we are in online mode...
+        //Falls wir im online Mode sind, übernehme Spiel-unabhängiges Setup
         if (MyApplication.onlineMode && !MyApplication.networkSetupComplete) {
-            //Network setup work independent of game
-            //Get and save ID of host and guest as a global control var
+            //Hole und speichere Host/Guest Daten
             MyApplication.myRef.child("data").child(MyApplication.code).child("Host").get().addOnSuccessListener(this) {
                 MyApplication.hostID = it.value.toString()
-                //Setup ActivePlayer field which will be used to determine what player can make a move - the "Host" and "Guest" field is entered here and checked for, same goes for ExitPlayer.
                 if (MyApplication.isHost)
                     MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").setValue(MyApplication.hostID)
             }
@@ -132,10 +121,10 @@ class GameHolder : AppCompatActivity() {
                 MyApplication.guestFriendID = it.value.toString()
             }
 
-            //Network setup work depending on game - e.g. setup a 9 field empty board for Tic Tac Toe.
+            //Call networkSetup - je nach Spiel werden hier spielspezifische Sachen unternommen
             networkSetup(gameViewModel)
 
-            //Setup field, listener and logic for the variable that controls whose turn it is
+            //activePlayer Listener ändert je nach dem was in dem activePlayer Feld steht ob man lokal erlaubt ist einen Zug zu machen
             activePlayerListener = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null) {
@@ -150,8 +139,8 @@ class GameHolder : AppCompatActivity() {
 
             })
 
-            //Listener that calls the fragment's network field update function if the "FieldUpdate" flag has been turned to true.
-            // Also sets the flag back to false once the field has been updated.
+            //Listener welche networkOnFieldUpdate() von dem geladenen Fragment callt und die flagge wieder zurück zu false setzt.
+            //Benutzt um z.b. in TTT anzukündigen das man das Feld verändert hat.
             fieldUpdateListener = MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value != null && snapshot.value != false){
@@ -162,19 +151,14 @@ class GameHolder : AppCompatActivity() {
                             is KompassViewModel -> (gameViewModel as KompassViewModel).logic.networkOnFieldUpdate(data)
                             is SchrittzaehlerViewModel -> (gameViewModel as SchrittzaehlerViewModel).logic.networkOnFieldUpdate(data)
                             is ArithmeticsViewModel -> (gameViewModel as ArithmeticsViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel4ViewModel -> (gameViewModel as PlaceholderSpiel4ViewModel).logic.networkOnFieldUpdate(data)
-                            is PlaceholderSpiel5ViewModel -> (gameViewModel as PlaceholderSpiel5ViewModel).logic.networkOnFieldUpdate(data)
                         }
                     }
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-
+                override fun onCancelled(error: DatabaseError) {}
             })
 
-            //Setup field, listener and logic for the variable that controls who won
+            //Listener für das Feld welches den Gewinner ankündigt. Zeigt beim erkennen ein Pop-Up welches den Gewinner deklariert und
+            //erlaubt dem User entweder das Spiel zu verlassen oder ein Rematch zu verlangen.
             winnerPlayerListener = MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
@@ -216,6 +200,8 @@ class GameHolder : AppCompatActivity() {
                             }
                         }
 
+                        //Beim rematch verlangen setzt der User eine Flagge auf dem Server und geht in den UI Lade-Modus während er auf
+                        //den anderen Spieler wartet.
                         build.setPositiveButton("rematch") { dialog, which ->
                             MyApplication.myRef.child("data").child(MyApplication.code).child("WinnerPlayer").setValue(null)
                             MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").get().addOnSuccessListener {
@@ -238,21 +224,19 @@ class GameHolder : AppCompatActivity() {
                         if(!isFinishing()) {
                             rematchAlert = build.show()
                         }
-                        //MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
                     }
                 }
-
-
 
                 override fun onCancelled(error: DatabaseError) {}
 
             })
+            //Der rematch listener betrachtet die rematch flagge falls man auf den zweiten Spieler wartet.
+            //Diese initalisiert dann das setup für das nächste Spiel falls er zweite Spieler das rematch akzeptiert.
             remachtListener = MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.value != null) {
                         if (snapshot.value == false && MyApplication.isLoading) {
                             if (MyApplication.isHost && MyApplication.globalSelectedGame == GameNames.COMPASS) {
-                                Log.d("Compass", "INIT GAME")
                                 (gameViewModel as KompassViewModel).logic.initGame(this@GameHolder)
                             }
                             stopLoad()
@@ -262,14 +246,11 @@ class GameHolder : AppCompatActivity() {
                         }
                     }
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-
+                override fun onCancelled(error: DatabaseError) {}
             })
 
-            //setup listener to quit game if Opponent leaves mid-match...
+            //Listener für die exitGame Flagge - verlässt ein Spieler das Spiel wird diese Flagge gesetzt und der andere User
+            //reagiert auf das verlassen mit einem Pop-up.
             exitPlayerListener = MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString())).child("Request")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -288,15 +269,12 @@ class GameHolder : AppCompatActivity() {
                             }
                         }
                     }
-                    override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
-                    }
+                    override fun onCancelled(error: DatabaseError) {}
                     //endregion
-
                 })
-
         }
 
+        //Exit Game Button Listener - feuert Hilfsfunktion zum verlassen des Spieles.
         binding.ButtonGiveUp.setOnClickListener() {
             if(MyApplication.onlineMode){
                 MyApplication.Ileft = true;
@@ -307,15 +285,18 @@ class GameHolder : AppCompatActivity() {
 
     }
 
+    //Hilfsfunktion zum verlassen des Spieles - räumt Database auf.
     fun exitGame() {
-        //cleanup
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(MyApplication.guestID)).child("Request").setValue("")
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(MyApplication.hostID)).child("Request").setValue("")
         MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
     }
 
+    //Spielabhängige setup funktion um die Spiele einzurichten bevor man spielt oder bei neustart (rematch)
     fun networkSetup(gameViewModel : ViewModel) {
         when (gameViewModel) {
+
+            //TicTacToe Setup: Reset Field
             is TicTacToeViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
                     val childUpdates = hashMapOf<String, Any>("0" to "", "1" to "", "2" to "", "3" to "", "4" to "", "5" to "", "6" to "", "7" to "", "8" to "")
@@ -335,21 +316,22 @@ class GameHolder : AppCompatActivity() {
                     gameViewModel.logic.networkBoardToLocalBoard()
                 }
             }
-            is KompassViewModel -> { //Your Setup Code here...
-                Log.d("Kompass", "LISTINDEX RESET NETWORKSETUP")
+
+            //Kompass Setup: initialisiere Spiel falls man Host ist
+            is KompassViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
                     if (MyApplication.networkSetupComplete) {
                         if (MyApplication.isHost) {
-                            Log.d("Compass", "INIT GAME")
                             gameViewModel.logic.initGame(this)
                         }
                         MyApplication.myRef.child("data").child(MyApplication.code).child("Rematch").setValue(false)
                     }
                     MyApplication.networkSetupComplete = true
                 }
-
             }
+
+            //Arithmetics Setup: Reset Game und starte Timer
             is ArithmeticsViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
@@ -361,6 +343,8 @@ class GameHolder : AppCompatActivity() {
                 gameViewModel.resetGame()
                 MyApplication.networkSetupComplete = true
             }
+
+            //Schrittzaehler Setup: Reset Game
             is SchrittzaehlerViewModel -> {
                 if (!MyApplication.networkSetupComplete || !MyApplication.isLoading) {
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").removeValue()
@@ -371,13 +355,10 @@ class GameHolder : AppCompatActivity() {
                 MyApplication.networkSetupComplete = true
                 gameViewModel.livenetworkReset.value = true
             }
-            is PlaceholderSpiel4ViewModel -> { //Your Setup Code here...
-            }
-            is PlaceholderSpiel5ViewModel -> { //Your Setup Code here...
-            }
         }
     }
 
+    //Hilf Funktionen fürs UI Hiding während warten
     fun startLoad() {
         binding.FrameLayoutGameHolder.visibility = View.GONE
         binding.idPB.visibility = View.VISIBLE

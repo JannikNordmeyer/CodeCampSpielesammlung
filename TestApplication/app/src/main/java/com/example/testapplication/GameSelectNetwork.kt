@@ -21,6 +21,7 @@ class GameSelectNetwork : AppCompatActivity() {
     private lateinit var quickplayListener: ValueEventListener
     lateinit var viewmodel: GameSelectNetworkViewModel
 
+    //Cleanup bei verlassen
     override fun onDestroy() {
         super.onDestroy()
         if(MyApplication.isLoggedIn) {
@@ -71,7 +72,7 @@ class GameSelectNetwork : AppCompatActivity() {
         //Select Quickplay Filter
         when (MyApplication.globalSelectedGame) {
             GameNames.COMPASS -> {
-                viewmodel.quickplayFilter = "PLACEHOLDERSPIEL1"
+                viewmodel.quickplayFilter = "COMPASS"
                 MyApplication.globalSelectedGameStatLocation = "COMPASS"
             }
             GameNames.ARITHMETICS -> {
@@ -82,14 +83,6 @@ class GameSelectNetwork : AppCompatActivity() {
                 viewmodel.quickplayFilter = "SCHRITTZAEHLER"
                 MyApplication.globalSelectedGameStatLocation = "SCHRITTZAEHLER"
             }
-            GameNames.PLACEHOLDERSPIEL4 -> {
-                viewmodel.quickplayFilter = "PLACEHOlDERSPIEL4"
-                MyApplication.globalSelectedGameStatLocation = "PLACEHOLDERSPIEL4"
-            }
-            GameNames.PLACEHOLDERSPIEL5 -> {
-                viewmodel.quickplayFilter = "PLACEHOLDERSPIEL5"
-                MyApplication.globalSelectedGameStatLocation = "PLACEHOLDERSPIEL5"
-            }
             GameNames.TICTACTOE -> {
                 viewmodel.quickplayFilter = "TICTACTOE"
                 MyApplication.globalSelectedGameStatLocation = "TICTACTOE"
@@ -97,6 +90,7 @@ class GameSelectNetwork : AppCompatActivity() {
             else -> Log.d(TAG, " ERROR: FAILED TO LOAD QUICKPLAY FILTER")
         }
 
+        //Hilfsfunktion zum Spiele starten - übergeht zum GameHolder und leistet Setup arbeit
         fun startGame(){
             if(MyApplication.onlineMode) {
                 host = false
@@ -110,11 +104,12 @@ class GameSelectNetwork : AppCompatActivity() {
             startActivity(intent)
         }
 
+        //Hilfsfunktion zum Hosten von Spielen wenn jemand eine Lobby betritt
         fun networkHostGame(opponent : String){
             //Generiere Raum Code
             MyApplication.code = MyApplication.SplitString(opponent)/*Guest Email*/ + MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()) /*Host Email*/
             MyApplication.isHost = true
-            //Verlasse Quickplay Lobby
+            //Verlasse Lobby
             MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).setValue(null)
             MyApplication.onlineMode = true;
             //Markiere mich als Host im Raum + notiere meine FriendID
@@ -129,15 +124,13 @@ class GameSelectNetwork : AppCompatActivity() {
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("Guest").removeEventListener(this)
                             }
                         }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            TODO("Not yet implemented")
-                        }
+                        override fun onCancelled(error: DatabaseError) {}
                     })
-                    }
+                }
             })
         }
 
+        //Hilfsfunktion zum beitreten eines Spieles nachdem man jemanden in einer Lobby gefunden hat
         fun networkJoinGame(opponent : String){
             MyApplication.onlineMode = true;
             //Merke Raum Code
@@ -156,10 +149,7 @@ class GameSelectNetwork : AppCompatActivity() {
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("Host").removeEventListener(this)
                             }
                         }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            TODO("Not yet implemented")
-                        }
+                        override fun onCancelled(error: DatabaseError) {}
                     })
                 }
             })
@@ -174,17 +164,14 @@ class GameSelectNetwork : AppCompatActivity() {
                         networkHostGame(snapshot.value as String)
                     }
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-
+                override fun onCancelled(error: DatabaseError) {}
             })
         }
 
-        fun createLobby(LobbyName: String){
+        //Hilfsfunktion zum erschaffen einer Lobby bzw. dem beitreten einer Lobby falls sie schon existiert
+        fun createOrJoinLobby(LobbyName: String){
             startLoad()
-            //Hole die Liste von Spielern in der Quickplay Lobby
+            //Hole die Liste von Spielern in der Lobby
             MyApplication.myRef.child(LobbyName).child(viewmodel.quickplayFilter).get().addOnSuccessListener(this) {
                 if(it.value != null){  //Falls es Spieler gibt...
                     //Heirate
@@ -193,7 +180,7 @@ class GameSelectNetwork : AppCompatActivity() {
                     //Join game
                     networkJoinGame(it.value.toString())
                     stopLoad()
-                } else { //Falls es keine Spieler gibt, werde ein Host und warte in der Quickplay lobby
+                } else { //Falls es keine Spieler gibt, werde ein Host und warte in der lobby
                     host = true
                     viewmodel.quickplayName = FirebaseAuth.getInstance().currentUser!!.email.toString()
                     MyApplication.myRef.child(LobbyName).child(viewmodel.quickplayFilter).setValue(viewmodel.quickplayName)
@@ -201,8 +188,8 @@ class GameSelectNetwork : AppCompatActivity() {
             }
         }
 
+        //Hilfsfunktion zum "Einladen" eines Freundes - sendet Notifikation für Spiel und Lobby Name.
         fun inviteFriend(lobbyName: String){
-            //Send my friend a push notification with a random lobby code for our lobby :)
             MyApplication.myRef.child("MessagingTokens").child(MyApplication.inviteFriendID.toString()).get().addOnSuccessListener {
                 if(it != null){
                     val id = it.value.toString()
@@ -213,7 +200,8 @@ class GameSelectNetwork : AppCompatActivity() {
             }
         }
 
-        // Lobby w/Name
+        //Button Listeners:
+        // Erschafft oder tritt Lobby bei
         binding.BtnOnlineRoomCode.setOnClickListener {
             if(MyApplication.isLoggedIn) {
                 viewmodel.lobbyName = binding.InviteLobbyName.text.toString()
@@ -222,34 +210,36 @@ class GameSelectNetwork : AppCompatActivity() {
                     MyApplication.inviteFriendID = ""
                     Toast.makeText(this, "Invited Friend!", Toast.LENGTH_SHORT).show()
                 }
-                createLobby(viewmodel.lobbyName)
+                createOrJoinLobby(viewmodel.lobbyName)
             }
             else{
                 Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
             }
         }
 
-
+        //Startet ein Offline Spiel.
         binding.BtnOffline.setOnClickListener {
             MyApplication.onlineMode = false
             startGame()
         }
 
+        //Geht zurück zum Game Select Bildschirm
         binding.buttonreturn.setOnClickListener{
             finish()
         }
 
+        //Öffnet eine Quickplay Lobby
         binding.BtnQuickplay.setOnClickListener {
             if(MyApplication.isLoggedIn) {
                 viewmodel.lobbyName = "Quickplay"
-                createLobby(viewmodel.lobbyName)
+                createOrJoinLobby(viewmodel.lobbyName)
             }
             else{
                 Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
             }
         }
 
-        //Verlasse Quickplay Lobby wenn man als Host Wartet
+        //Button zum verlassen einer Lobby falls man wartet
         binding.BtnCancel.setOnClickListener {
             MyApplication.myRef.child(viewmodel.lobbyName).child(viewmodel.quickplayFilter).setValue(null)
             host = false
@@ -260,6 +250,7 @@ class GameSelectNetwork : AppCompatActivity() {
 
     }
 
+    //UI Hilfsfunktionen für das warten auf andere Spieler wenn man hostet
     fun startLoad() {
         binding.BtnOnlineRoomCode.visibility    = View.GONE
         binding.InviteLobbyName.visibility    = View.GONE

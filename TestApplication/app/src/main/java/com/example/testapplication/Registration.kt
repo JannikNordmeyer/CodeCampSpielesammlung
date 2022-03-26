@@ -30,7 +30,6 @@ class Registration : AppCompatActivity() {
             binding.password.setText(password)
         }
 
-
         binding.buttonreturn.setOnClickListener() {
             finish()
         }
@@ -40,26 +39,17 @@ class Registration : AppCompatActivity() {
 
             when {
                 TextUtils.isEmpty(binding.email.text.toString().trim() { it <= ' '}) ->{
-
                     Toast.makeText(this, "Please Enter a Valid Email Address.", Toast.LENGTH_SHORT ).show()
-
                 }
                 TextUtils.isEmpty(binding.password.text.toString().trim() { it <= ' '}) ->{
-
                     Toast.makeText(this, "Please Enter a Valid Password.", Toast.LENGTH_SHORT ).show()
-
                 }
                 else ->{
-
                     val email = binding.email.text.toString()
                     val password = binding.password.text.toString()
 
-                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-
-                            task ->
-
+                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-
                             val firebaseUser: FirebaseUser = task.result!!.user!!
                             MyApplication.myRef.child("FriendCodes").child(FirebaseAuth.getInstance().uid.toString()).setValue(FirebaseAuth.getInstance().currentUser!!.email)
                             FirebaseMessaging.getInstance().token.addOnSuccessListener {
@@ -67,7 +57,6 @@ class Registration : AppCompatActivity() {
                                 if(it != null){
                                 MyApplication.myRef.child("MessagingTokens").child(FirebaseAuth.getInstance().uid.toString()).setValue(it)}
                             }
-
 
                             //Anlegen der Zähler für die Statistiken
                             var userpath = MyApplication.myRef.child("Users").child(MyApplication.SplitString(FirebaseAuth.getInstance().currentUser!!.email.toString()))
@@ -116,7 +105,6 @@ class Registration : AppCompatActivity() {
                     }
                 }
             }
-            }
+        }
     }
-
 }

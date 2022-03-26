@@ -31,6 +31,7 @@ class Arithmetics : Fragment() {
 
         viewmodel.logic.start()
 
+        //Anmeldung liveData
         viewmodel.logic.liveExpr.observe(viewLifecycleOwner){
             binding.operand1.text = it.first.toString()
             binding.operand2.text = it.second.toString()
@@ -40,7 +41,7 @@ class Arithmetics : Fragment() {
             binding.score.text = (viewmodel.score*1000).toString()
         }
 
-        //Submit
+        //Submit Knopf Listener: interpretiere Eingabe, clear Feld und schalte Buttons temporär aus
         binding.button.setOnClickListener(){
             if(binding.timer.text.toString().toInt() > 0) {
                 val input = binding.resultField.text.toString()
@@ -59,7 +60,7 @@ class Arithmetics : Fragment() {
             }
         }
 
-        //On enter...
+        //Enter Button Listener: Enter Knopf als Submit Button Hotkey
         binding.resultField.setOnKeyListener(object : View.OnKeyListener {
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
                 if (event.action == KeyEvent.ACTION_DOWN) {
@@ -75,12 +76,13 @@ class Arithmetics : Fragment() {
             }
         })
 
-        //Timer
+        //Gesamt Spiel Timer
         val timer = object: CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 binding.timer.text = (millisUntilFinished/1000).toString()
             }
             override fun onFinish() {
+                // Im Offline Modus, zeige Score und starte neu nach einem kleinen Delay
                 if(!MyApplication.onlineMode) {
                     Toast.makeText(context, "You have reached a score of " + (viewmodel.score).toString() + ".", Toast.LENGTH_SHORT).show()
                     val handler = Handler(Looper.getMainLooper())
@@ -89,6 +91,7 @@ class Arithmetics : Fragment() {
                         viewmodel.resetGame()
                     }, 6000)
                 }else{
+                    //Im Online Modus, sende Score zum Server und entscheide einen Gewinner.
                     //Prüfe ob Raum existiert...
                     MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
                         if(it.value != null) {
@@ -99,6 +102,7 @@ class Arithmetics : Fragment() {
                                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
                                         override fun onDataChange(snapshot: DataSnapshot) {
                                                 if (snapshot.value != null) {
+                                                    //Entscheide Gewinner!
                                                     var networkWinner = ""
                                                     if (viewmodel.score > snapshot.value.toString().toInt()) {
                                                         networkWinner = MyApplication.hostID
@@ -110,11 +114,7 @@ class Arithmetics : Fragment() {
                                                         MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").removeEventListener(this)
                                                     }
                                                 }
-
-                                                override fun onCancelled(error: DatabaseError) {
-                                                    TODO("Not yet implemented")
-                                                }
-
+                                                override fun onCancelled(error: DatabaseError) {}
                                             })
                                     } else {
                                         //Schreib deinen score in die DB...
@@ -126,6 +126,8 @@ class Arithmetics : Fragment() {
                 }
             }
         }
+
+        //Starte timer am anfang und logge ihn
         timer.start()
         viewmodel.gameTimer = timer
         return view

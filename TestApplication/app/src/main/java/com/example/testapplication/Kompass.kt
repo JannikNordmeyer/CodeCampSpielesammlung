@@ -190,9 +190,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                     return
                 }
                 for (location in locationResult.locations) {
-                    if (location != null) {
-                        //TODO: UI updates.
-                    }
+                    if (location != null) { }
                 }
             }
         }
@@ -203,15 +201,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                 activity!!,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-        }
+        ) { }
         LocationServices.getFusedLocationProviderClient(context)
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
 
@@ -242,11 +232,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                                 MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").removeEventListener(this)
                             }
                         }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            TODO("Not yet implemented")
-                        }
-
+                        override fun onCancelled(error: DatabaseError) {}
                     })
                 } else {
                     //write your score to the database

@@ -25,7 +25,6 @@ class Login : AppCompatActivity() {
         }
 
         binding.buttonregister.setOnClickListener(){
-
             val intent = Intent(this, Registration::class.java);
             intent.putExtra("email", binding.email.text.toString())
             intent.putExtra("password", binding.password.text.toString())
@@ -38,35 +37,22 @@ class Login : AppCompatActivity() {
 
             when {
                 TextUtils.isEmpty(binding.email.text.toString().trim() { it <= ' '}) ->{
-
                     Toast.makeText(this, "Please Enter a Valid Email Address.", Toast.LENGTH_SHORT ).show()
-
                 }
                 TextUtils.isEmpty(binding.password.text.toString().trim() { it <= ' '}) ->{
-
                     Toast.makeText(this, "Please Enter a Valid Password.", Toast.LENGTH_SHORT ).show()
-
                 }
                 else ->{
-
                     val email = binding.email.text.toString()
                     val password = binding.password.text.toString()
-
-                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener {
-
-                            task ->
-
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-
                             Toast.makeText(this, "Login Successful.", Toast.LENGTH_SHORT ).show()
-
                             val intent = Intent(this, GameSelect::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
-
                         }
                         else{
-
                             Toast.makeText(this, task.exception!!.message.toString(), Toast.LENGTH_SHORT ).show()
                         }
                     }

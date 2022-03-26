@@ -8,18 +8,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-//Globale Kontrollvariablen. Sollten (Hoffe ich) nicht bei Application Death sterben ähnlich wie Zeug im Viewmodel.
+//Globale Kontrollvariablen
 class MyApplication : Application() {
     companion object {
-        var globalSelectedGame = GameNames.NONE         //The selected game
+        var globalSelectedGame = GameNames.NONE         //Global ausgewähltes Spiel
         var globalSelectedGameStatLocation = ""
 
-        var isLoggedIn = false;                         //Global control variable that checks if the user is logged in.
+        var isLoggedIn = false;                         //Kontrollvariable um zu checken ob der User eingeloggt ist
 
-        var isHost = true;                              //If the player made the code - aka if they are the host, Player 1.
+        var isHost = true;                              //Kontrollvariable um zu schauen ob man Host ist
         var code = "null"                               //"Room" Code
-        var onlineMode = false;                         //If the game is being played in online mode
-        var myTurn = false;                             //If, regardless of game, the local player can make a move.
+        var onlineMode = false;
+        var myTurn = false;
         var hostID = "null"
         var hostFriendID = ""
         var guestFriendID = ""
@@ -28,7 +28,7 @@ class MyApplication : Application() {
         var isLoading = false
         var Ileft = false;
 
-        var ticTacToeOpen = false
+        var ticTacToeOpen = false                       //Kontrollvariable um zu prüfen ob man TTT offen hat - für TTT-spezifische Push Notes
 
         var inviteFriendID = ""
 
@@ -40,11 +40,13 @@ class MyApplication : Application() {
         const val CONTENT_TYPE = "application/json"
         const val FRIENDS_TOPIC = "/topics/Friends"
 
+        //Globale Hilfsfunktion zum splitten von email addressen
         fun SplitString(str:String): String{
             var split=str.split("@")
             return split[0]
         }
 
+        //Globale Hilfsfunktion zum senden von Notifications
         fun sendNotification(notification : PushNotification) = CoroutineScope(Dispatchers.IO).launch {
             try {
                 var response = RetrofitInstance.api.postNotification(notification)

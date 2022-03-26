@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 
 class TicTacToeGameLogic (var board: Array<Array<String>>){
 
+    //Hilfsenum
     companion object{
         const val CROSS = "X"
         const val CIRCLE = "O"
@@ -23,11 +24,11 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
     var player = CROSS
     var winner:Int? = null
 
-    private fun toggle(){   //Also switches the turn for Network
+    //Logik um zu setzen wer grade am Zug ist
+    private fun toggle(){
         if(MyApplication.onlineMode) {
             val networkActivePlayer = MyApplication.myRef.child("data").child(MyApplication.code).child("ActivePlayer")
             if(MyApplication.isHost) networkActivePlayer.setValue(MyApplication.guestID, { error, ref ->
-                //setValue operation is done, you'll get null in errror and ref is the path reference for firebase database
                 if (error != null) {
                     Log.d(TAG, "Host to Guest failed")
                 }
@@ -43,7 +44,6 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
                 }
             })
             else networkActivePlayer.setValue(MyApplication.hostID, { error, ref ->
-                //setValue operation is done, you'll get null in errror and ref is the path reference for firebase database
                 if (error != null) {
                     Log.d(TAG, "Guest to Host failed")
                 }
@@ -67,16 +67,15 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         }
     }
 
-    //Called from GameHolder whenever the Field changes.
     fun networkOnFieldUpdate(data : String?){
-        //Update Local Board with Network Board
+        //Update Local Board mit Network Board
         networkBoardToLocalBoard();
 
-        //Check board
+        //Prüfe Feld
         checkField()
     }
 
-    // Updates local board by taking in the values from the network board
+    // Update Local Board mit Werten des Network Boards
     fun networkBoardToLocalBoard(){
         val field_data = MyApplication.myRef.child("data").child(MyApplication.code).child("Field");
 
@@ -99,8 +98,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         }
     }
 
-    // Updates network board by translating the values from the local board
-    // Whenever we update the network board, the opponent's listener will be triggered to update the network board aswell.
+    // Update network board mit Local Board und setzt FieldUpdate Flagge so das der andere Spieler das Board auch übernimmt
     fun localBoardToNetworkBoard(){
         val childUpdates = hashMapOf<String, Any>("0" to board[0][0], "1" to board[0][1], "2" to board[0][2], "3" to board[1][0], "4" to board[1][1], "5" to board[1][2], "6" to board[2][0], "7" to board[2][1], "8" to board[2][2])
 
@@ -152,6 +150,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
             }
         }
 
+        //Ernennt den Sieg bzw. das es untenschieden ist
         if(win || full){
             if(win){
                 if(player == CROSS) winner = WINNER_PLAYER_ONE
@@ -181,6 +180,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
         return false
     }
 
+    //Hilfsfunktion beim clicken eines Feldes - setzt Value
     fun click(a: Int, b: Int){
         if(!MyApplication.onlineMode || MyApplication.myTurn) {
             if (board[a][b] != "" || winner != null) {
@@ -190,13 +190,14 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
             if (!checkField()) {
                 toggle()
             }
-            liveboard.value = board     //Update Liveboard, which triggers observer
-            if(MyApplication.onlineMode){ //Update Network Board
+            liveboard.value = board
+            if(MyApplication.onlineMode){
                 localBoardToNetworkBoard()
             }
         }
     }
 
+    //Reset Feld
     private fun clear() {
         for(i in 0..2){
             for(j in 0..2){
@@ -206,7 +207,7 @@ class TicTacToeGameLogic (var board: Array<Array<String>>){
 
         winner = null
         livewinner.value = winner
-        liveboard.value = board     //Update Liveboard, which triggers observer
+        liveboard.value = board
     }
 
 }

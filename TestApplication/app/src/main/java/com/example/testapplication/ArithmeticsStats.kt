@@ -15,10 +15,7 @@ class ArithmeticsStats : Fragment() {
     lateinit var viewmodel: StatisticsViewModel
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         binding = FragmentArithmeticsStatsBinding.inflate(inflater,container,false)
         val view = binding.root
