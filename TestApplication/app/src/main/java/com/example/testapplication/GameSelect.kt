@@ -25,6 +25,7 @@ class GameSelect : AppCompatActivity() {
 
     private lateinit var binding: ActivityGameSelectBinding
     lateinit var viewmodel: ViewModel
+    lateinit var mainViewModel: MainViewModel
     lateinit var mLocationManager : LocationManager
 
     //Hilfsfunktion zum übergehen zum SelectNetwork
@@ -53,6 +54,8 @@ class GameSelect : AppCompatActivity() {
         setContentView(binding.root)
 
         viewmodel = ViewModelProvider(this).get(GameSelectNetworkViewModel()::class.java)
+
+        mainViewModel = ViewModelProvider(this).get(MainViewModel(application)::class.java)
 
         //Sensor-Check: Welche Spiele kann der Nutzer spielen? Nicht spielbare Spiele werden ausgeblendet.
         val sensorManager = this.getSystemService(Context.SENSOR_SERVICE) as SensorManager

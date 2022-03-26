@@ -290,6 +290,7 @@ class GameHolder : AppCompatActivity() {
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(MyApplication.guestID)).child("Request").setValue("")
         MyApplication.myRef.child("Users").child(MyApplication.SplitString(MyApplication.hostID)).child("Request").setValue("")
         MyApplication.myRef.child("data").child(MyApplication.code).removeValue()
+        MyApplication.code = ""
     }
 
     //Spielabhängige setup funktion um die Spiele einzurichten bevor man spielt oder bei neustart (rematch)

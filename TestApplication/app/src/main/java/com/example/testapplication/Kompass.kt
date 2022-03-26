@@ -97,27 +97,27 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.indexList = ArrayList()
         viewmodel.targetLocation = JSONObject()
 
-        //timer that triggers when phone is pointing towards the target
+        //Timer startet wenn das Handy auf das Ziel zeigt
         timer = object : CountDownTimer(2000, 10) {
             override fun onTick(millisUntilFinished: Long) {
             }
 
             override fun onFinish() {
-                //adds the time it took to the total score
+                //erhöht den timer um die vergangene Zeit
                 viewmodel.score += completionTime
 
-                //not last target
+                //nicht letztes Ziel
                 if (viewmodel.listindex < viewmodel.indexList.size) {
-                    //next api call
+                    //nächster api call
                     viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
                     viewmodel.listindex++
                 }
-                //last target
+                //letztes Ziel
                 else {
-                    //stops the completion timer
+                    //stoppt den completion timer
                     viewmodel.completionTimer.cancel()
 
-                    //stops phone from vibrating after game is complete
+                    //stoppt Handy das zu vibrieren wenn das Spiel vorbei ist
                     viewmodel.vibrateActive = false
                     if (MyApplication.onlineMode) {
                         //online mode rematch/exit
@@ -130,13 +130,13 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             }
         }
 
-        //timer that sets the max amount of time you have for a single target
+        //Timer der die max Zeit setzt die man für jedes Ziel hat
         viewmodel.completionTimer = object : CountDownTimer(30000, 100) {
             override fun onTick(millisUntilFinished: Long) {
-                //calculate passed time
+                //berechnet die vergangene Zeit
                 completionTime = 30000 - millisUntilFinished.toFloat()
 
-                //string format the time to 3 digits after the .
+                //string formatiert den Timer auf 3 Stellen nach dem .
                 var time = (completionTime/1000).toString().split(".")
                 var sec = time[0]
                 var mili = time[1]
@@ -152,21 +152,21 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
             override fun onFinish() {
                 timer.cancel()
-                //not last target
+                //nicht letztes Ziel
                 if (viewmodel.listindex < viewmodel.indexList.size) {
-                    //add the max time to the score
+                    //erhöht den score um die max Zeit
                     viewmodel.score += 30000
 
-                    //next api call
+                    //nächster api call
                     viewmodel.logic.apiCall(viewmodel.indexList[viewmodel.listindex], activity!!)
                     viewmodel.listindex++
                 }
-                //last target
+                //letztes Ziel
                 else {
-                    //add max time to the score
+                    //erhöht den score um die max Zeit
                     viewmodel.score += 30000
 
-                    //stops phone from vibrating after game is complete
+                    //stoppt Handy das zu vibrieren wenn das Spiel vorbei ist
                     viewmodel.vibrateActive = false
                     if (MyApplication.onlineMode) {
                         //online mode reset/exit
@@ -179,7 +179,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             }
         }
 
-        //location request to make sure that the phone has a last location for getTargetDirection()
+        //location request um sicher zu gehen dass das Handy eine lastlocation für getTargetDirection() hat
         var mLocationRequest = LocationRequest()
         mLocationRequest.interval = 60000
         mLocationRequest.fastestInterval = 5000
@@ -205,22 +205,23 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         LocationServices.getFusedLocationProviderClient(context)
             .requestLocationUpdates(mLocationRequest, mLocationCallback, null)
 
-        //initialize the game for the first time
+        //initialisiere das Spiel zum ersten mal
         viewmodel.logic.initGame(activity!!)
         return view
     }
 
     fun winnerCheck() {
-        //check if room exists
+        //Prüfe ob Raum existiert...
         MyApplication.myRef.child("data").child(MyApplication.code).get().addOnSuccessListener {
             if(it.value != null) {
                 if(MyApplication.isHost) {
-                    //write score to the database
+                    //Schreib deinen score in die DB...
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
-                    //wait for guest to insert his score
+                    //Warte darauf das Guest seinen Score einträgt...
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
+                                //Entscheide Gewinner!
                                 var networkWinner = ""
                                 if (viewmodel.score < snapshot.value.toString().toInt()) {
                                     networkWinner = MyApplication.hostID
@@ -235,9 +236,9 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                         override fun onCancelled(error: DatabaseError) {}
                     })
                 } else {
-                    //write your score to the database
+                    //Schreib deinen score in die DB...
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
-                    //wait for host to determine the winner
+                    //Warte darauf das Host entscheidet wer gewonnen hat
                 }
             }
         }
@@ -261,12 +262,14 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         val alpha = 0.97f
         synchronized(this) {
             if(event!!.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                //speichert Werte des Accelerometer Sensor
                 floatGravity[0] = (alpha*floatGravity[0]+(1-alpha)*event!!.values[0])
                 floatGravity[1] = (alpha*floatGravity[1]+(1-alpha)*event!!.values[1])
                 floatGravity[2] = (alpha*floatGravity[2]+(1-alpha)*event!!.values[2])
             }
 
             if(event!!.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+                //speichert Wert des MagneticField Sensor
                 floatGeoMagnetic[0] = (alpha*floatGeoMagnetic[0]+(1-alpha)*event!!.values[0])
                 floatGeoMagnetic[1] = (alpha*floatGeoMagnetic[1]+(1-alpha)*event!!.values[1])
                 floatGeoMagnetic[2] = (alpha*floatGeoMagnetic[2]+(1-alpha)*event!!.values[2])
@@ -276,11 +279,14 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             var I = FloatArray(9)
             var success = SensorManager.getRotationMatrix(R, I, floatGravity, floatGeoMagnetic)
             if(success) {
+                //bestimmt Ausrichtung
                 var orientation = FloatArray(3)
+                //berechnet die Handyaurichtung zu Norden in Grad
                 SensorManager.getOrientation(R, orientation)
                 azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
                 azimuth = (azimuth+360)%360
 
+                //animiert Kopmass
                 var ani: RotateAnimation = RotateAnimation(-currentAzimuth, -azimuth, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
                 currentAzimuth = azimuth
 
@@ -290,7 +296,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
                 compass.startAnimation(ani)
 
-                //check for right direction
+                //checkt ob die Ausrichtung stimmt
                 if ((viewmodel.targetDirectionDegree - 5)%360 <= azimuth && azimuth <= (viewmodel.targetDirectionDegree + 5)%360) {
                     //start
                     if (!timerStarted) {
@@ -304,8 +310,9 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                     timerStarted = false
                 }
 
+                //checkt ob die Ausrichtung in einem 90 Grad (links und rechts) abstand zum Ziel ist
                 if ((viewmodel.targetDirectionDegree - 90)%360 <= azimuth && azimuth <= (viewmodel.targetDirectionDegree + 90)%360) {
-                    //start //vibrateTimer.start()
+                    //vibriert das Handy wenn das Handy in der nähe zum Ziel ist
                     val vibrator = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                     if (!vibrate && viewmodel.vibrateActive) {
                         if (vibrator.hasVibrator()) { // Vibrator availability checking
@@ -332,11 +339,13 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
     override fun onPause() {
         super.onPause()
+        //SensorManager abmelden wenn pausiert
         sensorManager.unregisterListener(this)
     }
 
     override fun onResume() {
         super.onResume()
+        //SensorManager anmelden wenn app fortgesetzt wird
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME)
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME)
     }

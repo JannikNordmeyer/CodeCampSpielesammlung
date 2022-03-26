@@ -26,50 +26,50 @@ class KompassLogic (viewModel: KompassViewModel){
     }
 
     fun initGame(passedActivity: Activity) {
-        //setup work that is only done by the host
+        //setup das nur vom Host ausgeführt wird
         if (MyApplication.isHost || !MyApplication.onlineMode) {
-            //reset all used variables
+            //reset alle genutzten Variablen
             viewmodel.listindex = 0
             viewmodel.score = 0f
             viewmodel.indexList.clear()
             viewmodel.vibrateActive = true
 
-            //fill the indexList with 5 random keys for the api call
+            //fphlt die indexList mit 5 zufälligen keys für die api calls
             for (i in 0..4) {
                 val rand = Random.nextInt(0,132)
                 viewmodel.indexList.add(rand)
             }
 
-            //push the indexList on the database for online mode
+            //pusht die indexList auf die Datenbank für online mode
             if (MyApplication.onlineMode) {
                 val childUpdates = hashMapOf<String, Any>("1" to viewmodel.indexList[0], "2" to viewmodel.indexList[1], "3" to viewmodel.indexList[2], "4" to viewmodel.indexList[3], "5" to viewmodel.indexList[4])
                 MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").setValue(childUpdates).addOnSuccessListener {
-                    //set FieldUpdate true to let the guest know that all data has been pushed
+                    //setzt FieldUpdate auf true um den Gast wissen zu lassen dass alle daten gepusht wurden
                     MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").setValue(true)
                 }
             }
 
-            //first api call to start the game
+            //ertser api call um das Spiel zu starten
             apiCall(viewmodel.indexList[viewmodel.listindex],passedActivity)
             viewmodel.listindex++
         } else {
-            //FieldUpdate listener for guest to check for keys pushed by the host
+            //FieldUpdate listener für den Gast um zu checken ob der Host die keys gepusht hat
             MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value == true) {
-                        //reset all used variables
+                        //reset alle genutzten Variablen
                         viewmodel.listindex = 0
                         viewmodel.score = 0f
                         viewmodel.vibrateActive = true
 
-                        //pull the indexList from the database
+                        //pullt die indexList von der Datenbank
                         MyApplication.myRef.child("data").child(MyApplication.code).child("Locations").get().addOnSuccessListener {
                             viewmodel.indexList.clear()
                             for (data in it.children){
                                 viewmodel.indexList.add(data.value.toString().toInt())
                             }
-                            //first api call for the guest to start his game
+                            //erster api call für den Gast um das Spiel zu starten
                             apiCall(viewmodel.indexList[viewmodel.listindex], passedActivity)
                             viewmodel.listindex++
                         }
@@ -89,17 +89,17 @@ class KompassLogic (viewModel: KompassViewModel){
                 "ameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
         val queue = Volley.newRequestQueue(passedActivity)
 
-        //request a jsonObject from the url
+        //jsonObject von der url anfordern
         val jsonObjectRequest = JsonObjectRequest(
             Request.Method.GET,
             url,
             null,
             Response.Listener {
-                //save the returned jsonObject
+                //speichert zurückgegebenes jsonObject
                 viewmodel.targetLocation = it.getJSONArray("features").getJSONObject(key)
 
                 getTargetDirection(passedActivity)
-                //update ui with livedata
+                //update ui mit livedata
                 viewmodel.liveLocation.value = viewmodel.targetLocation.getJSONObject("properties").getString("Objekt")
             }, Response.ErrorListener {
                 Log.d("MainActivity", "Api call failed")
@@ -109,23 +109,23 @@ class KompassLogic (viewModel: KompassViewModel){
     }
 
     fun getTargetDirection(passedActivity: Activity) {
-        //check for location permission
+        //checkt für location permission
         if(ActivityCompat.checkSelfPermission(passedActivity!!, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            //get the phone location
+            //holt die Handy location
             val location = viewmodel.fusedLocationClient.lastLocation.addOnSuccessListener {
                 if (it != null) {
                     viewmodel.completionTimer.cancel()
                     viewmodel.completionTimer.start()
 
-                    //phone longitude and latitude
+                    //Handy Längengrad und Breitengrad
                     val longitude = it.longitude
                     val latitude = it.latitude
 
-                    //target longitude and latitude
+                    //Ziel Längengrad und Breitengrad
                     val long = viewmodel.targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(0)
                     val lat = viewmodel.targetLocation.getJSONObject("geometry").getJSONArray("coordinates").getDouble(1)
 
-                    //direction vector
+                    //Richtungsgrad
                     val dir = FloatArray(2)
                     dir[0] = longitude.toFloat() - long.toFloat()
                     dir[1] = latitude.toFloat() - lat.toFloat()
@@ -133,14 +133,14 @@ class KompassLogic (viewModel: KompassViewModel){
                     //update ui
                     viewmodel.targetDirectionDegree = acos(dir[0]/(sqrt(  dir[0].pow(2) + dir[1].pow(2)) ) ) * 180/ PI
                 } else {
-                    //try again if location could not be found
+                    //versuchs nochmal wenn location nicht gefunden wurde
                     getTargetDirection(passedActivity)
                 }
 
             }
 
         } else {
-            //request location permission
+            //location permission anfordern
             ActivityCompat.requestPermissions(passedActivity!!, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
         }
     }

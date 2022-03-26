@@ -17,7 +17,7 @@ class MyApplication : Application() {
         var isLoggedIn = false;                         //Kontrollvariable um zu checken ob der User eingeloggt ist
 
         var isHost = true;                              //Kontrollvariable um zu schauen ob man Host ist
-        var code = "null"                               //"Room" Code
+        var code = ""                                   //"Room" Code
         var onlineMode = false;
         var myTurn = false;
         var hostID = "null"
