@@ -1,7 +1,6 @@
 package com.example.testapplication
 
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.lifecycle.ViewModel
 
 class ArithmeticsViewModel: ViewModel() {

@@ -7,7 +7,6 @@ import android.text.TextUtils
 import android.widget.Toast
 import com.example.testapplication.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 
 class Login : AppCompatActivity() {
 

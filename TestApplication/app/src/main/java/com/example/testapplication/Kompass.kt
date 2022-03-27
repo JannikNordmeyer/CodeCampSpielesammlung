@@ -12,7 +12,6 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,14 +33,7 @@ import com.google.android.gms.location.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import org.json.JSONArray
 import kotlin.collections.ArrayList
-import android.content.Intent
-
-import android.content.DialogInterface
-import android.provider.Settings
-import java.lang.Exception
-import kotlin.system.exitProcess
 
 
 class Kompass : Fragment(), SensorEventListener, LocationListener {

@@ -1,27 +1,10 @@
 package com.example.testapplication
 
-import android.Manifest
-import android.app.Activity
-import android.content.pm.PackageManager
 import android.os.CountDownTimer
-import android.util.Log
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import org.json.JSONObject
-import kotlin.math.PI
-import kotlin.math.acos
-import kotlin.math.pow
-import kotlin.math.sqrt
-import kotlin.random.Random
 
 class KompassViewModel(): ViewModel() {
 

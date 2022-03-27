@@ -10,17 +10,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.databinding.FragmentSchrittzaehlerBinding
-import java.lang.Math.abs
 
 /*  SPIEL KONZEPT
 Host kann entscheiden wie viele Schritte man als Ziel laufen muss.

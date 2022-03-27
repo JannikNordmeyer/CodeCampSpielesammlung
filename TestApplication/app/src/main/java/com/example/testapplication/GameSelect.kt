@@ -1,9 +1,11 @@
 package com.example.testapplication
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.location.LocationManager
@@ -11,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.testapplication.MyApplication.Companion.FRIENDS_TOPIC
@@ -121,23 +124,29 @@ class GameSelect : AppCompatActivity() {
                 mLocationManager =
                     this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                 var gps_enabled = false
+                var permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 try {
                     gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 } catch (ex: Exception) {
                 }
 
-                if (!gps_enabled) {
+                if (!gps_enabled || !permission) {
                     // Falls keine vorhanden, verlange diese.
-                    val build = AlertDialog.Builder(this)
-                        .setMessage("GPS is not enabled")
-                        .setPositiveButton("open location settings",
-                            DialogInterface.OnClickListener { paramDialogInterface, paramInt ->
-                                this.startActivity(
-                                    Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                                )
-                            })
-                        .setNegativeButton("Cancel", null)
-                        .show()
+                    if (!gps_enabled) {
+                        val build = AlertDialog.Builder(this)
+                            .setMessage("GPS is not enabled")
+                            .setPositiveButton("open location settings",
+                                DialogInterface.OnClickListener { paramDialogInterface, paramInt ->
+                                    this.startActivity(
+                                        Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                    )
+                                })
+                            .setNegativeButton("Cancel", null)
+                            .show()
+                    }
+                    if (!permission) {
+                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 44)
+                    }
                 } else {
                     //Falls vorhanden, gehe zu networkSetup.
                     MyApplication.globalSelectedGame = GameNames.COMPASS
