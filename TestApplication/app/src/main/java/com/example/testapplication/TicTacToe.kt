@@ -32,9 +32,9 @@ class TicTacToe : Fragment() {
             if(viewmodel.logic.winner == null){
                 if(!MyApplication.onlineMode) {
                     if (viewmodel.logic.player == "X") {
-                        binding.playerprompt.text = "Player 1's Turn:"
+                        binding.playerprompt.text = "Player 1's Turn!"
                     } else {
-                        binding.playerprompt.text = "Player 2's Turn:"
+                        binding.playerprompt.text = "Player 2's Turn!"
                     }
                 }
                 else{
