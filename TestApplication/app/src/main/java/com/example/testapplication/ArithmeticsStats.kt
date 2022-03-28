@@ -35,7 +35,7 @@ class ArithmeticsStats : Fragment() {
         }
         binding.gamesPlayedText.text =viewmodel.ArithmeticsGamesPlayed.toString()
         var winP = (viewmodel.ArithmeticsWinPercentage * 100).toString()
-        if(winP.length > 6){ binding.winPercentageText.text = winP.substring(0,7)+"%" }
+        if(winP.length > 6){ binding.winPercentageText.text = winP.substring(0,5)+"%" }
         else{ binding.winPercentageText.text = winP+"%" }
 
         val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.ArithmeticsData.value)

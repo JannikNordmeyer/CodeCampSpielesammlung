@@ -34,7 +34,7 @@ class KompassLogic (viewModel: KompassViewModel){
             viewmodel.indexList.clear()
             viewmodel.vibrateActive = true
 
-            //fphlt die indexList mit 5 zufälligen keys für die api calls
+            //füllt die indexList mit 5 zufälligen keys für die api calls
             for (i in 0..4) {
                 val rand = Random.nextInt(0,132)
                 viewmodel.indexList.add(rand)
