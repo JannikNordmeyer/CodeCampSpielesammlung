@@ -37,7 +37,7 @@ class SchrittzaehlerStats : Fragment() {
             return
         }
         binding.gamesPlayedText.text =viewmodel.ChallengeGamesPlayed.toString()
-        var winP = (viewmodel.ChallengeWinPercentage * 100).toInt().toString()
+        var winP = (viewmodel.ChallengeWinPercentage * 100).toString()
         if(winP.length > 6){ binding.winPercentageText.text = winP.substring(0,7)+"%" }
         else{ binding.winPercentageText.text = winP+"%" }
 

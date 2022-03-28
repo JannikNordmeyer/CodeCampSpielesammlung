@@ -38,7 +38,7 @@ class TicTacToeStats : Fragment() {
             return
         }
         binding.gamesPlayedText.text =viewmodel.TicTacToeGamesPlayed.toString()
-        var winP = (viewmodel.TicTacToeWinPercentage * 100).toInt().toString()
+        var winP = (viewmodel.TicTacToeWinPercentage * 100).toString()
         if(winP.length > 6){ binding.winPercentageText.text = winP.substring(0,7)+"%" }
         else{ binding.winPercentageText.text = winP+"%" }
 
