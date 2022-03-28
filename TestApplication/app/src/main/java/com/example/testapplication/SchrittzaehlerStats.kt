@@ -9,7 +9,7 @@ import com.example.testapplication.databinding.FragmentChallengeStatsBinding
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 
-class ChallengeStats : Fragment() {
+class SchrittzaehlerStats : Fragment() {
 
     private lateinit var binding: FragmentChallengeStatsBinding
     lateinit var viewmodel: StatisticsViewModel
@@ -37,7 +37,9 @@ class ChallengeStats : Fragment() {
             return
         }
         binding.gamesPlayedText.text =viewmodel.ChallengeGamesPlayed.toString()
-        binding.winPercentageText.text = viewmodel.ChallengeWinPercentage.toString()
+        var winP = (viewmodel.ChallengeWinPercentage * 100).toInt().toString()
+        if(winP.length > 6){ binding.winPercentageText.text = winP.substring(0,7)+"%" }
+        else{ binding.winPercentageText.text = winP+"%" }
 
         val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.ChallengeData.value)
 

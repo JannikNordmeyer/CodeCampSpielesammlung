@@ -1,8 +1,8 @@
 package com.example.testapplication
 
 import ArithmeticsStats
-import GeoportalStats
-import ChallengeStats
+import KompassStats
+import SchrittzaehlerStats
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -31,8 +31,8 @@ class Statistics : AppCompatActivity() {
         tabs = ArrayList()
         tabs.add(TicTacToeStats())
         tabs.add(ArithmeticsStats())
-        tabs.add(GeoportalStats())
-        tabs.add(ChallengeStats())
+        tabs.add(KompassStats())
+        tabs.add(SchrittzaehlerStats())
 
         fragToLoad = TicTacToeStats()
         supportFragmentManager.beginTransaction().apply {

@@ -38,7 +38,9 @@ class TicTacToeStats : Fragment() {
             return
         }
         binding.gamesPlayedText.text =viewmodel.TicTacToeGamesPlayed.toString()
-        binding.winPercentageText.text = viewmodel.TicTacToeWinPercentage.toString()
+        var winP = (viewmodel.TicTacToeWinPercentage * 100).toInt().toString()
+        if(winP.length > 6){ binding.winPercentageText.text = winP.substring(0,7)+"%" }
+        else{ binding.winPercentageText.text = winP+"%" }
 
         val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.TicTacToeData.value)
 

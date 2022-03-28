@@ -9,7 +9,7 @@ import com.example.testapplication.databinding.FragmentGeoportalStatsBinding
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 
-class GeoportalStats : Fragment() {
+class KompassStats : Fragment() {
 
     private lateinit var binding: FragmentGeoportalStatsBinding
     lateinit var viewmodel: StatisticsViewModel
@@ -37,7 +37,9 @@ class GeoportalStats : Fragment() {
             return
         }
         binding.gamesPlayedText.text =viewmodel.CompassGamesPlayed.toString()
-        binding.winPercentageText.text = viewmodel.CompassWinPercentage.toString()
+        var winP = (viewmodel.CompassWinPercentage * 100).toInt().toString()
+        if(winP.length > 6){ binding.winPercentageText.text = winP.substring(0,7)+"%" }
+        else{ binding.winPercentageText.text = winP+"%" }
 
         val series: LineGraphSeries<DataPoint> = LineGraphSeries(viewmodel.CompassData.value)
 
