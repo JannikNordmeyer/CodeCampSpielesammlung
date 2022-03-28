@@ -204,13 +204,18 @@ class GameSelectNetwork : AppCompatActivity() {
         // Erschafft oder tritt Lobby bei
         binding.BtnOnlineRoomCode.setOnClickListener {
             if(MyApplication.isLoggedIn) {
-                viewmodel.lobbyName = binding.InviteLobbyName.text.toString()
-                if (MyApplication.inviteFriendID != "") {
-                    inviteFriend(viewmodel.lobbyName)
-                    MyApplication.inviteFriendID = ""
-                    Toast.makeText(this, "Invited Friend!", Toast.LENGTH_SHORT).show()
+                if(binding.InviteLobbyName.text.isNotEmpty()) {
+                    viewmodel.lobbyName = binding.InviteLobbyName.text.toString()
+                    if (MyApplication.inviteFriendID != "") {
+                        inviteFriend(viewmodel.lobbyName)
+                        MyApplication.inviteFriendID = ""
+                        Toast.makeText(this, "Invited Friend!", Toast.LENGTH_SHORT).show()
+                    }
+                    createOrJoinLobby(viewmodel.lobbyName)
                 }
-                createOrJoinLobby(viewmodel.lobbyName)
+                else{
+                    Toast.makeText(this, "Please enter a valid lobby name.", Toast.LENGTH_SHORT ).show()
+                }
             }
             else{
                 Toast.makeText(this, "You can only use this feature while logged in.", Toast.LENGTH_SHORT ).show()
