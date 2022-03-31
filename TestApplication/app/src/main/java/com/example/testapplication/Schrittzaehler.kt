@@ -61,7 +61,6 @@ class Schrittzaehler : Fragment(), SensorEventListener {
     fun stopWait(){
         viewmodel.isWaiting = false
         viewmodel.running = true
-        binding.editTextGoalNumber.visibility = View.VISIBLE
         binding.TextViewSchritte.visibility = View.VISIBLE
         binding.textFieldGoalSteps.visibility = View.VISIBLE
         binding.textFieldStepCounter.visibility = View.VISIBLE
@@ -123,6 +122,8 @@ class Schrittzaehler : Fragment(), SensorEventListener {
             if(viewmodel.isWaiting){
                 stopWait()
                 viewmodel.score = 0
+                binding.textFieldGoalSteps.text = viewmodel.goalscore.toString()
+                binding.textFieldStepCounter.text = viewmodel.score.toString()
             }
         }
 
