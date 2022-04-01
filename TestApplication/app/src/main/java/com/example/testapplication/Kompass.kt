@@ -69,6 +69,23 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         }
     }
 
+    //UI-Hilfsfunktionen
+    fun showStuff() {
+        binding.idPB.visibility = View.GONE
+
+        binding.compass.visibility = View.VISIBLE
+        binding.idTimer.visibility = View.VISIBLE
+        binding.idTarget.visibility = View.VISIBLE
+    }
+
+    fun hideStuff() {
+        binding.idPB.visibility = View.VISIBLE
+
+        binding.compass.visibility = View.GONE
+        binding.idTimer.visibility = View.GONE
+        binding.idTarget.visibility = View.GONE
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
