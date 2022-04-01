@@ -21,8 +21,15 @@ class KompassLogic (viewModel: KompassViewModel){
 
 
     var viewmodel = viewModel
+    lateinit var guestListener: ValueEventListener
 
     fun networkOnFieldUpdate(data : String?){
+    }
+
+    fun removeListener() {
+        if(this::guestListener.isInitialized) {
+            MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").removeEventListener(guestListener)
+        }
     }
 
     fun initGame(passedActivity: Activity) {
@@ -54,7 +61,7 @@ class KompassLogic (viewModel: KompassViewModel){
             viewmodel.listindex++
         } else {
             //FieldUpdate listener für den Gast um zu checken ob der Host die keys gepusht hat
-            MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object :
+            guestListener = MyApplication.myRef.child("data").child(MyApplication.code).child("FieldUpdate").addValueEventListener(object :
                 ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if(snapshot.value == true) {

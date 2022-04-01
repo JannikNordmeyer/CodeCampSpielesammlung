@@ -67,6 +67,8 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         if(this::goalAlert.isInitialized){
             goalAlert.dismiss()
         }
+
+        viewmodel.logic.removeListener()
     }
 
     //UI-Hilfsfunktionen

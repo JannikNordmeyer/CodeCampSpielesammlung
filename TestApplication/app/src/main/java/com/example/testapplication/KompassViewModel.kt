@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.firebase.database.ValueEventListener
 import org.json.JSONObject
 
 class KompassViewModel(): ViewModel() {
