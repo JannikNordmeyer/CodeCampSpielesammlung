@@ -240,7 +240,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         //game over alert dialoge
         val build = AlertDialog.Builder(activity!!);
         build.setTitle("Game Over!")
-        build.setMessage("You took "+viewmodel.score.toString()+" Seconds!")
+        build.setMessage("You took "+ (viewmodel.score/1000).toString()+" Seconds!")
 
         //restart option
         build.setPositiveButton("Restart") {dialog, which ->
