@@ -84,7 +84,7 @@ class Arithmetics : Fragment() {
             override fun onFinish() {
                 // Im Offline Modus, zeige Score und starte neu nach einem kleinen Delay
                 if(!MyApplication.onlineMode) {
-                    Toast.makeText(context, "You have reached a score of " + (viewmodel.score).toString() + ".", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "You have reached a score of " + (viewmodel.score*1000).toString() + ".", Toast.LENGTH_SHORT).show()
                     val handler = Handler(Looper.getMainLooper())
                     handler.postDelayed({
                         this.start()
