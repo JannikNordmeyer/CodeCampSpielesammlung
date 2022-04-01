@@ -3,6 +3,7 @@ package com.example.testapplication
 import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
@@ -216,7 +217,6 @@ class GameHolder : AppCompatActivity() {
                         }
 
                         build.setNegativeButton("exit") { dialog, which ->
-                            exitGame()
                             finish()
                         }
 
@@ -260,7 +260,6 @@ class GameHolder : AppCompatActivity() {
                             build.setMessage("Opponent has left")
                             build.setPositiveButton("OK") { dialog, which ->
                                 MyApplication.Ileft = true;
-                                exitGame()
                                 finish()
                             }
                             if(!isFinishing()) {
@@ -277,7 +276,6 @@ class GameHolder : AppCompatActivity() {
         binding.ButtonGiveUp.setOnClickListener() {
             if(MyApplication.onlineMode){
                 MyApplication.Ileft = true;
-                exitGame()
             }
             finish()
         }
