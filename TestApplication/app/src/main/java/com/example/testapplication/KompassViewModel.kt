@@ -13,6 +13,7 @@ class KompassViewModel(): ViewModel() {
 
     var logic = KompassLogic(this)
     var liveLocation:MutableLiveData<String?> = MutableLiveData<String?>()
+    var livenetworkReset: MutableLiveData<Boolean?> = MutableLiveData<Boolean?>()
 
     var score : Float = 0.0f
     lateinit var targetLocation: JSONObject
@@ -22,6 +23,7 @@ class KompassViewModel(): ViewModel() {
     var indexList: ArrayList<Int> = ArrayList()
     var listindex = 0
     var vibrateActive = true
+    var running = true
 
 
 

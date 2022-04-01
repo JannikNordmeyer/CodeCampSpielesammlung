@@ -71,6 +71,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
 
     //UI-Hilfsfunktionen
     fun showStuff() {
+        viewmodel.running = true
         binding.idPB.visibility = View.GONE
 
         binding.compass.visibility = View.VISIBLE
@@ -79,6 +80,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
     }
 
     fun hideStuff() {
+        viewmodel.running = false
         binding.idPB.visibility = View.VISIBLE
 
         binding.compass.visibility = View.GONE
@@ -105,6 +107,14 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
         viewmodel.fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
         viewmodel.indexList = ArrayList()
         viewmodel.targetLocation = JSONObject()
+
+        //Setup Livedata für score und network
+        viewmodel.livenetworkReset.observe(viewLifecycleOwner){
+            if(viewmodel.livenetworkReset.value == true){
+                showStuff()
+            }
+            else viewmodel.livenetworkReset.value = false
+        }
 
         //Timer startet wenn das Handy auf das Ziel zeigt
         timer = object : CountDownTimer(2000, 10) {
@@ -227,6 +237,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                     //Schreib deinen score in die DB...
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("HostScore").setValue(viewmodel.score)
                     //Warte darauf das Guest seinen Score einträgt...
+                    hideStuff()
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.value != null) {
@@ -248,6 +259,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
                     //Schreib deinen score in die DB...
                     MyApplication.myRef.child("data").child(MyApplication.code).child("Field").child("GuestScore").setValue(viewmodel.score)
                     //Warte darauf das Host entscheidet wer gewonnen hat
+                    hideStuff()
                 }
             }
         }
@@ -287,7 +299,7 @@ class Kompass : Fragment(), SensorEventListener, LocationListener {
             var R = FloatArray(9)
             var I = FloatArray(9)
             var success = SensorManager.getRotationMatrix(R, I, floatGravity, floatGeoMagnetic)
-            if(success) {
+            if(success && viewmodel.running) {
                 //bestimmt Ausrichtung
                 var orientation = FloatArray(3)
                 //berechnet die Handyaurichtung zu Norden in Grad

@@ -329,6 +329,7 @@ class GameHolder : AppCompatActivity() {
                     }
                     MyApplication.networkSetupComplete = true
                 }
+                gameViewModel.livenetworkReset.value = true
             }
 
             //Arithmetics Setup: Reset Game und starte Timer
